@@ -1,0 +1,221 @@
+# Copyright (C) 2023 Webpixelia
+# This file is distributed under the GPLv2.
+msgid ""
+msgstr ""
+"Project-Id-Version: Coupons after order for WooCommerce 2.0.0 Beta RC 2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/test\n"
+"POT-Creation-Date: 2023-10-28T11:12:35+00:00\n"
+"PO-Revision-Date: 2023-10-31 21:45+0000\n"
+"Last-Translator: \n"
+"Language-Team: Spanish (Spain)\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Domain: coupons-after-order\n"
+"Plural-Forms: nplurals=2; plural=n != 1;"
+
+#: includes/admin/wccao-functions.php:211
+msgid ""
+"<p>If you have any questions or need assistance, our customer service team "
+"is here to help.</p><p>Thank you for your loyalty. We hope you enjoy this "
+"special.</p><p>Best regards,<br/>%s.</p>"
+msgstr ""
+"<p>Si tienes alguna pregunta o necesitas ayuda, nuestro equipo de atención "
+"al cliente está aquí para ayudarte.</p><p>Gracias por tu lealtad. Esperamos "
+"que disfrutes de este especial.</p><p>Saludos cordiales,<br/>%s.</p>"
+
+#: templates/email-template.php:65
+msgid "Add the items of your choice to your cart."
+msgstr "Añade los artículos de tu elección a tu carrito."
+
+#: includes/admin/wccao-functions.php:85
+msgid ""
+"An error occurred while sending your coupons by email (Email template not "
+"found). Please contact us to collect your coupons: mudaparis@outlook.fr."
+msgstr ""
+"Se produjo un error al enviar sus cupones por correo electrónico (Plantilla "
+"de correo electrónico no encontrada). Por favor, contáctenos para recoger "
+"sus cupones: mudaparis@outlook.fr."
+
+#: templates/email-template.php:57
+msgid ""
+"As promised, we are sending you your promo codes corresponding to our full "
+"refund offer. You spent %1$s on your last purchase, entitling you to %2$s "
+"promo codes, each worth %3$s."
+msgstr ""
+"Como prometido, le enviamos sus códigos promocionales correspondientes a "
+"nuestra oferta de reembolso completo. Usted gastó %1$s en su última compra, "
+"lo que le da derecho a %2$s códigos promocionales, cada uno de ellos con un "
+"valor de %3$s."
+
+#: templates/email-template.php:74
+msgid "Best regards,<br/>Muda Paris."
+msgstr "Atentamente,<br/>Muda Paris."
+
+#: includes/admin/wccao-functions.php:115
+#: includes/admin/wccao-functions.php:160
+msgid "Coupon Validity (Date)"
+msgstr "Validez del cupón (fecha)"
+
+#: includes/admin/wccao-functions.php:114
+#: includes/admin/wccao-functions.php:156
+msgid "Coupon Validity (Days)"
+msgstr "Validez del cupón (días)"
+
+#: includes/admin/wccao-functions.php:113
+#: includes/admin/wccao-functions.php:154
+msgid "Coupon Validity Type"
+msgstr "Tipo de validez del cupón"
+
+#: includes/admin/class-wccao-admin.php:65
+msgid "Coupons after order"
+msgstr "Cupones tras el pedido"
+
+#. Plugin Name of the plugin
+msgid "Coupons after order for WooCommerce"
+msgstr "Cupones después del pedido para WooCommerce"
+
+#: coupons-after-order.php:109
+msgid ""
+"Coupons After Order requires <a href=\"%s\" target=\"_blank\">WooCommerce</a>"
+" in order to work."
+msgstr ""
+"Cupones después del pedido requiere <a href=\"%s\" target=\"_blank\">"
+"WooCommerce</a> para funcionar."
+
+#: includes/admin/class-wccao-admin.php:64
+#: includes/admin/class-wccao-admin.php:84
+#: includes/admin/wccao-functions.php:109
+msgid "Coupons after order Settings"
+msgstr "Cupones después del pedido Ajustes"
+
+#: templates/email-template.php:66
+msgid ""
+"During the payment process, enter one of these promo codes in the "
+"corresponding \"Promo Code\" box."
+msgstr ""
+"Durante el proceso de pago, introduce uno de estos códigos promocionales en "
+"la casilla correspondiente a ‘Código promocional’."
+
+#: templates/email-template.php:58
+msgid "Each promo code is valid for a minimum cart value of %s."
+msgstr ""
+"Cada código promocional es válido para un valor mínimo de carrito de %s."
+
+#: includes/admin/wccao-functions.php:112
+msgid "Enable Coupon after order"
+msgstr "Activar cupón después del pedido"
+
+#. Description of the plugin
+msgid ""
+"Generate coupons after order completion. The sum of the coupons will be "
+"equal to the amount of the order."
+msgstr ""
+"Generar cupones tras la finalización del pedido. La suma de los cupones será "
+"igual al importe del pedido."
+
+#: templates/email-template.php:59
+msgid "Here are your promo codes:"
+msgstr "Aquí están tus códigos promocionales:"
+
+#. Plugin URI of the plugin
+msgid "https://webpixelia.com/"
+msgstr "https://webpixelia.com/"
+
+#. Author URI of the plugin
+msgid "https://www.webpixelia.com/"
+msgstr "https://www.webpixelia.com/"
+
+#: templates/email-template.php:72
+msgid ""
+"If you have any questions or need assistance, our customer service team is "
+"here to help. You can reach us by email at mudaparis@outlook.fr or via "
+"WhatsApp at 07.69.91.78.30."
+msgstr ""
+"Si tienes alguna pregunta o necesitas asistencia, nuestro equipo de servicio "
+"al cliente está aquí para ayudarte. Puedes contactarnos por correo "
+"electrónico en mudaparis@outlook.fr o a través de WhatsApp al 07.69.91.78.30."
+
+#: includes/admin/wccao-functions.php:116
+msgid "Number of Coupons Generated"
+msgstr "Número de cupones generados"
+
+#: templates/email-template.php:73
+msgid ""
+"Once again, we thank you for your loyalty to Muda Paris. We hope you enjoy "
+"this special offer and continue to find items you love in our store."
+msgstr ""
+"Nuevamente, te agradecemos por tu lealtad a Muda Paris. Esperamos que "
+"disfrutes de esta oferta especial y sigas encontrando artículos que te "
+"gusten en nuestra tienda."
+
+#: templates/email-template.php:68
+msgid ""
+"Please note that these promo codes are valid from %1$s until %2$s and cannot "
+"be combined in a single order."
+msgstr ""
+"Tenga en cuenta que estos códigos promocionales son válidos desde %1$s hasta "
+"%2$s y no pueden ser combinados en un solo pedido."
+
+#: includes/admin/wccao-functions.php:68
+msgid "Promo code "
+msgstr "Código promocional"
+
+#: templates/email-template.php:55
+msgid "Salam Alaykoum / Hello %s,"
+msgstr "Salam Alaykoum / Hola %s,"
+
+#: templates/email-template.php:71
+msgid ""
+"Take this opportunity to explore our collection of traditional clothing and "
+"save on your future purchases."
+msgstr ""
+"Aprovecha esta oportunidad para explorar nuestra colección de ropa "
+"tradicional y ahorrar en tus compras futuras."
+
+#: includes/admin/wccao-functions.php:118
+msgid "Text at the end of the email"
+msgstr "Texto al final del correo electrónico"
+
+#: includes/admin/wccao-functions.php:117
+msgid "Text at the start of the email"
+msgstr "Texto al inicio del correo electrónico"
+
+#: templates/email-template.php:44
+msgid "Thank you for your order"
+msgstr "Gracias por tu pedido"
+
+#: templates/email-template.php:67
+msgid "The discount of %s will be automatically applied to your order."
+msgstr "El descuento del %s se aplicará automáticamente a tu pedido."
+
+#: templates/email-template.php:63
+msgid ""
+"To use these promo codes on your next purchase, simply follow these steps:"
+msgstr ""
+"Para usar estos códigos promocionales en tu próxima compra, simplemente "
+"sigue estos pasos:"
+
+#: includes/admin/wccao-functions.php:204
+msgid ""
+"We hope you are doing well and that you have enjoyed your recent purchase at "
+"%s. We thank you for your trust in our products."
+msgstr ""
+"Esperamos que te vaya bien y que hayas disfrutado de tu reciente compra en "
+"%s. Le agradecemos su confianza en nuestros productos."
+
+#. Author of the plugin
+msgid "Webpixelia"
+msgstr "Webpixelia"
+
+#: templates/email-template.php:4
+msgid "Your Promo Codes to Enjoy the Refund Offer"
+msgstr "Tus Códigos de Promoción para Disfrutar de la Oferta de Reembolso"
+
+#: includes/admin/wccao-functions.php:89
+msgid "Your Promo Codes to Enjoy the Refund Offer - Muda Paris"
+msgstr ""
+"Tus Códigos de Promoción para Disfrutar de la Oferta de Reembolso - Muda "
+"Paris"
