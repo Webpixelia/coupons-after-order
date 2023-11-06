@@ -26,11 +26,13 @@ function wccao_generate_coupons($order_id) {
         if ($validity_type === 'date'):
             $validity = get_option('coupons_after_order_validitydate');
         elseif ($validity_type === 'days'):
-            $validity = intval(get_option('coupons_after_order_validity'));
+            $validity = intval(get_option('coupons_after_order_validitydays'));
             $validity = '+' . $validity . ' days';
         endif;
 
         $count = intval(get_option('coupons_after_order_count'));
+        $limitUsage = get_option('coupons_after_order_usage_limit');
+        $min_amount = get_option('coupons_after_order_min_amount');
         $order = wc_get_order($order_id);
         $order_total = $order->get_subtotal(); // Total amount of the order (shipping costs excluded)
         $nber_coupons = intval($count); // Number of coupons generated desired
@@ -52,7 +54,8 @@ function wccao_generate_coupons($order_id) {
             // Calculate the coupon amount
             $coupon_amount = $order_total / $nber_coupons; // Divide the total amount by the number of coupons
     
-            $min_order = $coupon_amount * 2;
+            //$min_order = $coupon_amount * 2;
+            $min_order = empty($min_amount) ? $coupon_amount * 2 : $min_amount;
     
             // Create the coupon
             $coupon = new WC_Coupon($coupon_code);
@@ -61,7 +64,7 @@ function wccao_generate_coupons($order_id) {
             $coupon->set_individual_use(true);
             $coupon->set_date_expires(strtotime($validity));
             $coupon->set_minimum_amount($min_order); // Minimum usage threshold
-            $coupon->set_usage_limit(1); // Usage limit at 1
+            $coupon->set_usage_limit($limitUsage); // Usage limit
             $coupon->save();
     
             // Add the coupon to the list
@@ -86,7 +89,7 @@ function wccao_generate_coupons($order_id) {
         }
     
         // Send a single email to the customer with the list of generated coupons
-        $subject_translation = __('Your Promo Codes to Enjoy the Refund Offer - Muda Paris', 'coupons-after-order');
+        $subject_translation = get_option('coupons_after_order_email_subject');
         $message = $email_content;
     
         $customer_email = $order->get_billing_email();
@@ -99,6 +102,7 @@ function wccao_generate_coupons($order_id) {
     }
 }
 
+
 /**
  * Create fields admin.
  *
@@ -106,23 +110,43 @@ function wccao_generate_coupons($order_id) {
  */
 function register_coupons_after_order_settings() {
 	 // Create section in WooCommerce menu
-     add_settings_section('coupons_after_order_section', __('Coupons after order Settings', 'coupons-after-order'), 'coupons_after_order_section_callback', 'woocommerce');
+     add_settings_section('coupons_after_order_section_settings', __('Coupons after order Settings', 'coupons-after-order'), 'coupons_after_order_section_settings_callback', 'woocommerce');
+     add_settings_section('coupons_after_order_section_email', __('Coupons after order Email', 'coupons-after-order'), 'coupons_after_order_section_email_callback', 'woocommerce');
 
      // Add fields to options
-    add_settings_field('coupons_after_order_enable', __('Enable Coupon after order', 'coupons-after-order'), 'coupons_after_order_enable_callback', 'woocommerce', 'coupons_after_order_section');
-    add_settings_field('coupons_after_order_validity_type', __('Coupon Validity Type', 'coupons-after-order'), 'coupons_after_order_validity_type_callback', 'woocommerce', 'coupons_after_order_section');
-    add_settings_field('coupons_after_order_validity', __('Coupon Validity (Days)', 'coupons-after-order'), 'coupons_after_order_validity_callback', 'woocommerce', 'coupons_after_order_section');
-    add_settings_field('coupons_after_order_validitydate', __('Coupon Validity (Date)', 'coupons-after-order'), 'coupons_after_order_validitydate_callback', 'woocommerce', 'coupons_after_order_section');
-    add_settings_field('coupons_after_order_count', __('Number of Coupons Generated', 'coupons-after-order'), 'coupons_after_order_count_callback', 'woocommerce', 'coupons_after_order_section');
-    add_settings_field('coupons_after_order_before_email', __('Text at the start of the email', 'coupons-after-order'), 'coupons_after_order_before_email_callback', 'woocommerce', 'coupons_after_order_section');
-    add_settings_field('coupons_after_order_after_email', __('Text at the end of the email', 'coupons-after-order'), 'coupons_after_order_after_email_callback', 'woocommerce', 'coupons_after_order_section');
+    add_settings_field('coupons_after_order_enable', __('Enable Coupon after order', 'coupons-after-order'), 'coupons_after_order_enable_callback', 'woocommerce', 'coupons_after_order_section_settings');
+    add_settings_field('coupons_after_order_validity_type', __('Coupon Validity Type', 'coupons-after-order'), 'coupons_after_order_validity_type_callback', 'woocommerce', 'coupons_after_order_section_settings');
+    add_settings_field('coupons_after_order_validity', __('Coupon Validity', 'coupons-after-order'), 'coupons_after_order_validity_callback', 'woocommerce', 'coupons_after_order_section_settings');
+    add_settings_field('coupons_after_order_others_parameters', __('Other Parameters', 'coupons-after-order'), 'coupons_after_order_others_parameters_callback', 'woocommerce', 'coupons_after_order_section_settings');
+    add_settings_field('coupons_after_order_email_config', __('Email settings', 'coupons-after-order'), 'coupons_after_order_email_config_callback', 'woocommerce', 'coupons_after_order_section_email');
+    add_settings_field('coupons_after_order_before_email', __('Text at the start of the email', 'coupons-after-order'), 'coupons_after_order_before_email_callback', 'woocommerce', 'coupons_after_order_section_email');
+    add_settings_field('coupons_after_order_after_email', __('Text at the end of the email', 'coupons-after-order'), 'coupons_after_order_after_email_callback', 'woocommerce', 'coupons_after_order_section_email');
 
     // Save settings
     register_setting('woocommerce', 'coupons_after_order_enable');
     register_setting('woocommerce', 'coupons_after_order_validity_type');
-    register_setting('woocommerce', 'coupons_after_order_validity');
+    register_setting('woocommerce', 'coupons_after_order_validitydays', array(
+        'type' => 'integer',
+        'sanitize_callback' => 'absint'
+    ));
     register_setting('woocommerce', 'coupons_after_order_validitydate');
-    register_setting('woocommerce', 'coupons_after_order_count');
+    register_setting('woocommerce', 'coupons_after_order_count', array(
+        'type' => 'integer',
+        'sanitize_callback' => 'absint'
+    ));
+
+    register_setting('woocommerce', 'coupons_after_order_usage_limit', array(
+        'type' => 'integer',
+        'sanitize_callback' => 'absint'
+    ));
+    register_setting('woocommerce', 'coupons_after_order_min_amount');
+
+    register_setting('woocommerce', 'coupons_after_order_email_subject', array(
+        'default' => __('Your Promo Codes to Enjoy the Refund Offer', 'coupons-after-order') . ' - ' . get_bloginfo('name'),
+    ));
+    register_setting('woocommerce', 'coupons_after_order_email_header', array(
+        'default' => __( 'Thank you for your order', 'coupons-after-order' ),
+    ));
     register_setting('woocommerce', 'coupons_after_order_before_email');
     register_setting('woocommerce', 'coupons_after_order_after_email');
 }
@@ -136,7 +160,12 @@ add_action( 'admin_init', 'register_coupons_after_order_settings' );
  *
  * @since 1.0.0
  */
-function coupons_after_order_section_callback() {
+function coupons_after_order_section_settings_callback() {
+    echo __('Configure generated coupon settings', 'coupons-after-order');
+}
+
+function coupons_after_order_section_email_callback() {
+    echo __('Configure the settings of the email received by the buyer', 'coupons-after-order');
     
 }
 
@@ -165,23 +194,51 @@ function coupons_after_order_validity_type_callback() {
 }
 
 function coupons_after_order_validity_callback() {
-    $validity = get_option('coupons_after_order_validity');
-    ?>
-    <input type="number" id="coupon-validity-days" name="coupons_after_order_validity" value="<?php echo esc_attr($validity); ?>" style="display: none;" />
-    <?php 
-}
-
-function coupons_after_order_validitydate_callback() {
+    $validitydays = get_option('coupons_after_order_validitydays');
     $validitydate = get_option('coupons_after_order_validitydate');
     ?>
-    <input type="date" id="coupon-validity-date" name="coupons_after_order_validitydate" value="<?php echo esc_attr($validitydate); ?>" min="<?php echo date('Y-m-d'); ?>" style="display: none;" />
+    <label id="coupon-validity-days-field" for="coupon-validity-days" style="display: none;"><?= __('Coupon Validity Days:', 'coupons-after-order') ?>
+        <input type="number" id="coupon-validity-days" name="coupons_after_order_validitydays" value="<?php echo esc_attr($validitydays); ?>" />&nbsp;<?= __('Days', 'coupons-after-order') ?>
+    </label>
+    <label id="coupon-validity-date-field" for="coupon-validity-date" style="display: none;"><?= __('Coupon Validity Date:', 'coupons-after-order') ?>
+        <input type="date" id="coupon-validity-date" name="coupons_after_order_validitydate" value="<?php echo esc_attr($validitydate); ?>" min="<?php echo date('Y-m-d'); ?>" />
+    </label>
     <?php 
 }
 
-function coupons_after_order_count_callback() {
+function coupons_after_order_others_parameters_callback() {
     $count = get_option('coupons_after_order_count');
+    $limitUsage = get_option('coupons_after_order_usage_limit', '1');
+    $min_amount = get_option('coupons_after_order_min_amount');
+    $decimal_separator = wc_get_price_decimal_separator();
     ?>
-    <input type="number" name="coupons_after_order_count" value="<?php echo esc_attr($count); ?>" required />
+    <label for="coupons-after-order-count"><?= __('Number of Coupons Generated:', 'coupons-after-order') ?>
+        <input type="number" id="coupons-after-order-count" name="coupons_after_order_count" value="<?php echo esc_attr($count); ?>" required />
+    </label>
+    <br><br>
+    <label for="coupon-validity-usage-limit"><?= __('Limit Usage of Coupons Generated:', 'coupons-after-order') ?>
+        <input type="number" id="coupon-validity-usage-limit" name="coupons_after_order_usage_limit" value="<?php echo esc_attr($limitUsage); ?>" />
+    </label>
+    <br><br>
+    <label for="coupon-amount-min"><?= __('Minimum amount:', 'coupons-after-order') ?>
+        <input type="text" id="coupon-amount-min" name="coupons_after_order_min_amount" value="<?php echo esc_attr($min_amount); ?>" oninput="validateCouponAmount(this, 'minAmountError')" class="wccao_input_price" data-decimal="<?= esc_attr($decimal_separator); ?>" />
+        &nbsp;<?php _e('(If empty, it is double the amount of the individual coupon)', 'coupons-after-order') ?>
+    </label>
+    <?php
+}
+
+function coupons_after_order_email_config_callback() {
+    $email_subject = get_option('coupons_after_order_email_subject');
+    $email_header = get_option('coupons_after_order_email_header');
+    ?>
+    <label for="email_subject" style="display: flex; align-items: center;"><?= __('Email subject:', 'coupons-after-order') ?>
+        <input type="text" id="email_subject" name="coupons_after_order_email_subject" value="<?php echo esc_attr($email_subject); ?>" style="flex:auto;" />
+    </label>
+    <br><br>
+    <label for="email_header" style="display: flex; align-items: center;"><?= __('Email header:', 'coupons-after-order') ?>
+        <input type="text" id="email_header" name="coupons_after_order_email_header" value="<?php echo esc_attr($email_header); ?>" style="flex:auto;" />
+    </label>
+   
     <?php
 }
 

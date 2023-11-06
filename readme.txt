@@ -39,7 +39,13 @@ In the search field type \"Coupons after order for WooCommerce\" and click Searc
 3. Example of email sent
 
 == Changelog ==
-= 1.0. =
+= 1.1.0 =
+* Added new coupon options
+* UI Improvement
+* Rewritten email with new content
+* Deleted bad content in email
+
+= 1.0.0 =
 * Added new PHP Functions and Classes
 * Code cleanup
 * Miscellaneous internal fixes and improvements

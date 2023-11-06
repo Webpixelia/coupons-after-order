@@ -1,7 +1,7 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-$email_heading = __('Your Promo Codes to Enjoy the Refund Offer', 'coupons-after-order');
+$email_header = get_option('coupons_after_order_email_header');
 $startDate = date('j F Y');
 $endDate = date("j F Y", strtotime($validity));
 
@@ -41,7 +41,7 @@ $content_after = wpautop(get_option('coupons_after_order_after_email'));
 												<table border="0" cellpadding="0" cellspacing="0" width="100%" id="template_header" style='background-color: <?= get_option('woocommerce_email_base_color'); ?>; color: #fff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; border-radius: 3px 3px 0 0;'>
 													<tr>
 														<td id="header_wrapper" style="padding: 36px 48px; display: block;">
-															<h1 style='font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 30px; font-weight: 300; line-height: 150%; margin: 0; text-align: left; text-shadow: 0 1px 0 #9976c2; color: #fff; background-color: inherit;'><?php _e( 'Thank you for your order', 'coupons-after-order' ) ; ?></h1>
+															<h1 style='font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 30px; font-weight: 300; line-height: 150%; margin: 0; text-align: left; text-shadow: 0 1px 0 #9976c2; color: #fff; background-color: inherit;'><?php echo $email_header ; ?></h1>
 														</td>
 													</tr>
 												</table>
@@ -55,7 +55,7 @@ $content_after = wpautop(get_option('coupons_after_order_after_email'));
                                                     <p style="margin: 0 0 16px;"><?php printf( esc_html__( 'Salam Alaykoum / Hello %s,', 'coupons-after-order' ), esc_html( $order->get_billing_first_name() ) ); ?></p>
                                                     <p style="margin: 0 0 16px;"><?= $content_before ?></p>
                                                     <p style="margin: 0 0 16px;"><?php printf( esc_html__('As promised, we are sending you your promo codes corresponding to our full refund offer. You spent %1$s on your last purchase, entitling you to %2$s promo codes, each worth %3$s.', 'coupons-after-order'), wc_price( $order_total ), $nber_coupons, wc_price($coupon_amount) ); ?></p>
-													<p style="margin: 0 0 16px;"><?php printf( esc_html__('Each promo code is valid for a minimum cart value of %s.', 'coupons-after-order'), wc_price($coupon_amount) ); ?></p>
+													<p style="margin: 0 0 16px;"><?php printf( esc_html__('Each promo code is valid for a minimum cart value of %s.', 'coupons-after-order'), wc_price($min_order) ); ?></p>
 													<p style="margin: 0 0 16px;"><?php _e('Here are your promo codes:', 'coupons-after-order'); ?></p>
                                                     <ul style="list-style-type: disc; margin-left: 20px;">
                                                         <?php echo $coupon_list; ?>
@@ -68,10 +68,6 @@ $content_after = wpautop(get_option('coupons_after_order_after_email'));
 														<li><?php printf( esc_html__('Please note that these promo codes are valid from %1$s until %2$s and cannot be combined in a single order.', 'coupons-after-order'), $startDate, $endDate ); ?></li>
                                                     </ul>
 													<p style="margin: 0 0 16px;"><?= $content_after ?></p>
-													<p style="margin: 0 0 16px;"><?php _e('Take this opportunity to explore our collection of traditional clothing and save on your future purchases.', 'coupons-after-order'); ?></p>
-													<p style="margin: 0 0 16px;"><?php _e('If you have any questions or need assistance, our customer service team is here to help. You can reach us by email at mudaparis@outlook.fr or via WhatsApp at 07.69.91.78.30.', 'coupons-after-order'); ?></p>
-													<p style="margin: 0 0 16px;"><?php _e('Once again, we thank you for your loyalty to Muda Paris. We hope you enjoy this special offer and continue to find items you love in our store.', 'coupons-after-order'); ?></p>
-													<p style="margin: 0 0 16px;"><?php _e('Best regards,<br/>Muda Paris.', 'coupons-after-order'); ?></p>
                                                 </div>    
                                             </td>
 										</tr>

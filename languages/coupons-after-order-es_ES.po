@@ -5,18 +5,22 @@ msgstr ""
 "Project-Id-Version: Coupons after order for WooCommerce 2.0.0 Beta RC 2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/test\n"
 "POT-Creation-Date: 2023-10-28T11:12:35+00:00\n"
-"PO-Revision-Date: 2023-10-31 21:45+0000\n"
+"PO-Revision-Date: 2023-11-06 17:18+0000\n"
 "Last-Translator: \n"
 "Language-Team: Spanish (Spain)\n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Loco https://localise.biz/\n"
 "X-Domain: coupons-after-order\n"
-"Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: includes/admin/wccao-functions.php:211
+#: includes/admin/wccao-functions.php:225
+msgid "(If empty, it is double the amount of the individual coupon)"
+msgstr "(Si está vacío, es el doble del importe del cupón individual)"
+
+#: includes/admin/wccao-functions.php:268
 msgid ""
 "<p>If you have any questions or need assistance, our customer service team "
 "is here to help.</p><p>Thank you for your loyalty. We hope you enjoy this "
@@ -30,7 +34,7 @@ msgstr ""
 msgid "Add the items of your choice to your cart."
 msgstr "Añade los artículos de tu elección a tu carrito."
 
-#: includes/admin/wccao-functions.php:85
+#: includes/admin/wccao-functions.php:88
 msgid ""
 "An error occurred while sending your coupons by email (Email template not "
 "found). Please contact us to collect your coupons: mudaparis@outlook.fr."
@@ -50,28 +54,48 @@ msgstr ""
 "lo que le da derecho a %2$s códigos promocionales, cada uno de ellos con un "
 "valor de %3$s."
 
-#: templates/email-template.php:74
-msgid "Best regards,<br/>Muda Paris."
-msgstr "Atentamente,<br/>Muda Paris."
+#: includes/admin/wccao-functions.php:164
+msgid "Configure generated coupon settings"
+msgstr "Configuración de los cupones generados"
 
-#: includes/admin/wccao-functions.php:115
-#: includes/admin/wccao-functions.php:160
+#: includes/admin/wccao-functions.php:168
+msgid "Configure the settings of the email received by the buyer"
+msgstr ""
+"Configurar los ajustes del correo electrónico recibido por el comprador"
+
+#: includes/admin/wccao-functions.php:119
+msgid "Coupon Validity"
+msgstr "Validez del Copón"
+
+#: includes/admin/wccao-functions.php:189
 msgid "Coupon Validity (Date)"
 msgstr "Validez del cupón (fecha)"
 
-#: includes/admin/wccao-functions.php:114
-#: includes/admin/wccao-functions.php:156
+#: includes/admin/wccao-functions.php:185
 msgid "Coupon Validity (Days)"
 msgstr "Validez del cupón (días)"
 
-#: includes/admin/wccao-functions.php:113
-#: includes/admin/wccao-functions.php:154
+#: includes/admin/wccao-functions.php:203
+msgid "Coupon Validity Date:"
+msgstr "Fecha de validez del cupón:"
+
+#: includes/admin/wccao-functions.php:200
+msgid "Coupon Validity Days:"
+msgstr "Días de validez del cupón:"
+
+#: includes/admin/wccao-functions.php:118
+#: includes/admin/wccao-functions.php:183
 msgid "Coupon Validity Type"
 msgstr "Tipo de validez del cupón"
 
 #: includes/admin/class-wccao-admin.php:65
+#: includes/admin/class-wccao-admin.php:109
 msgid "Coupons after order"
 msgstr "Cupones tras el pedido"
+
+#: includes/admin/wccao-functions.php:114
+msgid "Coupons after order Email"
+msgstr "Cupones tras el pedido Correo electrónico"
 
 #. Plugin Name of the plugin
 msgid "Coupons after order for WooCommerce"
@@ -87,9 +111,17 @@ msgstr ""
 
 #: includes/admin/class-wccao-admin.php:64
 #: includes/admin/class-wccao-admin.php:84
-#: includes/admin/wccao-functions.php:109
+#: includes/admin/wccao-functions.php:113
 msgid "Coupons after order Settings"
 msgstr "Cupones después del pedido Ajustes"
+
+#: includes/admin/class-wccao-admin.php:130
+msgid "Coupons generated:"
+msgstr "Cupones generados:"
+
+#: includes/admin/wccao-functions.php:201
+msgid "Days"
+msgstr "Días"
 
 #: templates/email-template.php:66
 msgid ""
@@ -104,7 +136,19 @@ msgid "Each promo code is valid for a minimum cart value of %s."
 msgstr ""
 "Cada código promocional es válido para un valor mínimo de carrito de %s."
 
-#: includes/admin/wccao-functions.php:112
+#: includes/admin/wccao-functions.php:238
+msgid "Email header:"
+msgstr "Encabezado del correo electrónico:"
+
+#: includes/admin/wccao-functions.php:121
+msgid "Email settings"
+msgstr "Ajustes del correo electrónico"
+
+#: includes/admin/wccao-functions.php:234
+msgid "Email subject:"
+msgstr "Asunto del correo electrónico:"
+
+#: includes/admin/wccao-functions.php:117
 msgid "Enable Coupon after order"
 msgstr "Activar cupón después del pedido"
 
@@ -121,35 +165,36 @@ msgid "Here are your promo codes:"
 msgstr "Aquí están tus códigos promocionales:"
 
 #. Plugin URI of the plugin
+msgid "https://github.com/Webpixelia"
+msgstr "https://github.com/Webpixelia"
+
+#. Author URI of the plugin
 msgid "https://webpixelia.com/"
 msgstr "https://webpixelia.com/"
 
-#. Author URI of the plugin
-msgid "https://www.webpixelia.com/"
-msgstr "https://www.webpixelia.com/"
+#: includes/admin/wccao-functions.php:219
+msgid "Limit Usage of Coupons Generated:"
+msgstr "Limitar el uso de los cupones generados:"
 
-#: templates/email-template.php:72
+#: includes/admin/wccao-functions.php:223
+msgid "Minimum amount:"
+msgstr "Importe mínimo:"
+
+#: includes/admin/wccao-functions.php:215
+msgid "Number of Coupons Generated:"
+msgstr "Número de cupones generados:"
+
+#: includes/admin/wccao-functions.php:120
+msgid "Other Parameters"
+msgstr "Otros parámetros"
+
+#: assets/js/woocommerce-coupons-after-order-admin.js:46
 msgid ""
-"If you have any questions or need assistance, our customer service team is "
-"here to help. You can reach us by email at mudaparis@outlook.fr or via "
-"WhatsApp at 07.69.91.78.30."
+"Please enter a numeric value and the defined decimal separator (%s), without "
+"thousands separators or currency symbols"
 msgstr ""
-"Si tienes alguna pregunta o necesitas asistencia, nuestro equipo de servicio "
-"al cliente está aquí para ayudarte. Puedes contactarnos por correo "
-"electrónico en mudaparis@outlook.fr o a través de WhatsApp al 07.69.91.78.30."
-
-#: includes/admin/wccao-functions.php:116
-msgid "Number of Coupons Generated"
-msgstr "Número de cupones generados"
-
-#: templates/email-template.php:73
-msgid ""
-"Once again, we thank you for your loyalty to Muda Paris. We hope you enjoy "
-"this special offer and continue to find items you love in our store."
-msgstr ""
-"Nuevamente, te agradecemos por tu lealtad a Muda Paris. Esperamos que "
-"disfrutes de esta oferta especial y sigas encontrando artículos que te "
-"gusten en nuestra tienda."
+"Ingrese un valor numérico y el separador decimal definido (%s), sin "
+"separadores de miles ni símbolos de moneda."
 
 #: templates/email-template.php:68
 msgid ""
@@ -159,7 +204,7 @@ msgstr ""
 "Tenga en cuenta que estos códigos promocionales son válidos desde %1$s hasta "
 "%2$s y no pueden ser combinados en un solo pedido."
 
-#: includes/admin/wccao-functions.php:68
+#: includes/admin/wccao-functions.php:71
 msgid "Promo code "
 msgstr "Código promocional"
 
@@ -167,23 +212,15 @@ msgstr "Código promocional"
 msgid "Salam Alaykoum / Hello %s,"
 msgstr "Salam Alaykoum / Hola %s,"
 
-#: templates/email-template.php:71
-msgid ""
-"Take this opportunity to explore our collection of traditional clothing and "
-"save on your future purchases."
-msgstr ""
-"Aprovecha esta oportunidad para explorar nuestra colección de ropa "
-"tradicional y ahorrar en tus compras futuras."
-
-#: includes/admin/wccao-functions.php:118
+#: includes/admin/wccao-functions.php:123
 msgid "Text at the end of the email"
 msgstr "Texto al final del correo electrónico"
 
-#: includes/admin/wccao-functions.php:117
+#: includes/admin/wccao-functions.php:122
 msgid "Text at the start of the email"
 msgstr "Texto al inicio del correo electrónico"
 
-#: templates/email-template.php:44
+#: includes/admin/wccao-functions.php:148
 msgid "Thank you for your order"
 msgstr "Gracias por tu pedido"
 
@@ -198,7 +235,7 @@ msgstr ""
 "Para usar estos códigos promocionales en tu próxima compra, simplemente "
 "sigue estos pasos:"
 
-#: includes/admin/wccao-functions.php:204
+#: includes/admin/wccao-functions.php:261
 msgid ""
 "We hope you are doing well and that you have enjoyed your recent purchase at "
 "%s. We thank you for your trust in our products."
@@ -210,12 +247,6 @@ msgstr ""
 msgid "Webpixelia"
 msgstr "Webpixelia"
 
-#: templates/email-template.php:4
+#: includes/admin/wccao-functions.php:145
 msgid "Your Promo Codes to Enjoy the Refund Offer"
 msgstr "Tus Códigos de Promoción para Disfrutar de la Oferta de Reembolso"
-
-#: includes/admin/wccao-functions.php:89
-msgid "Your Promo Codes to Enjoy the Refund Offer - Muda Paris"
-msgstr ""
-"Tus Códigos de Promoción para Disfrutar de la Oferta de Reembolso - Muda "
-"Paris"

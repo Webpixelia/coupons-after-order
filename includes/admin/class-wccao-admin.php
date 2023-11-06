@@ -20,7 +20,6 @@ class WCCAO_Admin {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-
 		// Add admin page
 		add_action( 'admin_menu', array( $this, 'add_wccao_admin_page' ) );
 
@@ -28,6 +27,8 @@ class WCCAO_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
 
         //add_action( 'init', array( $this, 'init' ) ); // Used init because admin_init is too late for admin_menu
+		// Add custom meta box to WooCommerce orders page
+		add_action( 'add_meta_boxes', array( $this, 'coupons_after_order_meta_box' ) );
 	}
 
 
@@ -42,9 +43,8 @@ class WCCAO_Admin {
 		$current_screen = get_current_screen();
 
 		if ( strpos( $current_screen->id, 'coupons-after-order-settings' ) !== false ) {
-			//wp_enqueue_style( 'coupons!after-order-for-woocommerce', plugins_url( 'assets/css/woocommerce-coupons-after-order-admin.min.css', Coupons_After_Order_WooCommerce()->file ), array( 'woocommerce_admin_styles', 'jquery-ui-style' ), Coupons_After_Order_WooCommerce()->version );
-
-			wp_enqueue_script( 'coupons!after-order-for-woocommerce', plugins_url( 'assets/js/woocommerce-coupons-after-order-admin.min.js', Coupons_After_Order_WooCommerce()->file ), array( 'jquery' ), Coupons_After_Order_WooCommerce()->version, true );
+			wp_enqueue_style( 'coupons!after-order-for-woocommerce', plugins_url( 'assets/css/woocommerce-coupons-after-order-admin.css', Coupons_After_Order_WooCommerce()->file ), array( 'woocommerce_admin_styles', 'jquery-ui-style' ), Coupons_After_Order_WooCommerce()->version );
+			wp_enqueue_script( 'coupons!after-order-for-woocommerce', plugins_url( 'assets/js/woocommerce-coupons-after-order-admin.js', Coupons_After_Order_WooCommerce()->file ), array( 'jquery', 'wp-i18n' ), Coupons_After_Order_WooCommerce()->version, true );
 		}
 	}
 
@@ -96,4 +96,38 @@ class WCCAO_Admin {
         </div>
         <?php
     }
+
+
+	/**
+	 * Add custom meta box.
+	 *
+	 * @return void
+	 */
+	public function coupons_after_order_meta_box() {
+		add_meta_box(
+			'custom-order-meta-box',
+			__('Coupons after order', 'coupons-after-order'),
+			array($this, 'coupons_after_order_meta_box_callback'),
+			'shop_order',
+			'advanced',
+			'core'
+		);
+	}	
+
+	/**
+	 * Callback function for custom meta box.
+	 *
+	 * @param WP_Post $post Post object.
+	 */
+	public function coupons_after_order_meta_box_callback($post) {
+		// Get the saved value
+		$coupons_generated = get_post_meta($post->ID, '_coupons_generated', true);
+		
+		// Determine whether to display "Yes" or "No" based on the value
+		$display_value = ($coupons_generated === 'yes') ? 'Yes' : 'No';
+		
+		// Output the input field
+		echo '<p><label for="coupons-after-order-meta-box">' . __('Coupons generated:', 'coupons-after-order') . '</label> ';
+		echo '<input type="text" id="coupons-after-order-meta-box" name="coupons_generated" value="' . esc_attr($display_value) . '" disabled /></p>';
+	}	
 }
