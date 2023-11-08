@@ -1,6 +1,7 @@
 === Coupons after order for WooCommerce ===
-Contributors: Webpixelia
+Contributors: marocweb
 Tags: ecommerce, woocommerce, coupon, woocommerce order
+Stable tag: 1.1.2
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.1
@@ -9,6 +10,10 @@ Coupons after order for WooCommerce
 
 == Description ==
 Generate coupons after order completion. The sum of the coupons will be equal to the amount of the order.
+
+It is possible to adjust the parameters of the generated coupons as well as different contents of the email that will be sent to the person who placed the order.
+
+Coupons after order for WooCommerce is a free WordPress plugin by <a href="https://webpiwelia.com" title="Jonathan Webpixelia">Jonathan Webpixelia</a>.
 
 == Installation ==
 = Minimum Requirements =
@@ -33,6 +38,12 @@ In the search field type \"Coupons after order for WooCommerce\" and click Searc
 2. Using an FTP program, or your hosting control panel, upload the unzipped plugin folder to your WordPress installation\'s wp-content/plugins/ directory.
 3. Activate the plugin from the Plugins menu within the WordPress admin.
 
+== Frequently Asked Questions ==
+= Is this plugin free? =
+Yes, completely
+= Is it possible to activate/deactivate the generation of coupons after an order? =
+Yes, simply by checking or unchecking the “Enable Coupon after order” box in the plugin settings
+
 == Screenshots ==
 1. Settings access
 2. Coupons after order for WooCommerce settings
@@ -40,6 +51,10 @@ In the search field type \"Coupons after order for WooCommerce\" and click Searc
 4. Example of email sent
 
 == Changelog ==
+= 1.1.2 =
+* Added full description and FAQ in readme.txt
+* Addes screenshots
+
 = 1.1.1 =
 * Fixed bug "min_amount" in email
 * UX Improvement
