@@ -11,7 +11,7 @@
  * Tested up to: 6.4
  * WC requires at least: 5.0
  * WC tested up to: 8.2
- * License: GPLv2
+ * License: GPLv2 or later
  * Text Domain: coupons-after-order
  * Domain Path: /languages
  */

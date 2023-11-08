@@ -51,7 +51,6 @@ inputElement.addEventListener('blur', function () {
 });
   
 function validateCouponAmount(input, errorDivId) {
-  const { __, _x, _n, sprintf } = wp.i18n;
   var customErrorMessage = couponsAfterOrderTranslations.customErrorMessage;
   var validRegExp = new RegExp("^\\d*(\\" + decimalSeparator + "\\d*)?$");
 
