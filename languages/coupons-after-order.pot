@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv2.
 msgid ""
 msgstr ""
-"Project-Id-Version: Coupons after order for WooCommerce 1.1.0\n"
+"Project-Id-Version: Coupons after order for WooCommerce 1.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/coupons-after-order\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-11-06T17:17:21+00:00\n"
+"POT-Creation-Date: 2023-11-08T08:43:14+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: coupons-after-order\n"
@@ -38,18 +38,22 @@ msgstr ""
 msgid "Coupons After Order requires <a href=\"%s\" target=\"_blank\">WooCommerce</a> in order to work."
 msgstr ""
 
-#: includes/admin/class-wccao-admin.php:64
-#: includes/admin/class-wccao-admin.php:84
+#: includes/admin/class-wccao-admin.php:51
+msgid "Please enter a numeric value and the defined decimal separator (%s), without thousands separators or currency symbols"
+msgstr ""
+
+#: includes/admin/class-wccao-admin.php:70
+#: includes/admin/class-wccao-admin.php:90
 #: includes/admin/wccao-functions.php:113
 msgid "Coupons after order Settings"
 msgstr ""
 
-#: includes/admin/class-wccao-admin.php:65
-#: includes/admin/class-wccao-admin.php:109
+#: includes/admin/class-wccao-admin.php:71
+#: includes/admin/class-wccao-admin.php:115
 msgid "Coupons after order"
 msgstr ""
 
-#: includes/admin/class-wccao-admin.php:130
+#: includes/admin/class-wccao-admin.php:136
 msgid "Coupons generated:"
 msgstr ""
 
@@ -138,66 +142,66 @@ msgstr ""
 msgid "Limit Usage of Coupons Generated:"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:223
+#: includes/admin/wccao-functions.php:221
+msgid "Use(s)"
+msgstr ""
+
+#: includes/admin/wccao-functions.php:224
 msgid "Minimum amount:"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:225
-msgid "(If empty, it is double the amount of the individual coupon)"
+#: includes/admin/wccao-functions.php:226
+msgid "%s (If empty, it is double the amount of the individual coupon)"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:234
+#: includes/admin/wccao-functions.php:235
 msgid "Email subject:"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:238
+#: includes/admin/wccao-functions.php:239
 msgid "Email header:"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:261
+#: includes/admin/wccao-functions.php:262
 msgid "We hope you are doing well and that you have enjoyed your recent purchase at %s. We thank you for your trust in our products."
 msgstr ""
 
-#: includes/admin/wccao-functions.php:268
+#: includes/admin/wccao-functions.php:269
 msgid "<p>If you have any questions or need assistance, our customer service team is here to help.</p><p>Thank you for your loyalty. We hope you enjoy this special.</p><p>Best regards,<br/>%s.</p>"
 msgstr ""
 
-#: templates/email-template.php:55
-msgid "Salam Alaykoum / Hello %s,"
-msgstr ""
-
-#: templates/email-template.php:57
-msgid "As promised, we are sending you your promo codes corresponding to our full refund offer. You spent %1$s on your last purchase, entitling you to %2$s promo codes, each worth %3$s."
+#: templates/email-template.php:56
+msgid "Hello %s,"
 msgstr ""
 
 #: templates/email-template.php:58
-msgid "Each promo code is valid for a minimum cart value of %s."
+msgid "As promised, we are sending you your promo codes corresponding to our full refund offer. You spent %1$s on your last purchase, entitling you to %2$s promo codes, each worth %3$s."
 msgstr ""
 
 #: templates/email-template.php:59
+msgid "Each promo code is valid for a minimum cart value of %s."
+msgstr ""
+
+#: templates/email-template.php:60
 msgid "Here are your promo codes:"
 msgstr ""
 
-#: templates/email-template.php:63
+#: templates/email-template.php:64
 msgid "To use these promo codes on your next purchase, simply follow these steps:"
 msgstr ""
 
-#: templates/email-template.php:65
+#: templates/email-template.php:66
 msgid "Add the items of your choice to your cart."
 msgstr ""
 
-#: templates/email-template.php:66
+#: templates/email-template.php:67
 msgid "During the payment process, enter one of these promo codes in the corresponding \"Promo Code\" box."
 msgstr ""
 
-#: templates/email-template.php:67
+#: templates/email-template.php:68
 msgid "The discount of %s will be automatically applied to your order."
 msgstr ""
 
-#: templates/email-template.php:68
+#: templates/email-template.php:69
 msgid "Please note that these promo codes are valid from %1$s until %2$s and cannot be combined in a single order."
-msgstr ""
-
-#: assets/js/woocommerce-coupons-after-order-admin.js:46
-msgid "Please enter a numeric value and the defined decimal separator (%s), without thousands separators or currency symbols"
 msgstr ""

@@ -47,7 +47,7 @@ function wccao_generate_coupons($order_id) {
         }
     
         for ($i = 1; $i <= $nber_coupons; $i++) {
-            $random_number = mt_rand(100, 999);
+            $random_number = mt_rand(10000, 99999);
             // Generate a unique coupon for each voucher
             $coupon_code = strtoupper('remb') . $order_id . $random_number;
     
@@ -218,11 +218,12 @@ function coupons_after_order_others_parameters_callback() {
     <br><br>
     <label for="coupon-validity-usage-limit"><?= __('Limit Usage of Coupons Generated:', 'coupons-after-order') ?>
         <input type="number" id="coupon-validity-usage-limit" name="coupons_after_order_usage_limit" value="<?php echo esc_attr($limitUsage); ?>" />
+        &nbsp;<?php _e('Use(s)', 'coupons-after-order') ?>
     </label>
     <br><br>
     <label for="coupon-amount-min"><?= __('Minimum amount:', 'coupons-after-order') ?>
         <input type="text" id="coupon-amount-min" name="coupons_after_order_min_amount" value="<?php echo esc_attr($min_amount); ?>" oninput="validateCouponAmount(this, 'minAmountError')" class="wccao_input_price" data-decimal="<?= esc_attr($decimal_separator); ?>" />
-        &nbsp;<?php _e('(If empty, it is double the amount of the individual coupon)', 'coupons-after-order') ?>
+        &nbsp;<?php echo sprintf(__('%s (If empty, it is double the amount of the individual coupon)', 'coupons-after-order'), get_woocommerce_currency_symbol()); ?>
     </label>
     <?php
 }

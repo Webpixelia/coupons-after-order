@@ -4,6 +4,7 @@ if (!defined('ABSPATH')) exit;
 $email_header = get_option('coupons_after_order_email_header');
 $startDate = date('j F Y');
 $endDate = date("j F Y", strtotime($validity));
+$min_order = floatval($min_order);
 
 $content_before = wpautop(get_option('coupons_after_order_before_email'));
 $content_after = wpautop(get_option('coupons_after_order_after_email'));
@@ -52,13 +53,13 @@ $content_after = wpautop(get_option('coupons_after_order_after_email'));
 											<td align="center" valign="top">
 												<!-- Body -->
                                                 <div id="body_content_inner" style='color: #636363; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 14px; line-height: 150%; text-align: left; padding: 48px 48px 32px;'>
-                                                    <p style="margin: 0 0 16px;"><?php printf( esc_html__( 'Salam Alaykoum / Hello %s,', 'coupons-after-order' ), esc_html( $order->get_billing_first_name() ) ); ?></p>
+                                                    <p style="margin: 0 0 16px;"><?php printf( esc_html__( 'Hello %s,', 'coupons-after-order' ), esc_html( $order->get_billing_first_name() ) ); ?></p>
                                                     <p style="margin: 0 0 16px;"><?= $content_before ?></p>
                                                     <p style="margin: 0 0 16px;"><?php printf( esc_html__('As promised, we are sending you your promo codes corresponding to our full refund offer. You spent %1$s on your last purchase, entitling you to %2$s promo codes, each worth %3$s.', 'coupons-after-order'), wc_price( $order_total ), $nber_coupons, wc_price($coupon_amount) ); ?></p>
 													<p style="margin: 0 0 16px;"><?php printf( esc_html__('Each promo code is valid for a minimum cart value of %s.', 'coupons-after-order'), wc_price($min_order) ); ?></p>
 													<p style="margin: 0 0 16px;"><?php _e('Here are your promo codes:', 'coupons-after-order'); ?></p>
                                                     <ul style="list-style-type: disc; margin-left: 20px;">
-                                                        <?php echo $coupon_list; ?>
+                                                        <?php echo $coupon_list;?>
                                                     </ul>
 													<p style="margin: 0 0 16px;"><?php _e('To use these promo codes on your next purchase, simply follow these steps:', 'coupons-after-order'); ?></p>
 													<ul style="list-style-type: disc; margin-left: 20px;">

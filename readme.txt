@@ -34,11 +34,16 @@ In the search field type \"Coupons after order for WooCommerce\" and click Searc
 3. Activate the plugin from the Plugins menu within the WordPress admin.
 
 == Screenshots ==
-1. Coupons after order for WooCommerce settings
-2. Example of coupons generated
-3. Example of email sent
+1. Settings access
+2. Coupons after order for WooCommerce settings
+3. Example of coupons generated
+4. Example of email sent
 
 == Changelog ==
+= 1.1.1 =
+* Fixed bug "min_amount" in email
+* UX Improvement
+
 = 1.1.0 =
 * Added new coupon options
 * UI Improvement

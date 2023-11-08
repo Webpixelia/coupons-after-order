@@ -29,7 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
 // Value validation of the amount field
+var decimalSeparator = getWooCommerceDecimalSeparator();
+
 function getWooCommerceDecimalSeparator() {
   // Get the HTML element that contains the decimal separator
   var decimalSeparatorElement = document.querySelector('.wccao_input_price');
@@ -39,11 +42,17 @@ function getWooCommerceDecimalSeparator() {
 
   return decimalSeparator;
 }
+
+const inputElement = document.getElementById('coupon-amount-min');
+inputElement.addEventListener('blur', function () {
+  if (!validateCouponAmount(this, 'minAmountError')) {
+    this.value = ''; // Clear field value only if entered incorrectly
+  }
+});
   
 function validateCouponAmount(input, errorDivId) {
   const { __, _x, _n, sprintf } = wp.i18n;
-  var decimalSeparator = getWooCommerceDecimalSeparator();
-  var customErrorMessage = sprintf(__( 'Please enter a numeric value and the defined decimal separator (%s), without thousands separators or currency symbols', 'coupons-after-order' ), decimalSeparator);
+  var customErrorMessage = couponsAfterOrderTranslations.customErrorMessage;
   var validRegExp = new RegExp("^\\d*(\\" + decimalSeparator + "\\d*)?$");
 
   var value = input.value;
@@ -65,10 +74,12 @@ function validateCouponAmount(input, errorDivId) {
       // Insert the newly created <div> element right after the input field
       inputParent.insertBefore(errorDivMessage, input.nextSibling);
     }
+    return false;
   } else {
     if (errorDiv) {
       // Remove the <div> element if present (in case of previous error)
       errorDiv.parentNode.removeChild(errorDiv);
     }
+    return true;
   }
 }
