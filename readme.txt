@@ -1,10 +1,12 @@
 === Coupons after order for WooCommerce ===
 Contributors: marocweb
 Tags: ecommerce, woocommerce, coupon, woocommerce order
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.1
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Coupons after order for WooCommerce
 
@@ -51,6 +53,9 @@ Yes, simply by checking or unchecking the “Enable Coupon after order” box in
 4. Example of email sent
 
 == Changelog ==
+= 1.1.3 =
+* Added Licence in readme.txt
+
 = 1.1.2 =
 * Added full description and FAQ in readme.txt
 * Addes screenshots
