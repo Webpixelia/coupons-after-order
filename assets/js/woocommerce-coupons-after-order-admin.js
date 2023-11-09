@@ -82,3 +82,71 @@ function validateCouponAmount(input, errorDivId) {
     return true;
   }
 }
+
+// Toggle email model
+var toggleEditorLink = document.getElementById('toggleEditorLink');
+var editorDiv = document.querySelector('.wccao-editor-email');
+var textDisplayedToggle = couponsAfterOrderTranslations.textDisplayedToggle;
+var textHiddenToggle = couponsAfterOrderTranslations.textHiddenToggle;
+
+toggleEditorLink.addEventListener('click', function (event) {
+    event.preventDefault();
+    if (editorDiv.style.display === 'none') {
+        editorDiv.style.display = 'block';
+        toggleEditorLink.textContent = textHiddenToggle;
+    } else {
+        editorDiv.style.display = 'none';
+        toggleEditorLink.textContent = textDisplayedToggle;
+    }
+});
+
+// Display content from editor TinyMCE and input "coupon-suffix"
+setTimeout(function () {
+  // Editors
+  var editors = [tinyMCE.get('editor_before_email'), tinyMCE.get('editor_after_email')];
+  var previewElements = [document.getElementById('preview_before'), document.getElementById('preview_after')];
+
+  function updatePreviewContent() {
+    for (var i = 0; i < editors.length; i++) {
+      var content = editors[i].getContent();
+      previewElements[i].innerHTML = content;
+    }
+  }
+
+  // Update <p> elements on page load
+  updatePreviewContent();
+
+  // Add an event listener for content change
+  for (var i = 0; i < editors.length; i++) {
+    editors[i].on('Change', function (e) {
+      // Update <p> elements with changed content
+      updatePreviewContent();
+    });
+  }
+
+  // Input field "coupon-suffix"
+  var inputCouponSuffix = document.getElementById('coupon-suffix');
+  var value = inputCouponSuffix.value;
+  if (value !== '') {
+    var spanElements = document.querySelectorAll('.suffix-coupon');
+    for (var i = 0; i < spanElements.length; i++) {
+      spanElements[i].innerHTML = value;
+    }
+  }
+
+  // Add an event listener for content change on coupon-suffix
+  var inputCouponSuffix = document.getElementById('coupon-suffix');
+
+  inputCouponSuffix.addEventListener('input', function () {
+    var value = inputCouponSuffix.value;
+    var spanElements = document.querySelectorAll('.suffix-coupon');
+
+    for (var i = 0; i < spanElements.length; i++) {
+      if (value === '') {
+        spanElements[i].innerHTML = 'ref';
+      } else {
+        spanElements[i].innerHTML = value;
+      }
+    }
+  });
+}, 1000);

@@ -27,3 +27,13 @@
     left: 50%;
     margin: -1em 0 0 -3px;
 }
+
+.wccao-editor-email {
+    background: #DFDFDF;
+    padding: 1em;
+}
+
+.wccao-list {
+    list-style:disc;
+    list-style-position: inside;
+}

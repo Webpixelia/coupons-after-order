@@ -19,6 +19,7 @@ add_action('woocommerce_order_status_completed', 'wccao_generate_coupons');
 
 function wccao_generate_coupons($order_id) {
     $enable = get_option('coupons_after_order_enable', 'no');
+    $coupon_suffix = get_option('coupons_after_order_suffix');
 
     // Check if checkbox Enable checked
     if ($enable === 'yes') {
@@ -49,12 +50,13 @@ function wccao_generate_coupons($order_id) {
         for ($i = 1; $i <= $nber_coupons; $i++) {
             $random_number = mt_rand(10000, 99999);
             // Generate a unique coupon for each voucher
-            $coupon_code = strtoupper('remb') . $order_id . $random_number;
+            $couponSuffix = ($coupon_suffix) ? $coupon_suffix : 'ref';
+            $coupon_code = $couponSuffix . $order_id . '-' . $random_number;
     
             // Calculate the coupon amount
             $coupon_amount = $order_total / $nber_coupons; // Divide the total amount by the number of coupons
     
-            //$min_order = $coupon_amount * 2;
+            //Define $min_order
             $min_order = empty($min_amount) ? $coupon_amount * 2 : $min_amount;
     
             // Create the coupon
@@ -119,8 +121,16 @@ function register_coupons_after_order_settings() {
     add_settings_field('coupons_after_order_validity', __('Coupon Validity', 'coupons-after-order'), 'coupons_after_order_validity_callback', 'woocommerce', 'coupons_after_order_section_settings');
     add_settings_field('coupons_after_order_others_parameters', __('Other Parameters', 'coupons-after-order'), 'coupons_after_order_others_parameters_callback', 'woocommerce', 'coupons_after_order_section_settings');
     add_settings_field('coupons_after_order_email_config', __('Email settings', 'coupons-after-order'), 'coupons_after_order_email_config_callback', 'woocommerce', 'coupons_after_order_section_email');
-    add_settings_field('coupons_after_order_before_email', __('Text at the start of the email', 'coupons-after-order'), 'coupons_after_order_before_email_callback', 'woocommerce', 'coupons_after_order_section_email');
-    add_settings_field('coupons_after_order_after_email', __('Text at the end of the email', 'coupons-after-order'), 'coupons_after_order_after_email_callback', 'woocommerce', 'coupons_after_order_section_email');
+    /*add_settings_field('coupons_after_order_before_email', __('Text at the start of the email', 'coupons-after-order'), 'coupons_after_order_before_email_callback', 'woocommerce', 'coupons_after_order_section_email');
+    add_settings_field('coupons_after_order_after_email', __('Text at the end of the email', 'coupons-after-order'), 'coupons_after_order_after_email_callback', 'woocommerce', 'coupons_after_order_section_email');*/
+    add_settings_field('coupons_after_order_before_email', __('Text at the start of the email', 'coupons-after-order'), function() {
+        coupons_after_order_email_callback(true);
+    }, 'woocommerce', 'coupons_after_order_section_email');
+    
+    add_settings_field('coupons_after_order_after_email', __('Text at the end of the email', 'coupons-after-order'), function() {
+        coupons_after_order_email_callback(false);
+    }, 'woocommerce', 'coupons_after_order_section_email');
+    
 
     // Save settings
     register_setting('woocommerce', 'coupons_after_order_enable');
@@ -140,6 +150,7 @@ function register_coupons_after_order_settings() {
         'sanitize_callback' => 'absint'
     ));
     register_setting('woocommerce', 'coupons_after_order_min_amount');
+    register_setting('woocommerce', 'coupons_after_order_suffix');
 
     register_setting('woocommerce', 'coupons_after_order_email_subject', array(
         'default' => __('Your Promo Codes to Enjoy the Refund Offer', 'coupons-after-order') . ' - ' . get_bloginfo('name'),
@@ -211,6 +222,7 @@ function coupons_after_order_others_parameters_callback() {
     $limitUsage = get_option('coupons_after_order_usage_limit', '1');
     $min_amount = get_option('coupons_after_order_min_amount');
     $decimal_separator = wc_get_price_decimal_separator();
+    $coupon_suffix = get_option('coupons_after_order_suffix');
     ?>
     <label for="coupons-after-order-count"><?= __('Number of Coupons Generated:', 'coupons-after-order') ?>
         <input type="number" id="coupons-after-order-count" name="coupons_after_order_count" value="<?php echo esc_attr($count); ?>" required />
@@ -223,7 +235,15 @@ function coupons_after_order_others_parameters_callback() {
     <br><br>
     <label for="coupon-amount-min"><?= __('Minimum amount:', 'coupons-after-order') ?>
         <input type="text" id="coupon-amount-min" name="coupons_after_order_min_amount" value="<?php echo esc_attr($min_amount); ?>" oninput="validateCouponAmount(this, 'minAmountError')" class="wccao_input_price" data-decimal="<?= esc_attr($decimal_separator); ?>" />
-        &nbsp;<?php echo sprintf(__('%s (If empty, it is double the amount of the individual coupon)', 'coupons-after-order'), get_woocommerce_currency_symbol()); ?>
+        &nbsp;<?php 
+        /* translators: %s: price symbol */
+        echo sprintf(__('%s (If empty, it is double the amount of the individual coupon)', 'coupons-after-order'), get_woocommerce_currency_symbol()); 
+        ?>
+    </label>
+    <br><br>
+    <label for="coupon-suffix"><?= __('Coupon suffix:', 'coupons-after-order') ?>
+        <input type="text" id="coupon-suffix" name="coupons_after_order_suffix" value="<?php echo esc_attr($coupon_suffix); ?>" pattern="[a-z]+" title="<?php echo esc_html('Only lowercase characters, no numbers','coupons-after-order') ?>" />
+        &nbsp;<?php _e('(If empty, by default, it is <strong>"ref"</strong> and the code is in this form "refOrderID-RandomNumber")', 'coupons-after-order'); ?>
     </label>
     <?php
 }
@@ -256,7 +276,7 @@ function generate_wp_editor($editor_id, $option_name, $default_text) {
     wp_editor($content, $editor_id, $settings);
 }
 
-function coupons_after_order_before_email_callback() {
+/*function coupons_after_order_before_email_callback() {
     $editor_id = 'editor_before_email';
     $option_name = 'coupons_after_order_before_email';
     $default_text = sprintf(__('We hope you are doing well and that you have enjoyed your recent purchase at %s. We thank you for your trust in our products.', 'coupons-after-order'), get_bloginfo('name'));
@@ -267,5 +287,26 @@ function coupons_after_order_after_email_callback() {
     $editor_id = 'editor_after_email';
     $option_name = 'coupons_after_order_after_email';
     $default_text = sprintf(__('<p>If you have any questions or need assistance, our customer service team is here to help.</p><p>Thank you for your loyalty. We hope you enjoy this special.</p><p>Best regards,<br/>%s.</p>', 'coupons-after-order'), get_bloginfo('name'));
+    generate_wp_editor($editor_id, $option_name, $default_text);
+}*/
+
+function coupons_after_order_email_callback($is_before_email) {
+    $editor_data = array(
+        'editor_before_email' => array(
+            'option_name' => 'coupons_after_order_before_email',
+            /* translators: %s: shop name */
+            'default_text' => sprintf(__('We hope you are doing well and that you have enjoyed your recent purchase at %s. We thank you for your trust in our products.', 'coupons-after'), get_bloginfo('name')),
+        ),
+        'editor_after_email' => array(
+            'option_name' => 'coupons_after_order_after_email',
+            /* translators: %s: shop name */
+            'default_text' => sprintf(__('<p>If you have any questions or need assistance, our customer service team is here to help.</p><p>Thank you for your loyalty. We hope you enjoy this special.</p><p>Best regards,<br/>%s.</p>', 'coupons-after-order'), get_bloginfo('name')),
+        ),
+    );
+
+    $editor_id = $is_before_email ? 'editor_before_email' : 'editor_after_email';
+    $option_name = $editor_data[$editor_id]['option_name'];
+    $default_text = $editor_data[$editor_id]['default_text'];
+
     generate_wp_editor($editor_id, $option_name, $default_text);
 }

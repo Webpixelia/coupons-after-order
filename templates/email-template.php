@@ -53,10 +53,20 @@ $content_after = wpautop(get_option('coupons_after_order_after_email'));
 											<td align="center" valign="top">
 												<!-- Body -->
                                                 <div id="body_content_inner" style='color: #636363; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 14px; line-height: 150%; text-align: left; padding: 48px 48px 32px;'>
-                                                    <p style="margin: 0 0 16px;"><?php printf( esc_html__( 'Hello %s,', 'coupons-after-order' ), esc_html( $order->get_billing_first_name() ) ); ?></p>
-                                                    <p style="margin: 0 0 16px;"><?= $content_before ?></p>
-                                                    <p style="margin: 0 0 16px;"><?php printf( esc_html__('As promised, we are sending you your promo codes corresponding to our full refund offer. You spent %1$s on your last purchase, entitling you to %2$s promo codes, each worth %3$s.', 'coupons-after-order'), wc_price( $order_total ), $nber_coupons, wc_price($coupon_amount) ); ?></p>
-													<p style="margin: 0 0 16px;"><?php printf( esc_html__('Each promo code is valid for a minimum cart value of %s.', 'coupons-after-order'), wc_price($min_order) ); ?></p>
+                                                    <p style="margin: 0 0 16px;"><?php 
+													/* translators: %s: buyer name */
+													printf( esc_html__( 'Hello %s,', 'coupons-after-order' ), esc_html( $order->get_billing_first_name() ) ); ?></p>
+                                                    <?php if (!empty($content_before)) : ?>
+														<p style="margin: 0 0 16px;"><?= $content_before ?></p>
+													<?php endif; ?>
+                                                    <p style="margin: 0 0 16px;"><?php 
+													/* translators: %1$s: order amount */
+													/* translators: %2$s: number of coupons generated */
+													/* translators: %3$s: amount of each coupon */
+													printf( esc_html__('As promised, we are sending you your promo codes corresponding to our full refund offer. You spent %1$s on your last purchase, entitling you to %2$s promo codes, each worth %3$s.', 'coupons-after-order'), wc_price( $order_total ), $nber_coupons, wc_price($coupon_amount) ); ?></p>
+													<p style="margin: 0 0 16px;"><?php 
+													/* translators: %s: minimum cart amount for coupon use */
+													printf( esc_html__('Each promo code is valid for a minimum cart value of %s.', 'coupons-after-order'), wc_price($min_order) ); ?></p>
 													<p style="margin: 0 0 16px;"><?php _e('Here are your promo codes:', 'coupons-after-order'); ?></p>
                                                     <ul style="list-style-type: disc; margin-left: 20px;">
                                                         <?php echo $coupon_list;?>
@@ -65,10 +75,17 @@ $content_after = wpautop(get_option('coupons_after_order_after_email'));
 													<ul style="list-style-type: disc; margin-left: 20px;">
                                                         <li><?php _e('Add the items of your choice to your cart.', 'coupons-after-order'); ?></li>
 														<li><?php _e('During the payment process, enter one of these promo codes in the corresponding "Promo Code" box.', 'coupons-after-order'); ?></li>
-														<li><?php printf( esc_html__('The discount of %s will be automatically applied to your order.', 'coupons-after-order'), wc_price($coupon_amount) ); ?></li>
-														<li><?php printf( esc_html__('Please note that these promo codes are valid from %1$s until %2$s and cannot be combined in a single order.', 'coupons-after-order'), $startDate, $endDate ); ?></li>
+														<li><?php 
+														/* translators: %s: coupon amount */
+														printf( esc_html__('The discount of %s will be automatically applied to your order.', 'coupons-after-order'), wc_price($coupon_amount) ); ?></li>
+														<li><?php 
+														/* translators: %1$s: start date of validity of generated coupons */
+														/* translators: %2$s: start date of validity of generated coupons */
+														printf( esc_html__('Please note that these promo codes are valid from %1$s until %2$s and cannot be combined in a single order.', 'coupons-after-order'), $startDate, $endDate ); ?></li>
                                                     </ul>
-													<p style="margin: 0 0 16px;"><?= $content_after ?></p>
+													<?php if (!empty($content_after)) : ?>
+														<p style="margin: 0 0 16px;"><?= $content_after ?></p>
+													<?php endif; ?>
                                                 </div>    
                                             </td>
 										</tr>

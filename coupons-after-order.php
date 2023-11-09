@@ -101,12 +101,12 @@ class Coupons_After_Order_WooCommerce {
 		// Check if WooCommerce is active
 		require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		if ( ! is_plugin_active( 'woocommerce/woocommerce.php' ) && ! function_exists( 'WC' ) ) {
-			//return;
 			add_action('admin_notices', 'wccao_woocommerce_not_active_notice');
 
 			function wccao_woocommerce_not_active_notice() {
 				deactivate_plugins(plugin_basename(__FILE__));
 				$url_wc = 'http://www.woothemes.com/woocommerce/';
+				/* translators: %s: link to WooCommerce website */
 				$error_message = sprintf(__('Coupons After Order requires <a href="%s" target="_blank">WooCommerce</a> in order to work.', 'coupons-after-order'), $url_wc);
 				$message = '<div class="error"><p>';
 				$message .= sprintf('<p>%s</p>', $error_message);

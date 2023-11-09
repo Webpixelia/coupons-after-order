@@ -48,7 +48,10 @@ class WCCAO_Admin {
 		
 			// Pass translation strings to JavaScript
 			$translation_strings = array(
+				/* translators: %s: price decimal separator */
 				'customErrorMessage' => sprintf( __( 'Please enter a numeric value and the defined decimal separator (%s), without thousands separators or currency symbols', 'coupons-after-order' ), wc_get_price_decimal_separator() ),
+				'textDisplayedToggle' => __('Show email template', 'coupons-after-order'),
+				'textHiddenToggle' => __('Hide email template', 'coupons-after-order'),
 			);
 			wp_localize_script( 'js-coupons-after-order-for-woocommerce', 'couponsAfterOrderTranslations', $translation_strings );
 		}
@@ -96,6 +99,10 @@ class WCCAO_Admin {
                 // Display sections and fields for WooCommerce settings
                 settings_fields('woocommerce');
                 do_settings_sections('woocommerce');
+				$template_file = plugin_dir_path(dirname(__DIR__)) . 'templates/html-email-template-preview-admin.php';
+				if (file_exists($template_file)) {
+					include $template_file;
+				}
                 submit_button();
                 ?>
             </form>

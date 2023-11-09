@@ -53,6 +53,12 @@ Yes, simply by checking or unchecking the “Enable Coupon after order” box in
 4. Example of email sent
 
 == Changelog ==
+= 1.1.4 =
+* Added a check that personalized content exists in the email
+* Added live viewing of sent email
+* Added coupon suffix customization
+* Improved code for displaying text editors
+
 = 1.1.3 =
 * Added Licence in readme.txt
 
