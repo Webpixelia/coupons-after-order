@@ -26,7 +26,7 @@ if (!defined('ABSPATH')) exit;
  *
  * @class		Coupons_After_Order_WooCommerce
  * @version		1.0.0
- * @author		Jeroen Sormani
+ * @author		Jonathan Webpixelia
  */
 class Coupons_After_Order_WooCommerce {
 

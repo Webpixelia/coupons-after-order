@@ -54,6 +54,8 @@ Yes, simply by checking or unchecking the “Enable Coupon after order” box in
 
 == Changelog ==
 = 1.1.5 =
+* Added class constant
+* Deleted old content
 * Fix: Exclusion of any coupon amount from the purchase during the calculation of generated coupons
 
 = 1.1.4 =

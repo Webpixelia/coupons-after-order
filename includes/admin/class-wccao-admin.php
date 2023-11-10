@@ -6,13 +6,20 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  *
  * Handle all general admin business.
  *
- * @class		WCCG_Admin
- * @author		Jeroen Sormani
- * @package		WooCommerce Coupon Generator
+ * @class		WCCAO_Admin
+ * @author		Jonathan Webpixelia
+ * @package		Coupon after order for WooCommerce
  * @version		1.0.0
  */
 class WCCAO_Admin {
 
+	/**
+	 * Plugin name
+	 * 
+	 * @since 1.0.0
+	 * @var string $name Plugin name
+	 */
+	public const PLUG_NAME = 'Coupons after order';
 
 	/**
 	 * Constructor.
@@ -26,7 +33,6 @@ class WCCAO_Admin {
 		// Enqueue scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
 
-        //add_action( 'init', array( $this, 'init' ) ); // Used init because admin_init is too late for admin_menu
 		// Add custom meta box to WooCommerce orders page
 		add_action( 'add_meta_boxes', array( $this, 'coupons_after_order_meta_box' ) );
 	}
@@ -69,9 +75,9 @@ class WCCAO_Admin {
 		global $admin_page_hooks;
 		$parent_menu = ( isset( $admin_page_hooks['woocommerce-marketing'] ) ) ? 'woocommerce-marketing' : 'woocommerce';
 		add_submenu_page(
-            $parent_menu, 
-            __('Coupons after order Settings', 'coupons-after-order'), 
-            __('Coupons after order', 'coupons-after-order'), 
+            $parent_menu,
+			WCCAO_Admin::PLUG_NAME,
+			WCCAO_Admin::PLUG_NAME,
             'manage_options', 
             'coupons-after-order-settings', 
             array( $this, 'coupons_after_order_admin_page' )
@@ -90,7 +96,9 @@ class WCCAO_Admin {
 	public function coupons_after_order_admin_page() {
         ?>
         <div class="wrap">
-            <h2><?php _e('Coupons after order Settings', 'coupons-after-order') ?></h2>
+            <h2><?php 
+			/* translators: %s: plugin name */
+			printf( esc_html__('%s Settings', 'coupons-after-order'), WCCAO_Admin::PLUG_NAME ); ?></h2>
     
             <?php settings_errors(); ?>
     
@@ -119,7 +127,7 @@ class WCCAO_Admin {
 	public function coupons_after_order_meta_box() {
 		add_meta_box(
 			'custom-order-meta-box',
-			__('Coupons after order', 'coupons-after-order'),
+			WCCAO_Admin::PLUG_NAME,
 			array($this, 'coupons_after_order_meta_box_callback'),
 			'shop_order',
 			'advanced',

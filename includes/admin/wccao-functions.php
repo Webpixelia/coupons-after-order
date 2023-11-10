@@ -2,7 +2,7 @@
 /**
  * WC Coupons After Order functions.
  *
- * @author 		Webpixelia
+ * @author 		Jonathan Webpixelia
  * @since		1.0.0
  */
 
@@ -18,11 +18,10 @@ if (!defined('ABSPATH')) exit;
 add_action('woocommerce_order_status_completed', 'wccao_generate_coupons');
 
 function wccao_generate_coupons($order_id) {
-    $enable = get_option('coupons_after_order_enable', 'no');
-    $coupon_suffix = get_option('coupons_after_order_suffix');
-
+    $enable = get_option('coupons_after_order_enable');
     // Check if checkbox Enable checked
     if ($enable === 'yes') {
+        $coupon_suffix = get_option('coupons_after_order_suffix');
         $validity_type = get_option('coupons_after_order_validity_type');
         if ($validity_type === 'date'):
             $validity = get_option('coupons_after_order_validitydate');
@@ -72,7 +71,7 @@ function wccao_generate_coupons($order_id) {
             $coupon->save();
     
             // Add the coupon to the list
-            $coupon_list .= '<li>' . __('Promo code ', 'coupons-after-order') . $i . ': ' . $coupon_code . '</li>';
+            $coupon_list .= '<li>' . __('Coupon code ', 'coupons-after-order') . $i . ': ' . $coupon_code . '</li>';
         }
 
         // Save the flag to indicate that coupons have been generated
@@ -123,8 +122,6 @@ function register_coupons_after_order_settings() {
     add_settings_field('coupons_after_order_validity', __('Coupon Validity', 'coupons-after-order'), 'coupons_after_order_validity_callback', 'woocommerce', 'coupons_after_order_section_settings');
     add_settings_field('coupons_after_order_others_parameters', __('Other Parameters', 'coupons-after-order'), 'coupons_after_order_others_parameters_callback', 'woocommerce', 'coupons_after_order_section_settings');
     add_settings_field('coupons_after_order_email_config', __('Email settings', 'coupons-after-order'), 'coupons_after_order_email_config_callback', 'woocommerce', 'coupons_after_order_section_email');
-    /*add_settings_field('coupons_after_order_before_email', __('Text at the start of the email', 'coupons-after-order'), 'coupons_after_order_before_email_callback', 'woocommerce', 'coupons_after_order_section_email');
-    add_settings_field('coupons_after_order_after_email', __('Text at the end of the email', 'coupons-after-order'), 'coupons_after_order_after_email_callback', 'woocommerce', 'coupons_after_order_section_email');*/
     add_settings_field('coupons_after_order_before_email', __('Text at the start of the email', 'coupons-after-order'), function() {
         coupons_after_order_email_callback(true);
     }, 'woocommerce', 'coupons_after_order_section_email');
@@ -277,20 +274,6 @@ function generate_wp_editor($editor_id, $option_name, $default_text) {
 
     wp_editor($content, $editor_id, $settings);
 }
-
-/*function coupons_after_order_before_email_callback() {
-    $editor_id = 'editor_before_email';
-    $option_name = 'coupons_after_order_before_email';
-    $default_text = sprintf(__('We hope you are doing well and that you have enjoyed your recent purchase at %s. We thank you for your trust in our products.', 'coupons-after-order'), get_bloginfo('name'));
-    generate_wp_editor($editor_id, $option_name, $default_text);
-}
-
-function coupons_after_order_after_email_callback() {
-    $editor_id = 'editor_after_email';
-    $option_name = 'coupons_after_order_after_email';
-    $default_text = sprintf(__('<p>If you have any questions or need assistance, our customer service team is here to help.</p><p>Thank you for your loyalty. We hope you enjoy this special.</p><p>Best regards,<br/>%s.</p>', 'coupons-after-order'), get_bloginfo('name'));
-    generate_wp_editor($editor_id, $option_name, $default_text);
-}*/
 
 function coupons_after_order_email_callback($is_before_email) {
     $editor_data = array(

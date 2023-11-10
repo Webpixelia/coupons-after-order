@@ -80,7 +80,7 @@ $content_after = wpautop(get_option('coupons_after_order_after_email'));
 														printf( esc_html__('The discount of %s will be automatically applied to your order.', 'coupons-after-order'), wc_price($coupon_amount) ); ?></li>
 														<li><?php 
 														/* translators: %1$s: start date of validity of generated coupons */
-														/* translators: %2$s: start date of validity of generated coupons */
+														/* translators: %2$s: end date of validity of generated coupons */
 														printf( esc_html__('Please note that these promo codes are valid from %1$s until %2$s and cannot be combined in a single order.', 'coupons-after-order'), $startDate, $endDate ); ?></li>
                                                     </ul>
 													<?php if (!empty($content_after)) : ?>
