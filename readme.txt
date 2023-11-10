@@ -1,7 +1,7 @@
 === Coupons after order for WooCommerce ===
 Contributors: marocweb
 Tags: ecommerce, woocommerce, coupon, woocommerce order
-Stable tag: 1.1.3
+Stable tag: 1.1.5
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.1
