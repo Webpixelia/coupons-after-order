@@ -53,6 +53,9 @@ Yes, simply by checking or unchecking the “Enable Coupon after order” box in
 4. Example of email sent
 
 == Changelog ==
+= 1.1.5 =
+* Fix: Exclusion of any coupon amount from the purchase during the calculation of generated coupons
+
 = 1.1.4 =
 * Added a check that personalized content exists in the email
 * Added live viewing of sent email

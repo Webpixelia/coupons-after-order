@@ -35,7 +35,9 @@ function wccao_generate_coupons($order_id) {
         $limitUsage = get_option('coupons_after_order_usage_limit');
         $min_amount = get_option('coupons_after_order_min_amount');
         $order = wc_get_order($order_id);
-        $order_total = $order->get_subtotal(); // Total amount of the order (shipping costs excluded)
+        $subTotal = $order->get_subtotal(); // Total amount of the order (shipping costs excluded)
+        $existCoupon = (float) $order->get_discount_total();
+        $order_total = (float) $subTotal - $existCoupon;
         $nber_coupons = intval($count); // Number of coupons generated desired
         $coupon_list = ''; // Create a variable to store the list of coupons
 
