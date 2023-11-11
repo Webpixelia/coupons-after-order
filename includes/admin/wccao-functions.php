@@ -21,7 +21,7 @@ function wccao_generate_coupons($order_id) {
     $enable = get_option('coupons_after_order_enable');
     // Check if checkbox Enable checked
     if ($enable === 'yes') {
-        $coupon_suffix = get_option('coupons_after_order_suffix');
+        $coupon_prefix = get_option('coupons_after_order_prefix');
         $validity_type = get_option('coupons_after_order_validity_type');
         if ($validity_type === 'date'):
             $validity = get_option('coupons_after_order_validitydate');
@@ -51,8 +51,8 @@ function wccao_generate_coupons($order_id) {
         for ($i = 1; $i <= $nber_coupons; $i++) {
             $random_number = mt_rand(10000, 99999);
             // Generate a unique coupon for each voucher
-            $couponSuffix = ($coupon_suffix) ? $coupon_suffix : 'ref';
-            $coupon_code = $couponSuffix . $order_id . '-' . $random_number;
+            $couponPrefix = ($coupon_prefix) ? $coupon_prefix : 'ref';
+            $coupon_code = $couponPrefix . $order_id . '-' . $random_number;
     
             // Calculate the coupon amount
             $coupon_amount = $order_total / $nber_coupons; // Divide the total amount by the number of coupons
@@ -149,7 +149,7 @@ function register_coupons_after_order_settings() {
         'sanitize_callback' => 'absint'
     ));
     register_setting('woocommerce', 'coupons_after_order_min_amount');
-    register_setting('woocommerce', 'coupons_after_order_suffix');
+    register_setting('woocommerce', 'coupons_after_order_prefix');
 
     register_setting('woocommerce', 'coupons_after_order_email_subject', array(
         'default' => __('Your Promo Codes to Enjoy the Refund Offer', 'coupons-after-order') . ' - ' . get_bloginfo('name'),
@@ -221,7 +221,7 @@ function coupons_after_order_others_parameters_callback() {
     $limitUsage = get_option('coupons_after_order_usage_limit', '1');
     $min_amount = get_option('coupons_after_order_min_amount');
     $decimal_separator = wc_get_price_decimal_separator();
-    $coupon_suffix = get_option('coupons_after_order_suffix');
+    $coupon_prefix = get_option('coupons_after_order_prefix');
     ?>
     <label for="coupons-after-order-count"><?= __('Number of Coupons Generated:', 'coupons-after-order') ?>
         <input type="number" id="coupons-after-order-count" name="coupons_after_order_count" value="<?php echo esc_attr($count); ?>" required />
@@ -240,8 +240,8 @@ function coupons_after_order_others_parameters_callback() {
         ?>
     </label>
     <br><br>
-    <label for="coupon-suffix"><?= __('Coupon suffix:', 'coupons-after-order') ?>
-        <input type="text" id="coupon-suffix" name="coupons_after_order_suffix" value="<?php echo esc_attr($coupon_suffix); ?>" pattern="[a-z]+" title="<?php echo esc_html('Only lowercase characters, no numbers','coupons-after-order') ?>" />
+    <label for="coupon-prefix"><?= __('Coupon prefix:', 'coupons-after-order') ?>
+        <input type="text" id="coupon-prefix" name="coupons_after_order_prefix" value="<?php echo esc_attr($coupon_prefix); ?>" pattern="[a-z]+" title="<?php echo esc_html('Only lowercase characters, no numbers','coupons-after-order') ?>" />
         &nbsp;<?php _e('(If empty, by default, it is <strong>"ref"</strong> and the code is in this form "refOrderID-RandomNumber")', 'coupons-after-order'); ?>
     </label>
     <?php
@@ -279,12 +279,12 @@ function coupons_after_order_email_callback($is_before_email) {
     $editor_data = array(
         'editor_before_email' => array(
             'option_name' => 'coupons_after_order_before_email',
-            /* translators: %s: shop name */
-            'default_text' => sprintf(__('We hope you are doing well and that you have enjoyed your recent purchase at %s. We thank you for your trust in our products.', 'coupons-after'), get_bloginfo('name')),
+            /* translators: %s: shop name start email*/
+            'default_text' => sprintf(__('We hope you are doing well and that you have enjoyed your recent purchase at %s. We thank you for your trust in our products.', 'coupons-after-order'), get_bloginfo('name')),
         ),
         'editor_after_email' => array(
             'option_name' => 'coupons_after_order_after_email',
-            /* translators: %s: shop name */
+            /* translators: %s: shop name end email*/
             'default_text' => sprintf(__('<p>If you have any questions or need assistance, our customer service team is here to help.</p><p>Thank you for your loyalty. We hope you enjoy this special.</p><p>Best regards,<br/>%s.</p>', 'coupons-after-order'), get_bloginfo('name')),
         ),
     );

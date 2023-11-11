@@ -21,10 +21,10 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <p><p><?php printf( esc_html__('Each promo code is valid for a minimum cart value of %s.', 'coupons-after-order'), '60 €'); ?></p>
                 <p><?php _e('Here are your promo codes:', 'coupons-after-order'); ?></p>
                 <ul class="wccao-list">
-                    <li><span class="suffix-coupon"></span>XXX-XXXX</li>
-                    <li><span class="suffix-coupon"></span>XXX-XXXX</li>
-                    <li><span class="suffix-coupon"></span>XXX-XXXX</li>
-                    <li><span class="suffix-coupon"></span>XXX-XXXX</li>
+                    <li><span class="prefix-coupon"></span>XXX-XXXX</li>
+                    <li><span class="prefix-coupon"></span>XXX-XXXX</li>
+                    <li><span class="prefix-coupon"></span>XXX-XXXX</li>
+                    <li><span class="prefix-coupon"></span>XXX-XXXX</li>
                     <li>......</li>
                 </ul>
                 </p><?php _e('To use these promo codes on your next purchase, simply follow these steps:', 'coupons-after-order'); ?></p>

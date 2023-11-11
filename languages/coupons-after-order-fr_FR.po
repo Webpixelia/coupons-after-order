@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Coupons after order for WooCommerce\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-10 10:54+0100\n"
-"PO-Revision-Date: 2023-11-10 17:46+0000\n"
+"PO-Revision-Date: 2023-11-11 21:20+0000\n"
 "Last-Translator: \n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -25,7 +25,7 @@ msgstr ""
 "coupon individuel)"
 
 #. translators: %s: plugin name
-#: includes/admin/class-wccao-admin.php:103
+#: includes/admin/class-wccao-admin.php:101
 msgid "%s Settings"
 msgstr "Paramètre de %s"
 
@@ -37,7 +37,7 @@ msgstr ""
 "(Si vide, par défaut, il s'agit de <strong>\"ref\"</strong> et le code est "
 "sous cette forme \"refCommandeN°-ChiffreAléatoire\")"
 
-#. translators: %s: shop name
+#. translators: %s: shop name end email
 #: includes/admin/wccao-functions.php:288
 msgid ""
 "<p>If you have any questions or need assistance, our customer service team "
@@ -96,8 +96,9 @@ msgid "Coupon code "
 msgstr "Code du coupon"
 
 #: includes/admin/wccao-functions.php:243
-msgid "Coupon suffix:"
-msgstr "Suffixe du coupon:"
+#| msgid "Coupon suffix:"
+msgid "Coupon prefix:"
+msgstr "Préfixe du coupon:"
 
 #: includes/admin/wccao-functions.php:122
 msgid "Coupon Validity"
@@ -145,7 +146,7 @@ msgstr ""
 msgid "Coupons after order Settings"
 msgstr "Paramètres de Coupons after order"
 
-#: includes/admin/class-wccao-admin.php:153
+#: includes/admin/class-wccao-admin.php:151
 msgid "Coupons generated:"
 msgstr "Coupons générés:"
 
@@ -299,6 +300,16 @@ msgid "View directly below the changes you made in the text editors"
 msgstr ""
 "Visualisez directement ci-dessous les modifications que vous avez apportées "
 "dans les éditeurs de texte"
+
+#. translators: %s: shop name start email
+#: includes/admin/wccao-functions.php:283
+msgid ""
+"We hope you are doing well and that you have enjoyed your recent purchase at "
+"%s. We thank you for your trust in our products."
+msgstr ""
+"Nous espérons que vous allez bien et que vous avez apprécié votre récent "
+"achat chez %s. Nous vous remercions de la confiance que vous accordez à nos "
+"produits."
 
 #. Author of the plugin
 msgid "Webpixelia"

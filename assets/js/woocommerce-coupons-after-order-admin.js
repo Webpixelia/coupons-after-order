@@ -100,7 +100,7 @@ toggleEditorLink.addEventListener('click', function (event) {
     }
 });
 
-// Display content from editor TinyMCE and input "coupon-suffix"
+// Display content from editor TinyMCE and input "coupon-prefix"
 setTimeout(function () {
   // Editors
   var editors = [tinyMCE.get('editor_before_email'), tinyMCE.get('editor_after_email')];
@@ -124,22 +124,22 @@ setTimeout(function () {
     });
   }
 
-  // Input field "coupon-suffix"
-  var inputCouponSuffix = document.getElementById('coupon-suffix');
-  var value = inputCouponSuffix.value;
+  // Input field "coupon-prefix"
+  var inputCouponPrefix = document.getElementById('coupon-prefix');
+  var value = inputCouponPrefix.value;
   if (value !== '') {
-    var spanElements = document.querySelectorAll('.suffix-coupon');
+    var spanElements = document.querySelectorAll('.prefix-coupon');
     for (var i = 0; i < spanElements.length; i++) {
       spanElements[i].innerHTML = value;
     }
   }
 
-  // Add an event listener for content change on coupon-suffix
-  var inputCouponSuffix = document.getElementById('coupon-suffix');
+  // Add an event listener for content change on coupon-prefix
+  var inputCouponPrefix = document.getElementById('coupon-prefix');
 
-  inputCouponSuffix.addEventListener('input', function () {
-    var value = inputCouponSuffix.value;
-    var spanElements = document.querySelectorAll('.suffix-coupon');
+  inputCouponPrefix.addEventListener('input', function () {
+    var value = inputCouponPrefix.value;
+    var spanElements = document.querySelectorAll('.prefix-coupon');
 
     for (var i = 0; i < spanElements.length; i++) {
       if (value === '') {
