@@ -32,6 +32,8 @@ function wccao_generate_coupons($order_id) {
 
         $count = intval(get_option('coupons_after_order_count'));
         $limitUsage = get_option('coupons_after_order_usage_limit');
+        $indivUse = get_option('coupons_after_order_individual_use');
+        $indivUseCoupon = ($indivUse === 'yes'); // Indivudual use or not
         $min_amount = get_option('coupons_after_order_min_amount');
         $order = wc_get_order($order_id);
         $subTotal = $order->get_subtotal(); // Total amount of the order (shipping costs excluded)
@@ -55,7 +57,9 @@ function wccao_generate_coupons($order_id) {
             $coupon_code = $couponPrefix . $order_id . '-' . $random_number;
     
             // Calculate the coupon amount
+            $decimals = wc_get_price_decimals();
             $coupon_amount = $order_total / $nber_coupons; // Divide the total amount by the number of coupons
+            $coupon_amount = round($coupon_amount, $decimals);
     
             //Define $min_order
             $min_order = empty($min_amount) ? $coupon_amount * 2 : $min_amount;
@@ -64,7 +68,7 @@ function wccao_generate_coupons($order_id) {
             $coupon = new WC_Coupon($coupon_code);
             $coupon->set_discount_type('fixed_cart');
             $coupon->set_amount($coupon_amount);
-            $coupon->set_individual_use(true);
+            $coupon->set_individual_use($indivUseCoupon);
             $coupon->set_date_expires(strtotime($validity));
             $coupon->set_minimum_amount($min_order); // Minimum usage threshold
             $coupon->set_usage_limit($limitUsage); // Usage limit
@@ -148,6 +152,7 @@ function register_coupons_after_order_settings() {
         'type' => 'integer',
         'sanitize_callback' => 'absint'
     ));
+    register_setting('woocommerce', 'coupons_after_order_individual_use');
     register_setting('woocommerce', 'coupons_after_order_min_amount');
     register_setting('woocommerce', 'coupons_after_order_prefix');
 
@@ -219,24 +224,29 @@ function coupons_after_order_validity_callback() {
 function coupons_after_order_others_parameters_callback() {
     $count = get_option('coupons_after_order_count');
     $limitUsage = get_option('coupons_after_order_usage_limit', '1');
+    $indivUse = get_option('coupons_after_order_individual_use', 'yes');
     $min_amount = get_option('coupons_after_order_min_amount');
     $decimal_separator = wc_get_price_decimal_separator();
     $coupon_prefix = get_option('coupons_after_order_prefix');
     ?>
     <label for="coupons-after-order-count"><?= __('Number of Coupons Generated:', 'coupons-after-order') ?>
-        <input type="number" id="coupons-after-order-count" name="coupons_after_order_count" value="<?php echo esc_attr($count); ?>" required />
+        <input type="number" id="coupons-after-order-count" name="coupons_after_order_count" value="<?php echo esc_attr($count); ?>" step="1" min="1" required />
     </label>
     <br><br>
     <label for="coupon-validity-usage-limit"><?= __('Limit Usage of Coupons Generated:', 'coupons-after-order') ?>
-        <input type="number" id="coupon-validity-usage-limit" name="coupons_after_order_usage_limit" value="<?php echo esc_attr($limitUsage); ?>" />
+        <input type="number" id="coupon-validity-usage-limit" name="coupons_after_order_usage_limit" value="<?php echo esc_attr($limitUsage); ?>" step="1" min="1" required />
         &nbsp;<?php _e('Use(s)', 'coupons-after-order') ?>
+    </label>
+    <br><br>
+    <label for="coupon_individual_use"><?= __('Individual use only', 'coupons-after-order') ?>
+        <input type="checkbox" id="coupon_individual_use" name="coupons_after_order_individual_use"  <?php checked($indivUse, 'yes'); ?> value="yes" /><span class="wccao-input-description"><?= __('Check this box if the promo code cannot be used in conjunction with other promo codes.', 'coupons-after-order') ?></span>
     </label>
     <br><br>
     <label for="coupon-amount-min"><?= __('Minimum amount:', 'coupons-after-order') ?>
         <input type="text" id="coupon-amount-min" name="coupons_after_order_min_amount" value="<?php echo esc_attr($min_amount); ?>" oninput="validateCouponAmount(this, 'minAmountError')" class="wccao_input_price" data-decimal="<?= esc_attr($decimal_separator); ?>" />
         &nbsp;<?php 
         /* translators: %s: price symbol */
-        echo sprintf(__('%s (If empty, it is double the amount of the individual coupon)', 'coupons-after-order'), get_woocommerce_currency_symbol()); 
+        echo sprintf(__('%s (If empty, it is double the amount of the individual coupon. Ex: By default, a €10 coupon can only be used for a minimum basket of €20.)', 'coupons-after-order'), get_woocommerce_currency_symbol()); 
         ?>
     </label>
     <br><br>

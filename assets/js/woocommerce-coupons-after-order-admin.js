@@ -1,4 +1,8 @@
-// Conditional fields admin page
+"use strict";
+// Thanks to 
+///////////////////////////////////
+// Conditional fields admin page //
+///////////////////////////////////
 document.addEventListener('DOMContentLoaded', function() {
     const validityTypeField = document.querySelectorAll('input[name="coupons_after_order_validity_type"]');
     const validityDaysField = document.getElementById('coupon-validity-days-field');
@@ -29,16 +33,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+/////////////////////////////////
+// Not allow decimal value in //
+/////////////////////////////////
+document.addEventListener('DOMContentLoaded', function () {
+  const inputIds = ['coupons-after-order-count', 'coupon-validity-usage-limit'];
 
-// Value validation of the amount field
-var decimalSeparator = getWooCommerceDecimalSeparator();
+  inputIds.forEach(function (inputId) {
+    const currentInput = document.getElementById(inputId);
+
+    if (currentInput) {
+      currentInput.addEventListener('input', function (event) {
+        this.value = parseInt(this.value, 10) || ''; // If the conversion fails, leave the value empty
+      });
+    }
+  });
+});
+
+
+//////////////////////////////////////////
+// Value validation of the amount field //
+//////////////////////////////////////////
+let decimalSeparator = getWooCommerceDecimalSeparator();
 
 function getWooCommerceDecimalSeparator() {
   // Get the HTML element that contains the decimal separator
-  var decimalSeparatorElement = document.querySelector('.wccao_input_price');
+  let decimalSeparatorElement = document.querySelector('.wccao_input_price');
 
   // Extract decimal separator from data-decimal attribute
-  var decimalSeparator = decimalSeparatorElement.getAttribute('data-decimal');
+  let decimalSeparator = decimalSeparatorElement.getAttribute('data-decimal');
 
   return decimalSeparator;
 }
@@ -51,24 +74,24 @@ inputElement.addEventListener('blur', function () {
 });
   
 function validateCouponAmount(input, errorDivId) {
-  var customErrorMessage = couponsAfterOrderTranslations.customErrorMessage;
-  var validRegExp = new RegExp("^\\d*(\\" + decimalSeparator + "\\d*)?$");
+  let customErrorMessage = couponsAfterOrderTranslations.customErrorMessage;
+  let validRegExp = new RegExp("^\\d*(\\" + decimalSeparator + "\\d*)?$");
 
-  var value = input.value;
-  var isValid = validRegExp.test(value);
+  let value = input.value;
+  let isValid = validRegExp.test(value);
 
-  var errorDiv = document.getElementById(errorDivId);
+  let errorDiv = document.getElementById(errorDivId);
 
   if (!isValid) {
     if (!errorDiv) {
       // Create a new <div> element to display the error message if it does not exist
-      var errorDivMessage = document.createElement('div');
+      let errorDivMessage = document.createElement('div');
       errorDivMessage.id = errorDivId;
       errorDivMessage.textContent = customErrorMessage;
       errorDivMessage.classList.add('wccao_error_tip');
 
       // Find the parent element of the input field
-      var inputParent = input.parentNode;
+      let inputParent = input.parentNode;
 
       // Insert the newly created <div> element right after the input field
       inputParent.insertBefore(errorDivMessage, input.nextSibling);
@@ -83,11 +106,13 @@ function validateCouponAmount(input, errorDivId) {
   }
 }
 
-// Toggle email model
-var toggleEditorLink = document.getElementById('toggleEditorLink');
-var editorDiv = document.querySelector('.wccao-editor-email');
-var textDisplayedToggle = couponsAfterOrderTranslations.textDisplayedToggle;
-var textHiddenToggle = couponsAfterOrderTranslations.textHiddenToggle;
+////////////////////////
+// Toggle email model //
+////////////////////////
+let toggleEditorLink = document.getElementById('toggleEditorLink');
+let editorDiv = document.querySelector('.wccao-editor-email');
+let textDisplayedToggle = couponsAfterOrderTranslations.textDisplayedToggle;
+let textHiddenToggle = couponsAfterOrderTranslations.textHiddenToggle;
 
 toggleEditorLink.addEventListener('click', function (event) {
     event.preventDefault();
@@ -100,15 +125,17 @@ toggleEditorLink.addEventListener('click', function (event) {
     }
 });
 
-// Display content from editor TinyMCE and input "coupon-prefix"
+///////////////////////////////////////////////////////////////////
+// Display content from editor TinyMCE and input "coupon-prefix" //
+///////////////////////////////////////////////////////////////////
 setTimeout(function () {
   // Editors
-  var editors = [tinyMCE.get('editor_before_email'), tinyMCE.get('editor_after_email')];
-  var previewElements = [document.getElementById('preview_before'), document.getElementById('preview_after')];
+  let editors = [tinyMCE.get('editor_before_email'), tinyMCE.get('editor_after_email')];
+  let previewElements = [document.getElementById('preview_before'), document.getElementById('preview_after')];
 
   function updatePreviewContent() {
-    for (var i = 0; i < editors.length; i++) {
-      var content = editors[i].getContent();
+    for (let i = 0; i < editors.length; i++) {
+      let content = editors[i].getContent();
       previewElements[i].innerHTML = content;
     }
   }
@@ -117,7 +144,7 @@ setTimeout(function () {
   updatePreviewContent();
 
   // Add an event listener for content change
-  for (var i = 0; i < editors.length; i++) {
+  for (let i = 0; i < editors.length; i++) {
     editors[i].on('Change', function (e) {
       // Update <p> elements with changed content
       updatePreviewContent();
@@ -125,23 +152,21 @@ setTimeout(function () {
   }
 
   // Input field "coupon-prefix"
-  var inputCouponPrefix = document.getElementById('coupon-prefix');
-  var value = inputCouponPrefix.value;
+  let inputCouponPrefix = document.getElementById('coupon-prefix');
+  let value = inputCouponPrefix.value;
   if (value !== '') {
-    var spanElements = document.querySelectorAll('.prefix-coupon');
-    for (var i = 0; i < spanElements.length; i++) {
+    let spanElements = document.querySelectorAll('.prefix-coupon');
+    for (let i = 0; i < spanElements.length; i++) {
       spanElements[i].innerHTML = value;
     }
   }
 
   // Add an event listener for content change on coupon-prefix
-  var inputCouponPrefix = document.getElementById('coupon-prefix');
-
   inputCouponPrefix.addEventListener('input', function () {
-    var value = inputCouponPrefix.value;
-    var spanElements = document.querySelectorAll('.prefix-coupon');
+    let value = inputCouponPrefix.value;
+    let spanElements = document.querySelectorAll('.prefix-coupon');
 
-    for (var i = 0; i < spanElements.length; i++) {
+    for (let i = 0; i < spanElements.length; i++) {
       if (value === '') {
         spanElements[i].innerHTML = 'ref';
       } else {
