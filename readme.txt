@@ -59,6 +59,7 @@ Yes, simply by checking or unchecking the “Enable Coupon after order” box in
 * Improved JS code
 * Improved control of values entered in fields
 * Fix coupon rounding based on woocommerce setting
+* Tested up with PHP 8.2
 
 = 1.1.5 =
 * Added class constant
