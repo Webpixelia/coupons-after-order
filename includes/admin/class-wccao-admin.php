@@ -1,6 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 /**
  * Admin class.
  *
@@ -94,6 +95,13 @@ class WCCAO_Admin {
 	 * @since 1.0.0
 	 */
 	public function coupons_after_order_admin_page() {
+		// Get the settings for the plugin
+		$settings = get_option('woocommerce_coupons_after_order_settings');
+
+		// Apply the woocommerce_coupons_after_order_settings filter
+		$settings = apply_filters_ref_array('woocommerce_coupons_after_order_settings', array(&$settings));
+
+		// Output the settings
         ?>
         <div class="wrap">
             <h2><?php 
@@ -125,30 +133,38 @@ class WCCAO_Admin {
 	 * @return void
 	 */
 	public function coupons_after_order_meta_box() {
+		$screen = wc_get_container()->get(CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled()
+            ? wc_get_page_screen_id('shop-order')
+            : 'shop_order';
+
 		add_meta_box(
 			'custom-order-meta-box',
 			WCCAO_Admin::PLUG_NAME,
 			array($this, 'coupons_after_order_meta_box_callback'),
-			'shop_order',
+			$screen,
 			'advanced',
 			'core'
 		);
-	}	
+	}
 
 	/**
 	 * Callback function for custom meta box.
 	 *
-	 * @param WP_Post $post Post object.
+	 * @param WP_Post|object $post WP_Post object or any other object with similar properties.
 	 */
 	public function coupons_after_order_meta_box_callback($post) {
+		// Get the order object
+		$order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;
+	
 		// Get the saved value
-		$coupons_generated = get_post_meta($post->ID, '_coupons_generated', true);
-		
+		$coupons_generated = sanitize_text_field($order->get_meta('_coupons_generated', true));
+
 		// Determine whether to display "Yes" or "No" based on the value
 		$display_value = ($coupons_generated === 'yes') ? 'Yes' : 'No';
-		
+	
 		// Output the input field
 		echo '<p><label for="coupons-after-order-meta-box">' . __('Coupons generated:', 'coupons-after-order') . '</label> ';
 		echo '<input type="text" id="coupons-after-order-meta-box" name="coupons_generated" value="' . esc_attr($display_value) . '" disabled /></p>';
-	}	
+	}
+	
 }

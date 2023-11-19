@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Coupons after order for WooCommerce 1.1.6\n"
+"Project-Id-Version: Coupons after order for WooCommerce 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/coupons-after-order\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-11-14T09:03:55+00:00\n"
+"POT-Creation-Date: 2023-11-19T21:29:39+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: coupons-after-order\n"
@@ -35,227 +35,228 @@ msgid "https://webpixelia.com/"
 msgstr ""
 
 #. translators: %s: link to WooCommerce website
-#: coupons-after-order.php:110
-msgid "Coupons After Order requires <a href=\"%s\" target=\"_blank\">WooCommerce</a> in order to work."
+#: coupons-after-order.php:114
+msgid "Coupons After Order for WooCommerce requires <a href=\"%s\" target=\"_blank\">WooCommerce</a> to be installed & activated!."
 msgstr ""
 
 #. translators: %s: price decimal separator
-#: includes/admin/class-wccao-admin.php:58
+#: includes/admin/class-wccao-admin.php:59
 msgid "Please enter a numeric value and the defined decimal separator (%s), without thousands separators or currency symbols"
 msgstr ""
 
-#: includes/admin/class-wccao-admin.php:59
-#: templates/html-email-template-preview-admin.php:14
+#: includes/admin/class-wccao-admin.php:60
+#: templates/html-email-template-preview-admin.php:15
 msgid "Show email template"
 msgstr ""
 
-#: includes/admin/class-wccao-admin.php:60
+#: includes/admin/class-wccao-admin.php:61
 msgid "Hide email template"
 msgstr ""
 
 #. translators: %s: plugin name
-#: includes/admin/class-wccao-admin.php:101
+#: includes/admin/class-wccao-admin.php:109
 msgid "%s Settings"
 msgstr ""
 
-#: includes/admin/class-wccao-admin.php:151
+#: includes/admin/class-wccao-admin.php:166
 msgid "Coupons generated:"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:78
+#: includes/admin/wccao-functions.php:117
 msgid "Coupon code "
 msgstr ""
 
-#: includes/admin/wccao-functions.php:95
-msgid "An error occurred while sending your coupons by email (Email template not found). Please contact us to collect your coupons: mudaparis@outlook.fr."
+#: includes/admin/wccao-functions.php:178
+msgid "An error occurred while sending your coupons by email (Email template not found). Please contact us to collect your coupons."
 msgstr ""
 
-#: includes/admin/wccao-functions.php:120
+#: includes/admin/wccao-functions.php:202
 msgid "Coupons after order Settings"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:121
+#: includes/admin/wccao-functions.php:207
 msgid "Coupons after order Email"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:124
+#: includes/admin/wccao-functions.php:215
+#: includes/admin/wccao-functions.php:285
 msgid "Enable Coupon after order"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:125
-#: includes/admin/wccao-functions.php:198
+#: includes/admin/wccao-functions.php:216
+#: includes/admin/wccao-functions.php:294
 msgid "Coupon Validity Type"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:126
+#: includes/admin/wccao-functions.php:217
 msgid "Coupon Validity"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:127
+#: includes/admin/wccao-functions.php:218
 msgid "Other Parameters"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:128
+#: includes/admin/wccao-functions.php:219
 msgid "Email settings"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:129
+#: includes/admin/wccao-functions.php:220
 msgid "Text at the start of the email"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:133
+#: includes/admin/wccao-functions.php:224
 msgid "Text at the end of the email"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:160
+#: includes/admin/wccao-functions.php:252
 msgid "Your Promo Codes to Enjoy the Refund Offer"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:163
+#: includes/admin/wccao-functions.php:255
 msgid "Thank you for your order"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:179
+#: includes/admin/wccao-functions.php:272
 msgid "Configure generated coupon settings"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:183
+#: includes/admin/wccao-functions.php:276
 msgid "Configure the settings of the email received by the buyer"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:200
+#: includes/admin/wccao-functions.php:297
 msgid "Coupon Validity (Days)"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:204
+#: includes/admin/wccao-functions.php:302
 msgid "Coupon Validity (Date)"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:215
+#: includes/admin/wccao-functions.php:313
 msgid "Coupon Validity Days:"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:216
+#: includes/admin/wccao-functions.php:315
 msgid "Days"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:218
+#: includes/admin/wccao-functions.php:318
 msgid "Coupon Validity Date:"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:232
+#: includes/admin/wccao-functions.php:337
 msgid "Number of Coupons Generated:"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:236
+#: includes/admin/wccao-functions.php:341
 msgid "Limit Usage of Coupons Generated:"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:238
+#: includes/admin/wccao-functions.php:343
 msgid "Use(s)"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:241
-msgid "Individual use only"
+#: includes/admin/wccao-functions.php:346
+msgid "Individual use only:"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:242
+#: includes/admin/wccao-functions.php:348
 msgid "Check this box if the promo code cannot be used in conjunction with other promo codes."
 msgstr ""
 
-#: includes/admin/wccao-functions.php:245
+#: includes/admin/wccao-functions.php:351
 msgid "Minimum amount:"
 msgstr ""
 
 #. translators: %s: price symbol
-#: includes/admin/wccao-functions.php:249
+#: includes/admin/wccao-functions.php:355
 msgid "%s (If empty, it is double the amount of the individual coupon. Ex: By default, a €10 coupon can only be used for a minimum basket of €20.)"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:253
+#: includes/admin/wccao-functions.php:359
 msgid "Coupon prefix:"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:255
+#: includes/admin/wccao-functions.php:361
 msgid "(If empty, by default, it is <strong>\"ref\"</strong> and the code is in this form \"refOrderID-RandomNumber\")"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:264
+#: includes/admin/wccao-functions.php:371
 msgid "Email subject:"
 msgstr ""
 
-#: includes/admin/wccao-functions.php:268
+#: includes/admin/wccao-functions.php:376
 msgid "Email header:"
 msgstr ""
 
 #. translators: %s: shop name start email
-#: includes/admin/wccao-functions.php:293
+#: includes/admin/wccao-functions.php:413
 msgid "We hope you are doing well and that you have enjoyed your recent purchase at %s. We thank you for your trust in our products."
 msgstr ""
 
 #. translators: %s: shop name end email
-#: includes/admin/wccao-functions.php:298
+#: includes/admin/wccao-functions.php:418
 msgid "<p>If you have any questions or need assistance, our customer service team is here to help.</p><p>Thank you for your loyalty. We hope you enjoy this special.</p><p>Best regards,<br/>%s.</p>"
 msgstr ""
 
 #. translators: %s: buyer name
 #: templates/email-template.php:58
-#: templates/html-email-template-preview-admin.php:18
+#: templates/html-email-template-preview-admin.php:21
 msgid "Hello %s,"
 msgstr ""
 
 #. translators: %3$s: amount of each coupon
 #: templates/email-template.php:66
-#: templates/html-email-template-preview-admin.php:20
-msgid "As promised, we are sending you your promo codes corresponding to our full refund offer. You spent %1$s on your last purchase, entitling you to %2$s promo codes, each worth %3$s."
+#: templates/html-email-template-preview-admin.php:27
+msgid "To thank you, we are sending you your promo codes corresponding to our full refund offer. You spent %1$s on your last purchase, entitling you to %2$s promo codes, each worth %3$s."
 msgstr ""
 
 #. translators: %s: minimum cart amount for coupon use
-#: templates/email-template.php:69
-#: templates/html-email-template-preview-admin.php:21
+#: templates/email-template.php:73
+#: templates/html-email-template-preview-admin.php:30
 msgid "Each promo code is valid for a minimum cart value of %s."
 msgstr ""
 
-#: templates/email-template.php:70
-#: templates/html-email-template-preview-admin.php:22
+#: templates/email-template.php:74
+#: templates/html-email-template-preview-admin.php:31
 msgid "Here are your promo codes:"
 msgstr ""
 
-#: templates/email-template.php:74
-#: templates/html-email-template-preview-admin.php:30
+#: templates/email-template.php:78
+#: templates/html-email-template-preview-admin.php:39
 msgid "To use these promo codes on your next purchase, simply follow these steps:"
 msgstr ""
 
-#: templates/email-template.php:76
-#: templates/html-email-template-preview-admin.php:32
+#: templates/email-template.php:80
+#: templates/html-email-template-preview-admin.php:41
 msgid "Add the items of your choice to your cart."
 msgstr ""
 
-#: templates/email-template.php:77
-#: templates/html-email-template-preview-admin.php:33
+#: templates/email-template.php:81
+#: templates/html-email-template-preview-admin.php:42
 msgid "During the payment process, enter one of these promo codes in the corresponding \"Promo Code\" box."
 msgstr ""
 
 #. translators: %s: coupon amount
-#: templates/email-template.php:80
-#: templates/html-email-template-preview-admin.php:34
+#: templates/email-template.php:84
+#: templates/html-email-template-preview-admin.php:45
 msgid "The discount of %s will be automatically applied to your order."
 msgstr ""
 
 #. translators: %2$s: end date of validity of generated coupons
-#: templates/email-template.php:84
-#: templates/html-email-template-preview-admin.php:35
+#: templates/email-template.php:88
+#: templates/html-email-template-preview-admin.php:49
 msgid "Please note that these promo codes are valid from %1$s until %2$s and cannot be combined in a single order."
 msgstr ""
 
-#: templates/html-email-template-preview-admin.php:13
+#: templates/html-email-template-preview-admin.php:14
 msgid "Email Model"
 msgstr ""
 
-#: templates/html-email-template-preview-admin.php:14
+#: templates/html-email-template-preview-admin.php:15
 msgid "You can view the email template that will be sent to the buyer:"
 msgstr ""
 
-#: templates/html-email-template-preview-admin.php:15
+#: templates/html-email-template-preview-admin.php:16
 msgid "View directly below the changes you made in the text editors"
 msgstr ""

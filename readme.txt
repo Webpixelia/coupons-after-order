@@ -2,7 +2,7 @@
 Contributors: marocweb
 Donate link: https://buymeacoffee.com/webpixelia
 Tags: ecommerce, woocommerce, coupon, woocommerce order
-Stable tag: 1.1.6
+Stable tag: 1.2.0
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.1
@@ -54,12 +54,20 @@ Yes, simply by checking or unchecking the “Enable Coupon after order” box in
 4. Example of email sent
 
 == Changelog ==
-= 1.1.6 =
-* Added allow coupon stacking
+= 1.2.0 =
+* Added the option to allow or disallow coupon stacking
+* Added support for WooCommerce High-Performance Order Storage
+* Added CSS for improved UI
+* Added "translators:" comment to clarify placeholders meaning
 * Improved JS code
 * Improved control of values entered in fields
-* Fix coupon rounding based on woocommerce setting
+* Improved maintainability and readability code
+* Improved security
+* Fixed coupon rounding based on woocommerce setting
+* Fixed Deprecated: Creation of dynamic property
+* Fixed minor bugs: Returned date language, Minimum order amount
 * Tested up with PHP 8.2
+* Tested up with WooCommerce 8.3
 
 = 1.1.5 =
 * Added class constant

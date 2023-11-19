@@ -1,21 +1,21 @@
 <?php
 /**
- * Plugin Name: Coupons after order for WooCommerce
- * Plugin URI: https://github.com/Webpixelia
- * Description: Generate coupons after order completion. The sum of the coupons will be equal to the amount of the order.
- * Author: Webpixelia
- * Version: 1.1.6
- * Author URI: https://webpixelia.com/
- * Requires PHP: 7.1
- * Requires at least: 5.0
- * Tested up to: 6.4
- * WC requires at least: 5.0
- * WC tested up to: 8.2
- * License: GPLv2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: coupons-after-order
- * Domain Path: /languages
- */
+* Plugin Name: Coupons after order for WooCommerce
+* Plugin URI: https://github.com/Webpixelia
+* Description: Generate coupons after order completion. The sum of the coupons will be equal to the amount of the order.
+* Author: Webpixelia
+* Version: 1.2.0
+* Author URI: https://webpixelia.com/
+* Requires PHP: 7.1
+* Requires at least: 5.0
+* Tested up to: 6.4
+* WC requires at least: 5.0
+* WC tested up to: 8.3
+* License: GPLv2 or later
+* License URI: https://www.gnu.org/licenses/gpl-2.0.html
+* Text Domain: coupons-after-order
+* Domain Path: /languages
+*/
 
 if (!defined('ABSPATH')) exit;
 
@@ -28,8 +28,10 @@ if (!defined('ABSPATH')) exit;
  * @version		1.0.0
  * @author		Jonathan Webpixelia
  */
+
 class Coupons_After_Order_WooCommerce {
 
+	protected $admin;
 
 	/**
 	 * Plugin version.
@@ -37,7 +39,7 @@ class Coupons_After_Order_WooCommerce {
 	 * @since 1.0.0
 	 * @var string $version Plugin version number.
 	 */
-	public $version = '1.1.6';
+	public $version = '1.2.0';
 
 
 	/**
@@ -53,32 +55,21 @@ class Coupons_After_Order_WooCommerce {
 	 * Instance of Coupons_After_Order_WooCommerce.
 	 *
 	 * @since 1.0.0
-	 * @access private
+	 * @access protected
 	 * @var object $instance The instance of Coupons_After_Order_WooCommerce.
 	 */
-	private static $instance;
-
+	protected static $instance = null;
 
 	/**
-	 * Construct.
+	 * Main Coupons_After_Order_WooCommerce Instance
 	 *
-	 * Initialize the class and plugin.
+	 * Ensures only one instance of Coupons_After_Order_WooCommerce is loaded or can be loaded.
 	 *
-	 * @since 1.0.0
-	 */
-	public function __construct() {
-		$this->init();
-	}
-
-    
-    /**
-	 * Instance.
+	 * @version 1.0.0
+	 * @since   1.0.0
 	 *
-	 * A global instance of the class. Used to retrieve the instance
-	 * to use on other files/plugins/themes.
-	 *
-	 * @since 1.0.0
-	 * @return object Instance of the class.
+	 * @static
+	 * @return  Coupons_After_Order_WooCommerce - Main instance
 	 */
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {
@@ -90,42 +81,42 @@ class Coupons_After_Order_WooCommerce {
 
 
 	/**
-	 * Init.
+	 * Construct.
 	 *
-	 * Initialize plugin parts.
+	 * Initialize the class and plugin.
 	 *
 	 * @since 1.0.0
 	 */
-	public function init() {
-
+	public function __construct() {
 		// Check if WooCommerce is active
 		require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		if ( ! is_plugin_active( 'woocommerce/woocommerce.php' ) && ! function_exists( 'WC' ) ) {
-			add_action('admin_notices', 'wccao_woocommerce_not_active_notice');
-
-			function wccao_woocommerce_not_active_notice() {
-				deactivate_plugins(plugin_basename(__FILE__));
-				$url_wc = 'http://www.woothemes.com/woocommerce/';
-				/* translators: %s: link to WooCommerce website */
-				$error_message = sprintf(__('Coupons After Order requires <a href="%s" target="_blank">WooCommerce</a> in order to work.', 'coupons-after-order'), $url_wc);
-				$message = '<div class="error"><p>';
-				$message .= sprintf('<p>%s</p>', $error_message);
-				$message .= '</p></div>';
-
-				echo wp_kses_post($message);
-			}
+			add_action('admin_notices', array( $this, 'wccao_woocommerce_not_active_notice'));
 		}
 
+		// Set up localisation
+		$this->load_textdomain();
 
+		// Admin
 		if ( is_admin() ) {
 			require_once plugin_dir_path( __FILE__ ) . 'includes/admin/wccao-functions.php';
 
 			// Classes
 			require_once plugin_dir_path( __FILE__ ) . 'includes/admin/class-wccao-admin.php';
 			$this->admin = new WCCAO_Admin();
-		}
+		}	
+	}
 
-		$this->load_textdomain();
+	public static function  wccao_woocommerce_not_active_notice() {
+		deactivate_plugins(plugin_basename(__FILE__));
+		$url_wc = 'http://wordpress.org/extend/plugins/woocommerce/';
+		/* translators: %s: link to WooCommerce website */
+		$error_message = sprintf(__('Coupons After Order for WooCommerce requires <a href="%s" target="_blank">WooCommerce</a> to be installed & activated!.', 'coupons-after-order'), $url_wc);
+		$message = '<div class="error"><p>';
+		$message .= sprintf('<p>%s</p>', $error_message);
+		$message .= '</p></div>';
+
+		echo wp_kses_post($message);
 	}
 
     /**
@@ -141,6 +132,15 @@ class Coupons_After_Order_WooCommerce {
 
 
 }
+
+/**
+ * Setup WooCommerce HPOS compatibility.
+*/
+add_action( 'before_woocommerce_init', function() {
+	if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+	}
+} );
 
 
 if ( ! function_exists( 'Coupons_After_Order_WooCommerce' ) ) {
