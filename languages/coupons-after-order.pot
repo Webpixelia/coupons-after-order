@@ -170,7 +170,7 @@ msgstr ""
 
 #. translators: %s: price symbol
 #: includes/admin/wccao-functions.php:355
-msgid "%s (If empty, it is double the amount of the individual coupon. Ex: By default, a €10 coupon can only be used for a minimum basket of €20.)"
+msgid "%s (If empty, it is the amount of the individual coupon.)"
 msgstr ""
 
 #: includes/admin/wccao-functions.php:359

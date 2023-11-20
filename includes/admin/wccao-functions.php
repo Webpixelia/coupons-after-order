@@ -78,7 +78,7 @@ function wccao_generate_coupon_details($order_total) {
     $nber_coupons = intval(get_option('coupons_after_order_count'));
     $coupon_amount = $order_total / $nber_coupons;
     $coupon_amount = round($coupon_amount, wc_get_price_decimals());
-    $min_order = empty($min_amount) ? $coupon_amount * 2 : max($min_amount, $coupon_amount);
+    $min_order = empty($min_amount) ? $coupon_amount : max(tofloat($min_amount), $coupon_amount);
 
 
     return compact(
@@ -195,6 +195,33 @@ function wccao_send_coupons_email($order, $coupon_list, $couponDetails) {
     $headers = array('Content-Type: text/html; charset=UTF-8');
 
     wp_mail($customer_email, $subject, $email_content, $headers);
+}
+
+/**
+ * Convert a numeric string with various decimal separators to a float value.
+ *
+ * This function takes a numeric string as input and converts it to a float,
+ * handling both dot (.) and comma (,) as decimal separators. It removes any
+ * non-numeric characters and correctly places the decimal separator, providing
+ * a clean float representation of the input.
+ *
+ * @param string $num The numeric string to be converted to a float.
+ * @return float The float representation of the input numeric string.
+ */
+function tofloat($num) {
+    $dotPos = strrpos($num, '.');
+    $commaPos = strrpos($num, ',');
+    $sep = (($dotPos > $commaPos) && $dotPos) ? $dotPos : 
+        ((($commaPos > $dotPos) && $commaPos) ? $commaPos : false);
+   
+    if (!$sep) {
+        return floatval(preg_replace("/[^0-9]/", "", $num));
+    } 
+
+    return floatval(
+        preg_replace("/[^0-9]/", "", substr($num, 0, $sep)) . '.' .
+        preg_replace("/[^0-9]/", "", substr($num, $sep+1, strlen($num)))
+    );
 }
 
 /**
@@ -361,7 +388,7 @@ function coupons_after_order_others_parameters_callback() {
         <input type="text" id="coupon-amount-min" name="coupons_after_order_min_amount" value="<?php echo esc_attr($min_amount); ?>" oninput="validateCouponAmount(this, 'minAmountError')" class="wccao_input_price" data-decimal="<?= esc_attr($decimal_separator); ?>" />
         &nbsp;<?php 
         /* translators: %s: price symbol */
-        echo sprintf(__('%s (If empty, it is double the amount of the individual coupon. Ex: By default, a €10 coupon can only be used for a minimum basket of €20.)', 'coupons-after-order'), get_woocommerce_currency_symbol()); 
+        echo sprintf(__('%s (If empty, it is the amount of the individual coupon.)', 'coupons-after-order'), get_woocommerce_currency_symbol()); 
         ?>     
     </div>
     <div class="coupon-field-group">

@@ -3,28 +3,23 @@ msgstr ""
 "Project-Id-Version: Coupons after order for WooCommerce\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-10 10:54+0100\n"
-"PO-Revision-Date: 2023-11-19 10:43+0000\n"
+"PO-Revision-Date: 2023-11-20 18:32+0100\n"
 "Last-Translator: \n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Loco https://localise.biz/\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Poedit 3.4.1\n"
 "X-Loco-Version: 2.6.6; wp-6.4.1\n"
 "X-Domain: coupons-after-order\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"Plural-Forms: nplurals=2; plural=n > 1;"
 
 #. translators: %s: price symbol
 #: includes/admin/wccao-functions.php:356
-msgid ""
-"%s (If empty, it is double the amount of the individual coupon. Ex: By "
-"default, a €10 coupon can only be used for a minimum basket of €20.)"
-msgstr ""
-"%s (Si le champs est vide, ce sera le double du montant du coupon individuel."
-" Ex : Par défaut, un coupon de 10€ ne peut être utilisé que pour un panier "
-"minimum de 20€"
+msgid "%s (If empty, it is the amount of the individual coupon.)"
+msgstr "%s (Si le champs est vide, ce sera le montant du coupon individuel.)"
 
 #. translators: %s: plugin name
 #: includes/admin/class-wccao-admin.php:108
@@ -48,8 +43,8 @@ msgid ""
 msgstr ""
 "<p>Si vous avez des questions ou avez besoin d'aide, notre équipe du service "
 "client est là pour vous aider.</p><p>Merci pour votre fidélité. Nous "
-"espérons que vous apprécierez cette offre spéciale.</p><p>Cordialement,<br/>"
-"%s.</p>"
+"espérons que vous apprécierez cette offre spéciale.</p><p>Cordialement,<br/"
+">%s.</p>"
 
 #: templates/email-template.php:80
 #: templates/html-email-template-preview-admin.php:40
@@ -103,11 +98,11 @@ msgstr "Validité du coupon (Jours)"
 
 #: includes/admin/wccao-functions.php:319
 msgid "Coupon Validity Date:"
-msgstr "Date de validité du coupon"
+msgstr "Date de validité du coupon:"
 
 #: includes/admin/wccao-functions.php:314
 msgid "Coupon Validity Days:"
-msgstr "Validité du coupon en jours"
+msgstr "Validité du coupon en jours:"
 
 #: includes/admin/wccao-functions.php:217
 #: includes/admin/wccao-functions.php:295
@@ -243,7 +238,7 @@ msgid ""
 "thousands separators or currency symbols"
 msgstr ""
 "Veuillez saisir une valeur numérique et le séparateur décimal défini (%s), "
-"sans séparateurs de milliers ni symboles monétaires."
+"sans séparateurs de milliers ni symboles monétaires"
 
 #. translators: %2$s: end date of validity of generated coupons
 #: templates/email-template.php:88
