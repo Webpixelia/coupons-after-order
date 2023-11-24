@@ -34,8 +34,23 @@ class WCCAO_Admin {
 		// Enqueue scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
 
-		// Add custom meta box to WooCommerce orders page
+		// Add custom meta box to WooCommerce order page
 		add_action( 'add_meta_boxes', array( $this, 'coupons_after_order_meta_box' ) );
+
+		// Add custom column to WooCommerce orders page
+		add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'wccao_custom_shop_order_column' ), 20 );
+		add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'wccao_custom_orders_list_column_content' ), 20, 2 );
+
+		// Custom footer admin
+		add_action( 'admin_init', array( $this, 'wccao_add_admin_footer_filters' ) );
+
+		// Planifier la tâche cron pour vérifier la version tous les jours.
+		if (!wp_next_scheduled('wccao_check_version_cron')) {
+			wp_schedule_event(time(), 'daily', 'wccao_check_version_cron');
+		}
+	
+		// Ajouter une action qui sera déclenchée par la tâche cron.
+		add_action('wccao_check_version_cron', array($this, 'perform_version_check_cron'));
 	}
 
 
@@ -106,21 +121,75 @@ class WCCAO_Admin {
         <div class="wrap">
             <h2><?php 
 			/* translators: %s: plugin name */
-			printf( esc_html__('%s Settings', 'coupons-after-order'), WCCAO_Admin::PLUG_NAME ); ?></h2>
+			printf( esc_html__('%s Settings', 'coupons-after-order'), WCCAO_Admin::PLUG_NAME ); 
+			?>
+			</h2>
+
+			<?php
+			$tabs = array(
+				'settings' => __('Settings', 'coupons-after-order'),
+				'email'    => __('Email', 'coupons-after-order'),
+				'misc'     => __('Misc', 'coupons-after-order'),
+				//'licence'  => __('Licence', 'coupons-after-order'),
+				'version'  => __('Version', 'coupons-after-order'),
+			);
+
+			$current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'settings';
+			?>
+
+			<nav class="wccao-nav-bar nav-tab-wrapper">
+				<?php foreach ($tabs as $tab_key => $tab_label) : ?>
+					<a href="?page=coupons-after-order-settings&tab=<?php echo esc_attr($tab_key); ?>" class="wccao-nav-tab nav-tab <?php echo ($current_tab === $tab_key) ? 'nav-tab-active' : ''; ?>">
+						<?php echo esc_html($tab_label); ?>
+					</a>
+				<?php endforeach; ?>
+				</nav>
     
             <?php settings_errors(); ?>
     
             <form method="post" action="options.php">
-                <?php
-                // Display sections and fields for WooCommerce settings
-                settings_fields('woocommerce');
-                do_settings_sections('woocommerce');
-				$template_file = plugin_dir_path(dirname(__DIR__)) . 'templates/html-email-template-preview-admin.php';
-				if (file_exists($template_file)) {
-					include $template_file;
-				}
-                submit_button();
-                ?>
+			<?php
+			// Display sections and fields for WooCommerce settings
+			$tab = isset($_GET['tab']) ? $_GET['tab'] : 'settings';
+
+			switch ($tab) {
+				case 'settings':
+					settings_fields('coupons-after-order-tab-settings-settings');
+					do_settings_sections('coupons-after-order-tab-settings-settings');
+					break;
+
+				case 'email':
+					settings_fields('coupons-after-order-tab-settings-email');
+					do_settings_sections('coupons-after-order-tab-settings-email');
+					$template_file = plugin_dir_path(dirname(__DIR__)) . 'templates/html-email-template-preview-admin.php';
+					if (file_exists($template_file)) {
+						include $template_file;
+					}
+					break;
+
+				case 'misc':
+					settings_fields('coupons-after-order-tab-settings-misc');
+					do_settings_sections('coupons-after-order-tab-settings-misc');
+					break;
+
+				/*case 'licence':
+					settings_fields('coupons-after-order-tab-settings-licence');
+					do_settings_sections('coupons-after-order-tab-settings-licence');
+					break;*/
+
+				case 'version':
+					settings_fields('coupons-after-order-tab-settings-version');
+					do_settings_sections('coupons-after-order-tab-settings-version');
+					break;
+
+				default:
+					break;
+			}
+
+            if (!isset($_GET['tab']) || $_GET['tab'] !== 'version') {
+				submit_button();
+			}					
+        	?>
             </form>
         </div>
         <?php
@@ -128,7 +197,7 @@ class WCCAO_Admin {
 
 
 	/**
-	 * Add custom meta box.
+	 * Add custom meta box to single order page.
 	 *
 	 * @return void
 	 */
@@ -166,5 +235,118 @@ class WCCAO_Admin {
 		echo '<p><label for="coupons-after-order-meta-box">' . __('Coupons generated:', 'coupons-after-order') . '</label> ';
 		echo '<input type="text" id="coupons-after-order-meta-box" name="coupons_generated" value="' . esc_attr($display_value) . '" disabled /></p>';
 	}
+
+	/**
+	 * Function to customize columns in the WooCommerce orders list.
+	 *
+	 * @param array $columns Default columns in the orders list.
+	 * @return array Reordered columns with the new 'coupons_generated' column.
+	 */
+	public function wccao_custom_shop_order_column( $columns ) {
+		$reordered_columns = array();
+		// Inserting columns to a specific location.
+		foreach ( $columns as $key => $column ) {
+			$reordered_columns[ $key ] = $column;
+			if ( 'order_status' === $key ) {
+				// Inserting after "Status" column.
+				$reordered_columns['coupons_generated'] = __('Coupons Generated', 'coupons-after-order');
+			}
+		}
+		return $reordered_columns;
+	}
+
+	/**
+	 * Function to display content in the custom 'coupons_generated' column.
+	 *
+	 * @param string $column   The name of the current column.
+	 * @param int    $order_id The order ID.
+	 */
+	public function wccao_custom_orders_list_column_content($column, $order_id) {
+		if ($column === 'coupons_generated') {
+				// Get custom order meta data.
+				$order = wc_get_order( $order_id );
+				$coupons_generated = $order->get_meta( '_coupons_generated', true );
+				echo $coupons_generated === 'yes' ? 'Yes' : 'No';
+				unset( $order );
+		}
+	}
 	
+	/**
+	 * Adds filters to customize the admin footer text and update footer HTML.
+	 * Hooked to the 'admin_footer_text' and 'update_footer' actions.
+	 */
+	public function wccao_add_admin_footer_filters() {
+		add_filter( 'admin_footer_text', array( $this, 'wccao_admin_footer_text'), 10, 2 );
+		add_filter( 'update_footer', array( $this, 'wccao_update_footer'), 10, 2 );
+	}
+	
+	/**
+	 * Customizes the admin footer text with a credit link to Webpixelia.
+	 *
+	 * @param string $credit The current admin footer text.
+	 * @return string The modified admin footer text with Webpixelia credit.
+	 */
+	public function wccao_admin_footer_text( $credit ) {
+		$url = 'https://webpixelia.com/';
+		$credit = '<span id="webpixelia-credit">' . sprintf('<span>%s</span> <a href="%s" target="_blank">Webpixelia</a>', esc_html(__('Coupons after order for WooCommerce is powered by', 'coupons-after-order')), esc_url($url)) . '</span>';
+	
+		return $credit;
+	}
+
+	/**
+	 * Customizes the update footer HTML with the plugin version.
+	 *
+	 * @param string $html The current update footer HTML.
+	 * @return string The modified update footer HTML with the plugin version.
+	 */
+	public function wccao_update_footer( $html ) {
+		$version = Coupons_After_Order_WooCommerce()->version;
+		$html = '<span>Version ' . $version . '</span>';
+
+		return $html;
+	}
+
+	/**
+	 * Perform a version check using GitHub API to determine if a new version of the plugin is available.
+	 *
+	 * Return the result array containing the notice type and message.
+	 */
+	public function perform_version_check_cron() {
+		$github_url = 'https://api.github.com/repos/Webpixelia/coupons-after-order/releases/latest';
+
+		// Perform a request to the GitHub API.
+		$response = wp_remote_get($github_url);
+
+		// Initialize the result array.
+		$result = array('notice' => '', 'message' => '');
+
+		// Check if the request was successful.
+		if (!is_wp_error($response)) {
+			// Parse the JSON response.
+			$body = wp_remote_retrieve_body($response);
+			$data = json_decode($body);
+
+			$latest_version = $data->tag_name;
+			$current_version = Coupons_After_Order_WooCommerce()->version;
+
+			// Compare versions.
+			if (version_compare($current_version, $latest_version, '<')) {
+				$result['notice'] = 'notice-error';
+				/* translators: %s: last version available */
+				$result['message'] = sprintf(__('A new version of the plugin (%s) is available. Please update it.', 'coupons-after-order'), $latest_version);
+			} else {
+				$result['notice'] = 'notice-success';
+				$result['message'] = __('Great! You are using the latest version of ', 'coupons-after-order') . WCCAO_Admin::PLUG_NAME;
+			}
+		} else {
+			// Error during the request to the GitHub API.
+			$result['message'] = __('Unable to check the latest version of the plugin.', 'coupons-after-order');
+		}
+
+		// Return the result array.
+		return $result;
+
+		// To save in the log file:
+		error_log('Version Check Cron: ' . print_r($result, true));
+	}
 }

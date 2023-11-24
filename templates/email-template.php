@@ -5,7 +5,6 @@ $email_header = get_option('coupons_after_order_email_header');
 $startDate = date_i18n('j F Y');
 $endDate = date_i18n("j F Y", strtotime($couponDetails['validity']));
 $min_order = floatval($couponDetails['min_order']);
-
 $content_before = wpautop(get_option('coupons_after_order_before_email'));
 $content_after = wpautop(get_option('coupons_after_order_after_email'));
 ?>

@@ -49,11 +49,20 @@ Yes, simply by checking or unchecking the “Enable Coupon after order” box in
 
 == Screenshots ==
 1. Settings access
-2. Coupons after order for WooCommerce settings
-3. Example of coupons generated
-4. Example of email sent
+2. Settings Tab
+3. Email Tab
+4. Misc Tab
+5. Version Tab
+6. Example of coupons generated
+7. Example of email sent
 
 == Changelog ==
+= 1.3.0 Beta =
+* Reorganized administration into tab
+* Added Misc tab and Version tab
+* Added choice to delete or not data
+* Minor bugs
+
 = 1.2.1 =
 * Fixed a bug in the calculation of $min_order that resulted in a string instead of a float value
 * Adjusted $min_order calculation to exclude doubling when $min_amount is empty, ensuring a more accurate minimum order value
