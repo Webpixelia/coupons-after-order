@@ -2,7 +2,7 @@
 Contributors: marocweb
 Donate link: https://buymeacoffee.com/webpixelia
 Tags: ecommerce, woocommerce, coupon, woocommerce order
-Stable tag: 1.2.1
+Stable tag: 1.3.0
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.1
@@ -57,11 +57,13 @@ Yes, simply by checking or unchecking the “Enable Coupon after order” box in
 7. Example of email sent
 
 == Changelog ==
-= 1.3.0 Beta =
-* Reorganized administration into tab
+= 1.3.0 =
+* Added administration by tabs
 * Added Misc tab and Version tab
 * Added choice to delete or not data
-* Minor bugs
+* Added shortcodes for fully customizable email
+* Added CSS customizations to the CTA button
+* Fixed minor bugs
 
 = 1.2.1 =
 * Fixed a bug in the calculation of $min_order that resulted in a string instead of a float value

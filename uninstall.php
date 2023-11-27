@@ -20,8 +20,12 @@ function coupons_after_order_uninstall_conditionally() {
             'coupons_after_order_prefix',
             'coupons_after_order_email_subject',
             'coupons_after_order_email_header',
-            'coupons_after_order_before_email',
-            'coupons_after_order_after_email',
+            'coupons_after_order_email_content',
+            'coupons_after_order_email_bt_title',
+            'coupons_after_order_email_bt_url',
+            'coupons_after_order_email_bt_color',
+            'coupons_after_order_email_bt_bg_color',
+            'coupons_after_order_email_bt_font_size',
             'coupons_after_order_data_uninstall'
         );
 

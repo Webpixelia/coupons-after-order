@@ -41,8 +41,9 @@ class WCCAO_Admin {
 		add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'wccao_custom_shop_order_column' ), 20 );
 		add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'wccao_custom_orders_list_column_content' ), 20, 2 );
 
-		// Custom footer admin
-		add_action( 'admin_init', array( $this, 'wccao_add_admin_footer_filters' ) );
+		// Custom admin page
+		add_action( 'admin_body_class', array( $this, 'admin_body_class' ) );
+		add_action( 'current_screen', array( $this, 'current_screen' ) );
 
 		// Planifier la tâche cron pour vérifier la version tous les jours.
 		if (!wp_next_scheduled('wccao_check_version_cron')) {
@@ -270,14 +271,37 @@ class WCCAO_Admin {
 				unset( $order );
 		}
 	}
+
+	/**
+	 * Appends custom admin body class.
+	 *
+	 * @since   1.3.0
+	 *
+	 * @param   string $classes CSS classe.
+	 * @return  string
+	 */
+	public function admin_body_class( $classes ) {
+		$classes = ' wccao-admin';
+
+		// Return classes.
+		return $classes;
+	}
 	
 	/**
-	 * Adds filters to customize the admin footer text and update footer HTML.
-	 * Hooked to the 'admin_footer_text' and 'update_footer' actions.
+	 * Adds custom functionality to "Coupons after order for WooCommerce" admin pages.
+	 *
+	 * @date    7/4/20
+	 * @since   1.3.0
+	 *
+	 * @param   void
+	 * @return  void
 	 */
-	public function wccao_add_admin_footer_filters() {
-		add_filter( 'admin_footer_text', array( $this, 'wccao_admin_footer_text'), 10, 2 );
-		add_filter( 'update_footer', array( $this, 'wccao_update_footer'), 10, 2 );
+	public function current_screen( $screen ) {
+		// Determine if the current page being viewed is "ACF" related.
+		if ( strpos( $screen->id, 'coupons-after-order-settings' ) !== false ) {
+			add_filter( 'admin_footer_text', array( $this, 'wccao_admin_footer_text' ) );
+			add_filter( 'update_footer', array( $this, 'wccao_update_footer' ) );
+		}
 	}
 	
 	/**
@@ -345,8 +369,5 @@ class WCCAO_Admin {
 
 		// Return the result array.
 		return $result;
-
-		// To save in the log file:
-		error_log('Version Check Cron: ' . print_r($result, true));
 	}
 }

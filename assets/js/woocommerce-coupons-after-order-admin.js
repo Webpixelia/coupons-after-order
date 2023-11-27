@@ -127,54 +127,62 @@ if (document.querySelector('.settings-tab')) {
       }
     });
 
-    ///////////////////////////////////////////////////////////////////
-    // Display content from editor TinyMCE and input "coupon-prefix" //
-    ///////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    // Display changes in live from button settings //
+    //////////////////////////////////////////////////
+    document.addEventListener('DOMContentLoaded', function () {
+      // Fonction pour mettre à jour les éléments HTML en fonction des valeurs des champs de formulaire
+      function updateElements() {
+          // Récupérer les valeurs des champs de formulaire
+          let emailBtTitle = document.getElementById('wccao_email_bt_title').value;
+          let emailBtUrl = document.getElementById('wccao_email_bt_url').value;
+          let emailBtColor = document.getElementById('wccao_email_bt_color').value;
+          let emailBtBgColor = document.getElementById('wccao_email_bt_bg_color').value;
+          let emailBtFontSize = document.getElementById('wccao_email_bt_font_size').value;
+
+          // Mettre à jour l'élément HTML
+          let emailButton = document.getElementById('emailButton');
+          emailButton.href = emailBtUrl;
+          emailButton.style.fontSize = emailBtFontSize + 'px';
+          emailButton.style.color = emailBtColor;
+          emailButton.style.background = emailBtBgColor;
+          emailButton.textContent = emailBtTitle;
+      }
+
+      // Appeler la fonction lors du chargement de la page
+      updateElements();
+
+      // Écouter les changements dans les champs de formulaire
+      let inputFields = ['wccao_email_bt_title', 'wccao_email_bt_url', 'wccao_email_bt_color', 'wccao_email_bt_bg_color', 'wccao_email_bt_font_size'];
+
+      inputFields.forEach(function (fieldName) {
+          document.getElementById(fieldName).addEventListener('input', function () {
+              // Appeler la fonction à chaque changement
+              updateElements();
+          });
+      });
+  });
+
+    /////////////////////////////////////////
+    // Display content from editor TinyMCE //
+    /////////////////////////////////////////
     setTimeout(function () {
       // Editors
-      let editors = [tinyMCE.get('editor_before_email'), tinyMCE.get('editor_after_email')];
-      let previewElements = [document.getElementById('preview_before'), document.getElementById('preview_after')];
+      let editors = tinyMCE.get('wccao_email_content');
+      let previewElements = document.getElementById('preview_email_content');
 
       function updatePreviewContent() {
-        for (let i = 0; i < editors.length; i++) {
-          let content = editors[i].getContent();
-          previewElements[i].innerHTML = content;
-        }
+          let content = editors.getContent();
+          previewElements.innerHTML = content;
       }
 
       // Update <p> elements on page load
       updatePreviewContent();
 
       // Add an event listener for content change
-      for (let i = 0; i < editors.length; i++) {
-        editors[i].on('Change', function (e) {
-          // Update <p> elements with changed content
-          updatePreviewContent();
-        });
-      }
-
-      // Input field "coupon-prefix"
-      let inputCouponPrefix = document.getElementById('hidden-coupon-prefix');
-      let value = inputCouponPrefix.value;
-      if (value !== '') {
-        let spanElements = document.querySelectorAll('.prefix-coupon');
-        for (let i = 0; i < spanElements.length; i++) {
-          spanElements[i].innerHTML = value;
-        }
-      }
-
-      // Add an event listener for content change on coupon-prefix
-      inputCouponPrefix.addEventListener('input', function () {
-        let value = inputCouponPrefix.value;
-        let spanElements = document.querySelectorAll('.prefix-coupon');
-
-        for (let i = 0; i < spanElements.length; i++) {
-          if (value === '') {
-            spanElements[i].innerHTML = 'ref';
-          } else {
-            spanElements[i].innerHTML = value;
-          }
-        }
+      editors.on('Change', function (e) {
+        // Update <p> elements with changed content
+        updatePreviewContent();
       });
     }, 1000);
 }

@@ -5,31 +5,8 @@ $email_header = get_option('coupons_after_order_email_header');
 $startDate = date_i18n('j F Y');
 $endDate = date_i18n("j F Y", strtotime($couponDetails['validity']));
 $min_order = floatval($couponDetails['min_order']);
-$content_email = wpautop(get_option('coupons_after_order_email_content'));
-
-$coupons = '<ul style="list-style-type: disc; margin-left: 20px;">' . $coupon_list . '</ul>';
-$coupon_amount = wc_price( $couponDetails['coupon_amount'] );
-$order_total = wc_price( $couponDetails['order_total'] );
-$nb_coupons = esc_html( $couponDetails['nber_coupons'] );
-
-// Button
-$email_bt_title = isset( $_GET['coupons_after_order_email_bt_title'] ) ? wp_unslash( $_GET['coupons_after_order_email_bt_title'] ) : get_option('coupons_after_order_email_bt_title');
-$email_bt_url = isset( $_GET['coupons_after_order_email_bt_url'] ) ? wp_unslash( $_GET['coupons_after_order_email_bt_url'] ) : get_option('coupons_after_order_email_bt_url');
-$email_bt_color = isset( $_GET['coupons_after_order_email_bt_color'] ) ? wp_unslash( $_GET['coupons_after_order_email_bt_color'] ) : get_option('coupons_after_order_email_bt_color');
-$email_bt_bg_color = isset( $_GET['coupons_after_order_email_bt_bg_color'] ) ? wp_unslash( $_GET['coupons_after_order_email_bt_bg_color'] ) : get_option('coupons_after_order_email_bt_bg_color');
-$email_bt_font_size = isset( $_GET['coupons_after_order_email_bt_font_size'] ) ? wp_unslash( $_GET['coupons_after_order_email_bt_font_size'] ) : get_option('coupons_after_order_email_bt_font_size');
-$wccao_bt = '<a href="' . $email_bt_url . '" target="_blank" style="text-decoration:none;display:inline-block;padding:10px 30px;margin:10px 0;font-size:' . $email_bt_font_size . 'px;color:' . $email_bt_color . ';background:' . $email_bt_bg_color . ';">' . $email_bt_title . '</a>';
-
-// Shortcodes
-$content_email = str_replace( '{billing_first_name}', esc_html( $order->get_billing_first_name() ), $content_email );												
-$content_email = str_replace( '{coupons}', $coupons, $content_email );
-$content_email = str_replace( '{coupon_amount}', $coupon_amount, $content_email );
-$content_email = str_replace( '{order_total}', $order_total, $content_email );
-$content_email = str_replace( '{nb_coupons}', $nb_coupons, $content_email );
-$content_email = str_replace( '{min_amount_order}', wc_price($min_order), $content_email );
-$content_email = str_replace( '{start_date}', esc_html($startDate), $content_email );
-$content_email = str_replace( '{end_date}', esc_html($endDate) , $content_email );
-$content_email = str_replace( '{shop_button}', $wccao_bt, $content_email );
+$content_before = wpautop(get_option('coupons_after_order_before_email'));
+$content_after = wpautop(get_option('coupons_after_order_after_email'));
 ?>
 
 <!DOCTYPE html>
@@ -75,9 +52,43 @@ $content_email = str_replace( '{shop_button}', $wccao_bt, $content_email );
 											<td align="center" valign="top">
 												<!-- Body -->
                                                 <div id="body_content_inner" style='color: #636363; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 14px; line-height: 150%; text-align: left; padding: 48px 48px 32px;'>
-                                                    <?php if (!empty($content_email)) : ?>
-														<p style="margin: 0 0 16px;"><?php echo wp_kses_post($content_email); ?></p>
-													<?php endif; ?>									
+                                                    <p style="margin: 0 0 16px;"><?php 
+													/* translators: %s: buyer name */
+													printf( esc_html__( 'Hello %s,', 'coupons-after-order' ), esc_html( $order->get_billing_first_name() ) ); ?></p>
+                                                    <?php if (!empty($content_before)) : ?>
+														<p style="margin: 0 0 16px;"><?php echo wp_kses_post($content_before); ?></p>
+													<?php endif; ?>
+                                                    <p style="margin: 0 0 16px;"><?php 
+													/* translators: %1$s: order amount */
+													/* translators: %2$s: number of coupons generated */
+													/* translators: %3$s: amount of each coupon */
+													printf(esc_html__('To thank you, we are sending you your promo codes corresponding to our full refund offer. You spent %1$s on your last purchase, entitling you to %2$s promo codes, each worth %3$s.', 'coupons-after-order'),
+														wc_price( $couponDetails['order_total'] ),
+														esc_html( $couponDetails['nber_coupons'] ),
+														wc_price( $couponDetails['coupon_amount'] )
+													); ?>
+													<p style="margin: 0 0 16px;"><?php 
+													/* translators: %s: minimum cart amount for coupon use */
+													printf( esc_html__('Each promo code is valid for a minimum cart value of %s.', 'coupons-after-order'), wc_price($min_order) ); ?></p>
+													<p style="margin: 0 0 16px;"><?php _e('Here are your promo codes:', 'coupons-after-order'); ?></p>
+                                                    <ul style="list-style-type: disc; margin-left: 20px;">
+                                                        <?php echo $coupon_list;?>
+                                                    </ul>
+													<p style="margin: 0 0 16px;"><?php _e('To use these promo codes on your next purchase, simply follow these steps:', 'coupons-after-order'); ?></p>
+													<ul style="list-style-type: disc; margin-left: 20px;">
+														<li><?php esc_html_e('Add the items of your choice to your cart.', 'coupons-after-order'); ?></li>
+														<li><?php esc_html_e('During the payment process, enter one of these promo codes in the corresponding "Promo Code" box.', 'coupons-after-order'); ?></li>
+														<li><?php 
+														/* translators: %s: coupon amount */
+														printf( esc_html__('The discount of %s will be automatically applied to your order.', 'coupons-after-order'), wc_price($couponDetails['coupon_amount']) ); ?></li>
+														<li><?php 
+														/* translators: %1$s: start date of validity of generated coupons */
+														/* translators: %2$s: end date of validity of generated coupons */
+														printf( esc_html__('Please note that these promo codes are valid from %1$s until %2$s and cannot be combined in a single order.', 'coupons-after-order'), esc_html($startDate), esc_html($endDate) ); ?></li>
+													</ul>
+													<?php if (!empty($content_after)) : ?>
+														<p style="margin: 0 0 16px;"><?php echo wp_kses_post($content_after); ?></p>
+													<?php endif; ?>
                                                 </div>    
                                             </td>
 										</tr>
