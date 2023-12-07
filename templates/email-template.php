@@ -7,7 +7,7 @@ $endDate = date_i18n("j F Y", strtotime($couponDetails['validity']));
 $min_order = floatval($couponDetails['min_order']);
 $content_email = wpautop(get_option('coupons_after_order_email_content'));
 
-$coupons = '<ul style="list-style-type: disc; margin-left: 20px;">' . $coupon_list . '</ul>';
+$coupons = $coupon_list;
 $coupon_amount = wc_price( $couponDetails['coupon_amount'] );
 $order_total = wc_price( $couponDetails['order_total'] );
 $nb_coupons = esc_html( $couponDetails['nber_coupons'] );
@@ -38,6 +38,51 @@ $content_email = str_replace( '{shop_button}', $wccao_bt, $content_email );
 		<meta http-equiv="Content-Type" content="text/html; charset=<?php bloginfo( 'charset' ); ?>" />
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
 		<title><?php echo get_bloginfo( 'name', 'display' ); ?></title>
+		<style>
+			.wccao-coupons-list {
+			    list-style-type: none;
+				padding-left: 0;
+				width: 100%;
+				columns: 2;
+				-webkit-columns: 2;
+				-moz-columns: 2;
+				column-gap: 1em;
+			}
+			ul .prefix-coupon {
+				padding: 1em;
+				-webkit-mask-image: radial-gradient(circle at 10px 40%, transparent 10px, red 10.5px), linear-gradient(90deg, transparent 25%, red 0, red 75%, transparent 0);
+				mask-image: radial-gradient(circle at 10px 40%, transparent 10px, red 10.5px), linear-gradient(90deg, transparent 25%, red 0, red 75%, transparent 0);
+				-webkit-mask-size: 100%, 8px 2px;
+				mask-size: 100%, 8px 2px;
+				-webkit-mask-repeat: repeat, repeat-x;
+				mask-repeat: repeat, repeat-x;
+				-webkit-mask-position: -10px, 50% 39%;
+				mask-position: -10px, 50% 39%;
+				-webkit-mask-composite: source-out;
+				mask-composite: subtract;
+				border-radius: 0.5rem;
+				background: linear-gradient(#bf4080,#8c5ead);
+				color: #fff;
+				text-align: center;
+			}
+			ul .prefix-coupon:not(:last-child) {margin-bottom:1em;}
+			ul .prefix-coupon .email-title-coupon {
+				margin-bottom: 0.5em;
+				display: block;
+			}
+			ul .prefix-coupon .email-code-coupon {
+				font-size: 1.2em;
+				margin-top: 0.5em;
+				border: 1px solid #fff;
+				border-radius: 5px;
+				display: inline-block;
+				padding: 0.5em;
+				font-weight: bold;
+			}
+			ul .prefix-coupon .email-code-coupon a {
+				color:#fff;
+			}
+		</style>
 	</head>
 	<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="background-color: <?= get_option('woocommerce_email_background_color'); ?>; padding: 0; text-align: center;">
 		<table width="100%" id="outer_wrapper" style="background-color: <?= get_option('woocommerce_email_background_color'); ?>;">
@@ -76,7 +121,7 @@ $content_email = str_replace( '{shop_button}', $wccao_bt, $content_email );
 												<!-- Body -->
                                                 <div id="body_content_inner" style='color: #636363; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 14px; line-height: 150%; text-align: left; padding: 48px 48px 32px;'>
                                                     <?php if (!empty($content_email)) : ?>
-														<p style="margin: 0 0 16px;"><?php echo wp_kses_post($content_email); ?></p>
+														<?php echo wp_kses_post($content_email); ?>
 													<?php endif; ?>									
                                                 </div>    
                                             </td>

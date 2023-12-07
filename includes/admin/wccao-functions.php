@@ -9,6 +9,48 @@
 if (!defined('ABSPATH')) exit;
 
 /**
+ * wccao_get_path
+ *
+ * Returns the plugin path to a specified file.
+ *
+ * @since   1.3.1
+ *
+ * @param   string $filename The specified file.
+ * @return  string
+ */
+function wccao_get_path( $filename = '' ) {
+	return WCCAO_ABSPATH . ltrim( $filename, '/' );
+}
+
+/*
+ * wccao_include
+ *
+ * Includes a file within the WCCAO plugin.
+ *
+ * @since   1.3.1
+ *
+ * @param   string $filename The specified file.
+ * @return  void
+ */
+function wccao_include( $filename = '' ) {
+	$file_path = wccao_get_path( $filename );
+	if ( file_exists( $file_path ) ) {
+		include_once $file_path;
+	}
+}
+
+/**
+ * Check if current install is WCAO PRO
+ *
+ * @since 1.3.1
+ *
+ * @return boolean True if the current install is WCCAO PRO
+ */
+function wccao_is_pro() {
+	return defined( 'WCCAO_PRO' ) && WCCAO_PRO;
+}
+
+/**
  * Generate coupons after order completion based on the $order_id argument.
  *
  * @since 1.0.0
@@ -75,10 +117,9 @@ function wccao_generate_coupon_details($order_total) {
     $min_amount = get_option('coupons_after_order_min_amount');
   
     $nber_coupons = intval(get_option('coupons_after_order_count'));
-    $coupon_amount = $order_total / $nber_coupons;
+    $coupon_amount = ($nber_coupons != 0) ? ($order_total / $nber_coupons) : 0; //$coupon_amount = $order_total / $nber_coupons;
     $coupon_amount = round($coupon_amount, wc_get_price_decimals());
     $min_order = empty($min_amount) ? $coupon_amount : max(tofloat($min_amount), $coupon_amount);
-
 
     return compact(
         'coupon_prefix', 'validity_type', 'validity', 'limitUsage', 'indivUseCoupon', 'min_amount', 'order_total', 'nber_coupons', 'coupon_amount', 'min_order'
@@ -107,37 +148,63 @@ function wccao_get_validity($validity_type) {
 }
 
 /**
- * Generate a list of coupons based on the provided details.
+ * Generate a list of coupons based on the provided details and save them if necessary.
  *
  * Creates a list of coupons with unique coupon codes using the specified details.
+ * Optionally saves the generated coupons to the database.
+ * Returns an HTML list of the generated coupon codes.
  *
- * @param array $couponDetails An array containing details of the generated coupons.
- * @param int   $order_id      The ID of the order associated with the generated coupons.
+ * @param array $couponDetails An associative array containing details for generating the coupons.
+ * @param int $order_id The ID of the order associated with the generated coupons.
+ * @param bool $save (Optional) Whether to save the generated coupons to the database (default: true).
  *
  * @return string HTML list of generated coupon codes.
  */
-function wccao_generate_coupons_list($couponDetails, $order_id) {
-    $coupon_list = '';
+function wccao_generate_coupons_list($couponDetails, $order_id, $save = true) {
+    $coupon_list = '<ul class="wccao-coupons-list">';
 
-    for ($i = 1; $i <=  $couponDetails['nber_coupons']; $i++) {
-        $coupon_code = wccao_generate_coupon_code($couponDetails, $order_id);
+    for ($i = 1; $i <= $couponDetails['nber_coupons']; $i++) {
+        $coupon = wccao_generate_coupon_code($couponDetails, $order_id); // Get the WC_Coupon object
+        $url_site = get_home_url();
+        $parameter_link_coupon = get_option('coupons_after_order_url_parameter');
 
-        $coupon_list .= '<li class="prefix-coupon">' . esc_html_e('Coupon code ', 'coupons-after-order') . $i . ': ' . $coupon_code . '</li>';
+        if ($save) {
+            $coupon->save(); // Save the coupon if necessary
+        }
+
+        $coupon_code = $coupon->get_code();
+        $coupon_url = esc_url($url_site . '/?' . $parameter_link_coupon . '=' . $coupon_code);
+        $coupon_label = esc_html__('My coupon code', 'coupons-after-order');
+
+        $coupon_list .= <<<HTML
+            <li class="prefix-coupon">
+                <span class="email-title-coupon">
+                    {$coupon_label} {$i}
+                </span>
+                <br>
+                <span class="email-code-coupon">
+                    <a href="{$coupon_url}" target="_blank">{$coupon_code}</a>
+                </span>
+            </li>
+        HTML;
     }
+    $coupon_list .= '</ul>';
 
     return $coupon_list;
 }
 
+
+
 /**
- * Generate a unique coupon code and create a coupon with the provided details.
+ * Generate a unique coupon code and create a WooCommerce coupon.
  *
- * Generates a coupon code by combining a prefix, order ID, and a random number.
- * Then, creates a WooCommerce coupon with the specified details and returns the generated coupon code.
+ * Generates a unique coupon code by combining a prefix, order ID, and a random number.
+ * Creates a WooCommerce coupon with the specified details and returns the generated coupon code.
  *
- * @param array $couponDetails An array containing details for generating the coupon.
- * @param int   $order_id      The ID of the order associated with the coupon.
+ * @param array $couponDetails An associative array containing details for generating the coupon.
+ * @param int $order_id The ID of the order associated with the coupon.
  *
- * @return string The generated coupon code.
+ * @return WC_Coupon The generated WooCommerce coupon object.
  */
 function wccao_generate_coupon_code($couponDetails, $order_id) {
     $random_number = mt_rand(10000, 99999);
@@ -148,18 +215,18 @@ function wccao_generate_coupon_code($couponDetails, $order_id) {
     $coupon_amount = round($coupon_amount, wc_get_price_decimals());
 
     // Create the coupon
-    $coupon_code = $couponPrefix . $order_id . '-' . $random_number;
-    $coupon = new WC_Coupon($coupon_code);
+    $coupon = new WC_Coupon();
+    $coupon->set_code($couponPrefix . $order_id . '-' . $random_number);
     $coupon->set_discount_type('fixed_cart');
     $coupon->set_amount($coupon_amount);
     $coupon->set_individual_use($couponDetails['indivUseCoupon']);
     $coupon->set_date_expires(strtotime($couponDetails['validity']));
     $coupon->set_minimum_amount($couponDetails['min_order']); // Minimum usage threshold
     $coupon->set_usage_limit($couponDetails['limitUsage']); // Usage limit
-    $coupon->save();
 
-    return $coupon_code;
+    return $coupon;
 }
+
 
 /**
  * Send coupons to the customer via email after a successful order.
@@ -196,7 +263,6 @@ function wccao_send_coupons_email($order, $coupon_list, $couponDetails ) {
     $headers = array('Content-Type: text/html; charset=UTF-8');
 
     // Send email
-    //wp_mail($customer_email, $subject, $email_content, $headers);
     WC()->mailer()->send($customer_email, $subject, $email_content, $headers,'');
 }
 
@@ -254,11 +320,6 @@ function register_coupons_after_order_sections() {
     ));
 
     add_settings_section('coupons_after_order_tab_version', __('Coupons after order Version', 'coupons-after-order'), 'coupons_after_order_tab_version_callback', 'coupons-after-order-tab-settings-version');
-
-    add_settings_section('coupons_after_order_tab_licence', __('Coupons after order Licence', 'coupons-after-order'), 'coupons_after_order_tab_licence_callback', 'coupons-after-order-tab-settings-licence', array(
-        'before_section' => '<div class="wccao_section_admin">',
-        'after_section'  => '</div>',
-    ));
 }
 
 function register_coupons_after_order_fields() {
@@ -276,10 +337,8 @@ function register_coupons_after_order_fields() {
     add_settings_field('coupons_after_order_email_button', __('Email button', 'coupons-after-order'), 'coupons_after_order_email_button_callback', 'coupons-after-order-tab-settings-email', 'coupons_after_order_tab_email');
     // Misc
     add_settings_field('coupons_after_order_data_uninstall', __('Remove data on uninstall', 'coupons-after-order'), 'coupons_after_order_miscellaneous_callback', 'coupons-after-order-tab-settings-misc', 'coupons_after_order_tab_misc');
-    // Licence
-    add_settings_field('coupons_after_order_licence', __('Enter your licence key:', 'coupons-after-order'), 'coupons_after_order_licence_callback', 'coupons-after-order-tab-settings-licence', 'coupons_after_order_tab_licence');
 
-    // Save settings
+    // Save settings 
     // Settings
     register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_enable');
     register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_validity_type');
@@ -302,6 +361,7 @@ function register_coupons_after_order_fields() {
     register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_individual_use');
     register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_min_amount');
     register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_prefix');
+    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_url_parameter');
     // Email
     register_setting('coupons-after-order-tab-settings-email', 'coupons_after_order_email_subject', array(
         /* translators: %s: shop */
@@ -338,8 +398,6 @@ function register_coupons_after_order_fields() {
     ));
     // Misc
     register_setting('coupons-after-order-tab-settings-misc', 'coupons_after_order_data_uninstall');
-    // Licence
-    register_setting('coupons-after-order-tab-settings-licence', 'coupons_after_order_licence');
 }
 
 add_action('admin_init', 'register_coupons_after_order_settings');
@@ -390,10 +448,6 @@ function coupons_after_order_tab_version_callback() {
     echo '<h3 class="has-icon">' . __('Installed version ', 'coupons-after-order') . Coupons_After_Order_WooCommerce()->version .'</h3>';
     echo esc_html($result['message']);
     echo '</div>';
-}
-
-function coupons_after_order_tab_licence_callback() {
-    echo '<p class="wccao-descr-section-admin misc-tab">' . __('Manage your licence key. Do not have one yet? Buy here.', 'coupons-after-order') . '</p>'; 
 }
 
 // Fields
@@ -450,6 +504,7 @@ function coupons_after_order_others_parameters_callback() {
    $min_amount = $couponDetails['min_amount'];
    $decimal_separator = wc_get_price_decimal_separator();
    $coupon_prefix = sanitize_text_field($couponDetails['coupon_prefix']);
+   $coupon_url_parameter = sanitize_text_field(get_option('coupons_after_order_url_parameter'));
    ?>
    <div class="coupon-field-group">
         <label for="coupons-after-order-count"><?php esc_html_e('Number of Coupons Generated:', 'coupons-after-order') ?></label>
@@ -474,6 +529,11 @@ function coupons_after_order_others_parameters_callback() {
         <label for="coupon-prefix"><?php esc_html_e('Coupon prefix:', 'coupons-after-order') ?></label>
         <input type="text" id="coupon-prefix" name="coupons_after_order_prefix" value="<?php echo esc_attr($coupon_prefix); ?>" pattern="[a-z]+" title="<?php echo esc_html('Only lowercase characters, no numbers','coupons-after-order') ?>" placeholder="<?php echo esc_html__('"ref" by default', 'coupons-after-order'); ?>" />
         <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_html_e('If empty, by default, it is "ref" and the code is in this form "refOrderID-RandomNumber"', 'coupons-after-order'); ?>"></span>
+    </div>
+    <div class="coupon-field-group">
+        <label for="coupon_url_parameter"><?php esc_html_e('URL Parameter link:', 'coupons-after-order') ?></label>
+        <input type="text" id="coupon_url_parameter" name="coupons_after_order_url_parameter" value="<?php echo esc_attr($coupon_url_parameter); ?>" pattern="[a-z]+" title="<?php echo esc_html('Only lowercase characters, no numbers','coupons-after-order') ?>" placeholder="<?php echo esc_html__('"apply_coupon" by default', 'coupons-after-order'); ?>" />
+        <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_html_e('If empty, by default, it is "apply_coupon"', 'coupons-after-order'); ?>"></span>
     </div>
    <?php
 }
@@ -579,7 +639,7 @@ function coupons_after_order_email_button_callback() {
      </label>
     </div>
     <?php
- }
+}
  
 function coupons_after_order_miscellaneous_callback() {
     $data_uninstall = get_option('coupons_after_order_data_uninstall', 'no');
@@ -588,17 +648,6 @@ function coupons_after_order_miscellaneous_callback() {
         <label for="coupons_after_order_data_uninstall">
             <input type="checkbox" id="coupons_after_order_data_uninstall" name="coupons_after_order_data_uninstall" <?php checked($data_uninstall, 'yes'); ?> value="yes" />
             <?php esc_html_e('Check this box if you would like to completely remove all of its data upon plugin deletion.', 'coupons-after-order'); ?>
-        </label>
-    </div>
-    <?php
-}
-
-function coupons_after_order_licence_callback() {
-    $license_key = get_option('coupons_after_order_licence_key');
-    ?>
-    <div class="coupon-field-group">
-        <label for="coupons_after_order_licence_key" style="display: flex; align-items: center;">
-        <input type="password" id="coupons_after_order_licence_key" name="coupons_after_order_licence_key" value="<?php echo esc_attr($license_key); ?>" style="flex:auto;">
         </label>
     </div>
     <?php

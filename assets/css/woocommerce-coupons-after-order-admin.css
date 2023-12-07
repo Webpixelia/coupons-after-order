@@ -105,6 +105,17 @@ input {font-weight: normal;}
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
+.disabled-link {
+    color: gray;
+    pointer-events: none;
+    text-decoration: none;
+}
+
+#wccao-email-success {
+    color: green;
+    font-weight: 600;
+}
+
 /* Footer */
 #webpixelia-credit>* {
     vertical-align: middle;

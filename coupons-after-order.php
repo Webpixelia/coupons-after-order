@@ -4,7 +4,7 @@
 * Plugin URI: https://github.com/Webpixelia
 * Description: Generate coupons after order completion. The sum of the coupons will be equal to the amount of the order.
 * Author: Webpixelia
-* Version: 1.3.0
+* Version: 1.3.1
 * Author URI: https://webpixelia.com/
 * Requires PHP: 7.1
 * Requires at least: 5.0
@@ -32,6 +32,8 @@ if (!defined('ABSPATH')) exit;
 class Coupons_After_Order_WooCommerce {
 
 	protected $admin;
+	
+	protected $link_coupons_email;
 
 	/**
 	 * Plugin version.
@@ -39,7 +41,7 @@ class Coupons_After_Order_WooCommerce {
 	 * @since 1.0.0
 	 * @var string $version Plugin version number.
 	 */
-	public $version = '1.3.0';
+	public $version = '1.3.1';
 
 
 	/**
@@ -88,35 +90,84 @@ class Coupons_After_Order_WooCommerce {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		// Check if WooCommerce is active
-		require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-		if ( ! is_plugin_active( 'woocommerce/woocommerce.php' ) && ! function_exists( 'WC' ) ) {
-			add_action('admin_notices', array( $this, 'wccao_woocommerce_not_active_notice'));
-		}
-
-		// Set up localisation
+		$this->define_constants();
+		$this->includes();
+		$this->init_hooks();
 		$this->load_textdomain();
-
-		// Admin
-		if ( is_admin() ) {
-			require_once plugin_dir_path( __FILE__ ) . 'includes/admin/wccao-functions.php';
-
-			// Classes
-			require_once plugin_dir_path( __FILE__ ) . 'includes/admin/class-wccao-admin.php';
-			$this->admin = new WCCAO_Admin();
-		}	
 	}
 
-	public static function  wccao_woocommerce_not_active_notice() {
+	/**
+	 * Define WCCAO Constants.
+	 */
+	private function define_constants() {
+		define( 'WCCAO_PLUGIN_FILE', __FILE__ );
+		define( 'WCCAO_ABSPATH', plugin_dir_path(WCCAO_PLUGIN_FILE) );
+		define( 'WCCAO_PLUGIN_BASENAME', plugin_basename( WCCAO_PLUGIN_FILE ) );
+		define( 'WCCAO_VERSION', $this->version );
+	}
+
+	/**
+	 * Include required core files used in admin.
+	 */
+	public function includes() {
+		require_once WCCAO_ABSPATH . 'includes/admin/wccao-functions.php';
+		// Admin
+		if ( is_admin() ) {			
+			require_once WCCAO_ABSPATH . 'includes/admin/class-wccao-admin.php';
+			$this->admin = new WCCAO_Admin();
+		}
+
+		require_once WCCAO_ABSPATH . 'includes/admin/class-link-coupons-email.php';
+		$this->link_coupons_email = new LinkCouponsEmail();
+
+		// Include PRO.
+		wccao_include( 'pro/wccao-pro.php' );
+
+		if ( is_admin() && function_exists( 'wccao_is_pro' ) && ! wccao_is_pro() ) {
+			wccao_include( 'pro/admin/admin-settings-pages.php' );
+		}
+	}
+
+	/**
+	 * Hook into actions and filters.
+	 */
+	private function init_hooks() {
+		add_action('admin_notices', array( $this, 'wccao_woocommerce_not_active_notice'));
+	}
+
+	/**
+	 * Check if WooCommerce installed and activated
+	 *
+	 * @return bool
+	 */
+	public function wccao_dependencies_satisfied() {
+		require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		if ( ! is_plugin_active( 'woocommerce/woocommerce.php' ) && ! function_exists( 'WC' ) ) {
+			return false;
+		}
+
+		return true;
+	}
+	
+	/**
+	 * Output a admin notice when build dependencies not met.
+	 *
+	 * @return void
+	 */
+	public function  wccao_woocommerce_not_active_notice() {
+		if ( $this->wccao_dependencies_satisfied() ) {
+			return;
+		}
+
 		deactivate_plugins(plugin_basename(__FILE__));
 		$url_wc = 'http://wordpress.org/extend/plugins/woocommerce/';
-		/* translators: %s: link to WooCommerce website */
-		$error_message = sprintf(__('Coupons After Order for WooCommerce requires <a href="%s" target="_blank">WooCommerce</a> to be installed & activated!.', 'coupons-after-order'), $url_wc);
-		$message = '<div class="error"><p>';
-		$message .= sprintf('<p>%s</p>', $error_message);
-		$message .= '</p></div>';
+		$error_message = sprintf(
+		/* translators: %s: link to WooCommerce website */	
+			__('Coupons After Order for WooCommerce requires <a href="%s" target="_blank">WooCommerce</a> to be installed & activated!.', 'coupons-after-order'), 
+			$url_wc
+		);
 
-		echo wp_kses_post($message);
+		printf('<div class="error"><p>%s</p></div>', $error_message); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
     /**
@@ -130,7 +181,20 @@ class Coupons_After_Order_WooCommerce {
         load_plugin_textdomain('coupons-after-order', false, basename( dirname( __FILE__ ) ) . '/languages');
     }
 
-
+	/**
+	 * Defines a constant if doesnt already exist.
+	 *
+	 * @since   1.3.1
+	 *
+	 * @param   string $name The constant name.
+	 * @param   mixed  $value The constant value.
+	 * @return  void
+	 */
+	public function define( $name, $value = true ) {
+		if ( ! defined( $name ) ) {
+			define( $name, $value );
+		}
+	}
 }
 
 /**

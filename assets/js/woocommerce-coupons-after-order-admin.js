@@ -161,7 +161,7 @@ if (document.querySelector('.settings-tab')) {
               updateElements();
           });
       });
-  });
+    });
 
     /////////////////////////////////////////
     // Display content from editor TinyMCE //
@@ -185,4 +185,64 @@ if (document.querySelector('.settings-tab')) {
         updatePreviewContent();
       });
     }, 1000);
-}
+
+    ///////////////////////////////////////////////
+    // Call method wccao_send_email_test in ajax //
+    ///////////////////////////////////////////////
+    jQuery(document).ready(function($) {
+      $('#wccao-email-test-link').on('click', function(event) {
+          event.preventDefault(); // Empêche le formulaire de se soumettre normalement
+          let $input = $('#wccao-email-user');
+          let $link = $('#wccao-email-test-link');
+          let userEmail = $input.val();
+          let errorMessageText = couponsAfterOrderTranslations.errorMessageText;
+          let errorMessageEmptyEmail = couponsAfterOrderTranslations.errorMessageEmptyEmail;
+          let errorMessageFalseEmail = couponsAfterOrderTranslations.errorMessageFalseEmail;
+
+          // Vérifier si le champ email est vide
+          if (userEmail.trim() === '') {
+            alert(errorMessageEmptyEmail);
+            return;
+          }
+
+          // Vérifier si l'adresse email est valide
+          if (!isValidEmail(userEmail)) {
+            alert(errorMessageFalseEmail);
+            return;
+          }
+
+          // Envoyer une requête AJAX pour déclencher la fonction côté serveur avec l'email saisi
+          $.ajax({
+              type: 'POST',
+              dataType: 'json',
+              async: false,
+              url: ajaxurl,
+              data: {
+                  action: 'wccao_send_email_test',
+                  security: '<?php echo wp_create_nonce("wccao_send_email_test_nonce"); ?>',
+                  user_email: userEmail
+              },
+              beforeSend: function() {
+                $link.addClass('disabled-link');
+              },
+              success: function(response) {
+                  $('#wccao-email-success').show();
+              },
+              error: function(xhr, status, error) {
+                alert(errorMessageText);
+              },
+              complete: function() {
+                $link.removeClass('disabled-link');
+                $input.val('');
+              }
+            });
+        });
+
+        // Fonction pour vérifier si une adresse email est valide
+        function isValidEmail(email) {
+          // Expression régulière pour la validation d'une adresse email
+          let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return emailRegex.test(email);
+        }
+    });
+ }

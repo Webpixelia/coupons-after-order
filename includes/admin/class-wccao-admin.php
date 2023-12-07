@@ -20,7 +20,15 @@ class WCCAO_Admin {
 	 * @since 1.0.0
 	 * @var string $name Plugin name
 	 */
-	public const PLUG_NAME = 'Coupons after order';
+	public const WCCAO_PLUGIN_NAME = 'Coupons after order';
+
+	/**
+	 * Settings page admin
+	 * 
+	 * @since 1.0.0
+	 * @var string $name Settings page admin
+	 */
+	public const WCCAO_ADMIN_SLUG = 'coupons-after-order-settings';
 
 	/**
 	 * Constructor.
@@ -28,30 +36,24 @@ class WCCAO_Admin {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		// Add admin page
-		add_action( 'admin_menu', array( $this, 'add_wccao_admin_page' ) );
-
-		// Enqueue scripts
+		// Action
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
-
-		// Add custom meta box to WooCommerce order page
+		add_action( 'admin_menu', array( $this, 'add_wccao_admin_page' ) );
 		add_action( 'add_meta_boxes', array( $this, 'coupons_after_order_meta_box' ) );
-
-		// Add custom column to WooCommerce orders page
-		add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'wccao_custom_shop_order_column' ), 20 );
 		add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'wccao_custom_orders_list_column_content' ), 20, 2 );
-
-		// Custom admin page
+		add_action('wp_ajax_wccao_send_email_test', array($this, 'wccao_send_email_test'));
 		add_action( 'admin_body_class', array( $this, 'admin_body_class' ) );
 		add_action( 'current_screen', array( $this, 'current_screen' ) );
+		add_action('wccao_check_version_cron', array($this, 'perform_version_check_cron'));
 
-		// Planifier la tâche cron pour vérifier la version tous les jours.
+		// Cron Task
 		if (!wp_next_scheduled('wccao_check_version_cron')) {
 			wp_schedule_event(time(), 'daily', 'wccao_check_version_cron');
 		}
-	
-		// Ajouter une action qui sera déclenchée par la tâche cron.
-		add_action('wccao_check_version_cron', array($this, 'perform_version_check_cron'));
+
+		// Filter
+		add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'wccao_custom_shop_order_column' ), 20 );
+		add_filter( 'plugin_action_links_' . WCCAO_PLUGIN_BASENAME, array( __CLASS__, 'plugin_action_links' ) );			
 	}
 
 
@@ -65,7 +67,7 @@ class WCCAO_Admin {
 	public function enqueue_scripts( $hook ) {
 		$current_screen = get_current_screen();
 
-		if ( strpos( $current_screen->id, 'coupons-after-order-settings' ) !== false ) {
+		if ( strpos( $current_screen->id, WCCAO_Admin::WCCAO_ADMIN_SLUG ) !== false ) {
 			wp_enqueue_style( 'css-coupons-after-order-for-woocommerce', plugins_url( 'assets/css/woocommerce-coupons-after-order-admin.css', Coupons_After_Order_WooCommerce()->file ), array( 'woocommerce_admin_styles', 'jquery-ui-style' ), Coupons_After_Order_WooCommerce()->version );
 			wp_enqueue_script( 'js-coupons-after-order-for-woocommerce', plugins_url( 'assets/js/woocommerce-coupons-after-order-admin.js', Coupons_After_Order_WooCommerce()->file ), array( 'jquery', 'wp-i18n' ), Coupons_After_Order_WooCommerce()->version, true );
 		
@@ -75,6 +77,9 @@ class WCCAO_Admin {
 				'customErrorMessage' => sprintf( __( 'Please enter a numeric value and the defined decimal separator (%s), without thousands separators or currency symbols', 'coupons-after-order' ), wc_get_price_decimal_separator() ),
 				'textDisplayedToggle' => __('Show email template', 'coupons-after-order'),
 				'textHiddenToggle' => __('Hide email template', 'coupons-after-order'),
+				'errorMessageText' => __('Error sending test email. Please try again.', 'coupons-after-order'),
+				'errorMessageEmptyEmail' => __('Please enter an email address.', 'coupons-after-order'),
+				'errorMessageFalseEmail' => __('Please enter a valid email address.', 'coupons-after-order'),
 			);
 			wp_localize_script( 'js-coupons-after-order-for-woocommerce', 'couponsAfterOrderTranslations', $translation_strings );
 		}
@@ -93,10 +98,10 @@ class WCCAO_Admin {
 		$parent_menu = ( isset( $admin_page_hooks['woocommerce-marketing'] ) ) ? 'woocommerce-marketing' : 'woocommerce';
 		add_submenu_page(
             $parent_menu,
-			WCCAO_Admin::PLUG_NAME,
-			WCCAO_Admin::PLUG_NAME,
-            'manage_options', 
-            'coupons-after-order-settings', 
+			WCCAO_Admin::WCCAO_PLUGIN_NAME,
+			WCCAO_Admin::WCCAO_PLUGIN_NAME,
+            'manage_options',
+			WCCAO_Admin::WCCAO_ADMIN_SLUG,
             array( $this, 'coupons_after_order_admin_page' )
         );
 	}
@@ -110,7 +115,7 @@ class WCCAO_Admin {
 	 *
 	 * @since 1.0.0
 	 */
-	public function coupons_after_order_admin_page() {
+	public function coupons_after_order_admin_page($tabs) {
 		// Get the settings for the plugin
 		$settings = get_option('woocommerce_coupons_after_order_settings');
 
@@ -122,16 +127,15 @@ class WCCAO_Admin {
         <div class="wrap">
             <h2><?php 
 			/* translators: %s: plugin name */
-			printf( esc_html__('%s Settings', 'coupons-after-order'), WCCAO_Admin::PLUG_NAME ); 
+			printf( esc_html__('%s Settings', 'coupons-after-order'), WCCAO_Admin::WCCAO_PLUGIN_NAME ); 
 			?>
 			</h2>
-
+		
 			<?php
 			$tabs = array(
 				'settings' => __('Settings', 'coupons-after-order'),
 				'email'    => __('Email', 'coupons-after-order'),
 				'misc'     => __('Misc', 'coupons-after-order'),
-				//'licence'  => __('Licence', 'coupons-after-order'),
 				'version'  => __('Version', 'coupons-after-order'),
 			);
 
@@ -140,7 +144,7 @@ class WCCAO_Admin {
 
 			<nav class="wccao-nav-bar nav-tab-wrapper">
 				<?php foreach ($tabs as $tab_key => $tab_label) : ?>
-					<a href="?page=coupons-after-order-settings&tab=<?php echo esc_attr($tab_key); ?>" class="wccao-nav-tab nav-tab <?php echo ($current_tab === $tab_key) ? 'nav-tab-active' : ''; ?>">
+					<a href="<?php echo admin_url( 'admin.php?page=' . WCCAO_Admin::WCCAO_ADMIN_SLUG ) . '&tab=' . esc_attr( $tab_key ); ?>" class="wccao-nav-tab nav-tab <?php echo ($current_tab === $tab_key) ? 'nav-tab-active' : ''; ?>">
 						<?php echo esc_html($tab_label); ?>
 					</a>
 				<?php endforeach; ?>
@@ -161,8 +165,8 @@ class WCCAO_Admin {
 
 				case 'email':
 					settings_fields('coupons-after-order-tab-settings-email');
-					do_settings_sections('coupons-after-order-tab-settings-email');
-					$template_file = plugin_dir_path(dirname(__DIR__)) . 'templates/html-email-template-preview-admin.php';
+					do_settings_sections('coupons-after-order-tab-settings-email'); ?>				
+					<?php $template_file = plugin_dir_path(dirname(__DIR__)) . 'templates/html-email-template-preview-admin.php';
 					if (file_exists($template_file)) {
 						include $template_file;
 					}
@@ -172,11 +176,6 @@ class WCCAO_Admin {
 					settings_fields('coupons-after-order-tab-settings-misc');
 					do_settings_sections('coupons-after-order-tab-settings-misc');
 					break;
-
-				/*case 'licence':
-					settings_fields('coupons-after-order-tab-settings-licence');
-					do_settings_sections('coupons-after-order-tab-settings-licence');
-					break;*/
 
 				case 'version':
 					settings_fields('coupons-after-order-tab-settings-version');
@@ -209,7 +208,7 @@ class WCCAO_Admin {
 
 		add_meta_box(
 			'custom-order-meta-box',
-			WCCAO_Admin::PLUG_NAME,
+			WCCAO_Admin::WCCAO_PLUGIN_NAME,
 			array($this, 'coupons_after_order_meta_box_callback'),
 			$screen,
 			'advanced',
@@ -273,6 +272,46 @@ class WCCAO_Admin {
 	}
 
 	/**
+	 * Sends a test email with the generated coupons.
+	 *
+	 * This function simulates an order with a given total amount, then generates coupons based on that amount. The coupons are then sent to the email address specified in the form data.
+	 *
+	 * @param string $user_email The email address of the email recipient.
+	 *
+	 * @return void
+	 */
+	public static function wccao_send_email_test($user_email) {
+		// Dependencies
+		include_once WCCAO_ABSPATH . 'includes/admin/wccao-functions.php';
+	
+		// Retrieve and sanitize the user email address from the POST data
+		$user_email = isset($_POST['user_email']) ? sanitize_email($_POST['user_email']) : '';
+
+		// Simulate dummy data
+		$order = new WC_Order();
+		$order->set_billing_email($user_email);
+		$order->set_total(100);
+		$order->set_currency(get_woocommerce_currency());
+		$current_time = current_time('mysql');
+		$date_created = new WC_DateTime($current_time);
+		$order->set_date_created($date_created);
+	
+		// Generate coupons based on the total amount of the order
+		$order_total = $order->get_total();
+		$couponDetails = wccao_generate_coupon_details($order_total);
+	
+		// Generate the list of coupons
+		$coupon_list = wccao_generate_coupons_list($couponDetails, $order->get_id(), $save = false);
+	
+		// Call the existing function with dummy data and the generated coupons
+		wccao_send_coupons_email($order, $coupon_list, $couponDetails);
+	
+		// Return the status of the email sending
+        $data = array('success' => true, 'data' => array('status' => 'success'));
+        wp_send_json_success($data);
+	}
+
+	/**
 	 * Appends custom admin body class.
 	 *
 	 * @since   1.3.0
@@ -298,7 +337,7 @@ class WCCAO_Admin {
 	 */
 	public function current_screen( $screen ) {
 		// Determine if the current page being viewed is "ACF" related.
-		if ( strpos( $screen->id, 'coupons-after-order-settings' ) !== false ) {
+		if ( strpos( $screen->id, WCCAO_Admin::WCCAO_ADMIN_SLUG ) !== false ) {
 			add_filter( 'admin_footer_text', array( $this, 'wccao_admin_footer_text' ) );
 			add_filter( 'update_footer', array( $this, 'wccao_update_footer' ) );
 		}
@@ -331,6 +370,21 @@ class WCCAO_Admin {
 	}
 
 	/**
+	 * Show action links on the plugin screen.
+	 *
+	 * @param mixed $links Plugin Action links.
+	 *
+	 * @return array
+	 */
+	public static function plugin_action_links( $links ) {
+		$action_links = array(
+			'settings' => '<a href="' . admin_url( 'admin.php?page=' . WCCAO_Admin::WCCAO_ADMIN_SLUG ) . '" aria-label="' . esc_attr__( 'View WooCommerce settings', 'woocommerce' ) . '">' . esc_html__( 'Settings', 'woocommerce' ) . '</a>',
+		);
+
+		return array_merge( $action_links, $links );
+	}
+
+	/**
 	 * Perform a version check using GitHub API to determine if a new version of the plugin is available.
 	 *
 	 * Return the result array containing the notice type and message.
@@ -360,7 +414,7 @@ class WCCAO_Admin {
 				$result['message'] = sprintf(__('A new version of the plugin (%s) is available. Please update it.', 'coupons-after-order'), $latest_version);
 			} else {
 				$result['notice'] = 'notice-success';
-				$result['message'] = __('Great! You are using the latest version of ', 'coupons-after-order') . WCCAO_Admin::PLUG_NAME;
+				$result['message'] = __('Great! You are using the latest version of ', 'coupons-after-order') . WCCAO_Admin::WCCAO_PLUGIN_NAME;
 			}
 		} else {
 			// Error during the request to the GitHub API.
