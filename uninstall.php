@@ -17,6 +17,7 @@ function coupons_after_order_uninstall_conditionally() {
             'coupons_after_order_usage_limit',
             'coupons_after_order_individual_use',
             'coupons_after_order_min_amount',
+            'coupons_after_order_email_restriction',
             'coupons_after_order_prefix',
             'coupons_after_order_url_parameter',
             'coupons_after_order_email_subject',

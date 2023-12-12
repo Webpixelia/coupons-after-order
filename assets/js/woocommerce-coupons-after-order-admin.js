@@ -114,7 +114,7 @@ if (document.querySelector('.settings-tab')) {
     let toggleEditorLink = document.getElementById('toggleEditorLink');
     let editorDiv = document.querySelector('.wccao-editor-email');
     let textDisplayedToggle = couponsAfterOrderTranslations.textDisplayedToggle;
-    let textHiddenToggle = couponsAfterOrderTranslations.textHiddenToggle;
+    let textHiddenToggle = couponsAfterOrderTranslations.textHiddenToggle; 
 
     toggleEditorLink.addEventListener('click', function (event) {
       event.preventDefault();
@@ -131,16 +131,16 @@ if (document.querySelector('.settings-tab')) {
     // Display changes in live from button settings //
     //////////////////////////////////////////////////
     document.addEventListener('DOMContentLoaded', function () {
-      // Fonction pour mettre à jour les éléments HTML en fonction des valeurs des champs de formulaire
+      // Function to update HTML elements based on form field values
       function updateElements() {
-          // Récupérer les valeurs des champs de formulaire
+          // Retrieve form field values
           let emailBtTitle = document.getElementById('wccao_email_bt_title').value;
           let emailBtUrl = document.getElementById('wccao_email_bt_url').value;
           let emailBtColor = document.getElementById('wccao_email_bt_color').value;
           let emailBtBgColor = document.getElementById('wccao_email_bt_bg_color').value;
           let emailBtFontSize = document.getElementById('wccao_email_bt_font_size').value;
 
-          // Mettre à jour l'élément HTML
+          // Update HTML element
           let emailButton = document.getElementById('emailButton');
           emailButton.href = emailBtUrl;
           emailButton.style.fontSize = emailBtFontSize + 'px';
@@ -149,15 +149,15 @@ if (document.querySelector('.settings-tab')) {
           emailButton.textContent = emailBtTitle;
       }
 
-      // Appeler la fonction lors du chargement de la page
+      // Call function on page load
       updateElements();
 
-      // Écouter les changements dans les champs de formulaire
+      // Listen for changes in form fields
       let inputFields = ['wccao_email_bt_title', 'wccao_email_bt_url', 'wccao_email_bt_color', 'wccao_email_bt_bg_color', 'wccao_email_bt_font_size'];
 
       inputFields.forEach(function (fieldName) {
           document.getElementById(fieldName).addEventListener('input', function () {
-              // Appeler la fonction à chaque changement
+              // Call the function on each change
               updateElements();
           });
       });
@@ -199,19 +199,19 @@ if (document.querySelector('.settings-tab')) {
           let errorMessageEmptyEmail = couponsAfterOrderTranslations.errorMessageEmptyEmail;
           let errorMessageFalseEmail = couponsAfterOrderTranslations.errorMessageFalseEmail;
 
-          // Vérifier si le champ email est vide
+          // Check if the email field is empty
           if (userEmail.trim() === '') {
             alert(errorMessageEmptyEmail);
             return;
           }
 
-          // Vérifier si l'adresse email est valide
+          // Check if the email address is valid
           if (!isValidEmail(userEmail)) {
             alert(errorMessageFalseEmail);
             return;
           }
 
-          // Envoyer une requête AJAX pour déclencher la fonction côté serveur avec l'email saisi
+          // Send an AJAX request to trigger the server-side function with the entered email
           $.ajax({
               type: 'POST',
               dataType: 'json',
@@ -238,9 +238,9 @@ if (document.querySelector('.settings-tab')) {
             });
         });
 
-        // Fonction pour vérifier si une adresse email est valide
+        // Function to check if an email address is valid
         function isValidEmail(email) {
-          // Expression régulière pour la validation d'une adresse email
+          // Regular expression for validating an email address
           let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           return emailRegex.test(email);
         }

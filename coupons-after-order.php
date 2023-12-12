@@ -32,8 +32,6 @@ if (!defined('ABSPATH')) exit;
 class Coupons_After_Order_WooCommerce {
 
 	protected $admin;
-	
-	protected $link_coupons_email;
 
 	/**
 	 * Plugin version.
@@ -118,11 +116,10 @@ class Coupons_After_Order_WooCommerce {
 		}
 
 		require_once WCCAO_ABSPATH . 'includes/admin/class-link-coupons-email.php';
-		$this->link_coupons_email = new LinkCouponsEmail();
+		require_once WCCAO_ABSPATH . 'includes/admin/class-wccao-account.php';
 
 		// Include PRO.
 		wccao_include( 'pro/wccao-pro.php' );
-
 		if ( is_admin() && function_exists( 'wccao_is_pro' ) && ! wccao_is_pro() ) {
 			wccao_include( 'pro/admin/admin-settings-pages.php' );
 		}

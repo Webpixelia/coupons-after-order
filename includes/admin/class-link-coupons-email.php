@@ -1,6 +1,13 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+// Inclusion de l'autoloader de Composer
+require_once WCCAO_ABSPATH . 'vendor/autoload.php';
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
+
 if ( ! class_exists( 'LinkCouponsEmail' ) ) :
 
     class LinkCouponsEmail {
@@ -8,6 +15,7 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
         public function __construct() {
             add_action('template_redirect', array($this, 'apply_coupon_via_parameter'));
             add_action('woocommerce_cart_calculate_fees', array($this, 'check_and_apply_coupon'));
+            add_action('add_meta_boxes', array($this, 'wccao_qrcode_meta_box'));
         }
 
         /**
@@ -112,8 +120,123 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
                 }
             }
         }
+
+        /**
+         * Creates a link to apply a coupon code.
+         *
+         * The link will have the following format:
+         *
+         * `https://example.com/?url_parameter=coupon_code`
+         *
+         * where `coupon_code` is the value of the coupon code.
+         *
+         * @since 1.3.2
+         * @access public
+         *
+         * @param string $coupon_code The code of the coupon to apply.
+         *
+         * @return string The link to apply the coupon code.
+         */
+        public function create_link_to_apply_coupon($coupon_code) {
+            $parameter_link_coupon = get_option('coupons_after_order_url_parameter');
+            return add_query_arg($parameter_link_coupon, $coupon_code, home_url());
+        }
+        
+        /**
+         * Adds a meta box to the 'shop_coupon' post type to display a QR code for the coupon.
+         *
+         * This method is hooked to the 'add_meta_boxes' action.
+         * It creates a meta box that contains a QR code image representing the coupon.
+         *
+         * @since 1.3.2
+         * @access public
+         *
+         * @param string $post_type The type of the current post.
+         *                          This method is triggered for the 'shop_coupon' post type.
+         */
+        public function wccao_qrcode_meta_box($post_type) {
+            if ($post_type === 'shop_coupon') {
+                add_meta_box(
+                    'wccao_qr_code',
+                    __('Coupon QR Code', 'coupons-after-order'),
+                    array($this, 'wccao_qrcode_meta_box_callback'),
+                    'shop_coupon',
+                    'side',
+                    'default'
+                );
+            }
+        }
+        
+        /**
+         * Generates a QR code image for a given coupon URL.
+         *
+         * The QR code is generated using the BaconQrCode library.
+         *
+         * @since 1.3.2
+         * @access public
+         *
+         * @param string $coupon_url The URL to encode in the QR code.
+         *
+         * @return string The SVG representation of the QR code image.
+         */
+        public function generate_qr_code_image($coupon_url) {
+            $qrCode = \BaconQrCode\Encoder\Encoder::encode($coupon_url, \BaconQrCode\Common\ErrorCorrectionLevel::L());
+            $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+                new \BaconQrCode\Renderer\RendererStyle\RendererStyle(200),
+                new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+            );
+            return $renderer->render($qrCode);
+        }
+
+        /**
+         * Generates a base64-encoded PNG QR code image for a given coupon URL.
+         *
+         * The QR code is generated using the BaconQrCode library with an Imagick backend.
+         *
+         * @since 1.3.2
+         * @access public
+         *
+         * @param string $coupon_url The URL to encode in the QR code.
+         *
+         * @return string The base64-encoded PNG representation of the QR code image.
+         */
+        public function generate_qr_code_image_base64($coupon_url) {
+            $renderer = new ImageRenderer(
+                new RendererStyle(150),
+                new ImagickImageBackEnd()
+            );
+        
+            $writer = new Writer($renderer);
+        
+            $base64_image = base64_encode($writer->writeString($coupon_url));
+
+            return 'data:image/png;base64,' . $base64_image;
+        }
+
+        /**
+         * Callback function for the WooCommerce Coupon QR Code meta box.
+         *
+         * Displays the QR code for the coupon in the meta box.
+         *
+         * @since 1.3.2
+         * @access public
+         *
+         * @param WP_Post $post The current coupon post object.
+         */
+        public function wccao_qrcode_meta_box_callback($post) {
+            $coupon_code = $post->post_name;
+            if ($post->ID) {
+                $coupon_url = $this->create_link_to_apply_coupon($coupon_code);
+                $qrCodeImageBase64 = $this->generate_qr_code_image_base64($coupon_url);
+
+                printf('<div id="wccao-qr-code"><img src="%s" alt="QR Code"></div>', $qrCodeImageBase64);
+            } else {
+                echo '<p>'.__('Save coupon then QR code will be generated','coupons-after-order').'</p>';
+            }
+        }
+        
     }
 
-    //$link_coupons_email = new LinkCouponsEmail();
+    new LinkCouponsEmail;
 
 endif;

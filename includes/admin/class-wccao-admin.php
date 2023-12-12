@@ -41,10 +41,12 @@ class WCCAO_Admin {
 		add_action( 'admin_menu', array( $this, 'add_wccao_admin_page' ) );
 		add_action( 'add_meta_boxes', array( $this, 'coupons_after_order_meta_box' ) );
 		add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'wccao_custom_orders_list_column_content' ), 20, 2 );
-		add_action('wp_ajax_wccao_send_email_test', array($this, 'wccao_send_email_test'));
+		add_action( 'wp_ajax_wccao_send_email_test', array($this, 'wccao_send_email_test'));
 		add_action( 'admin_body_class', array( $this, 'admin_body_class' ) );
 		add_action( 'current_screen', array( $this, 'current_screen' ) );
 		add_action('wccao_check_version_cron', array($this, 'perform_version_check_cron'));
+
+		//add_filter('woocommerce_settings_pages', array($this, 'add_custom_settings_field'));
 
 		// Cron Task
 		if (!wp_next_scheduled('wccao_check_version_cron')) {
@@ -68,8 +70,8 @@ class WCCAO_Admin {
 		$current_screen = get_current_screen();
 
 		if ( strpos( $current_screen->id, WCCAO_Admin::WCCAO_ADMIN_SLUG ) !== false ) {
-			wp_enqueue_style( 'css-coupons-after-order-for-woocommerce', plugins_url( 'assets/css/woocommerce-coupons-after-order-admin.css', Coupons_After_Order_WooCommerce()->file ), array( 'woocommerce_admin_styles', 'jquery-ui-style' ), Coupons_After_Order_WooCommerce()->version );
-			wp_enqueue_script( 'js-coupons-after-order-for-woocommerce', plugins_url( 'assets/js/woocommerce-coupons-after-order-admin.js', Coupons_After_Order_WooCommerce()->file ), array( 'jquery', 'wp-i18n' ), Coupons_After_Order_WooCommerce()->version, true );
+			wp_enqueue_style( 'admin-coupons-after-order-for-woocommerce', plugins_url( 'assets/css/woocommerce-coupons-after-order-admin.css', Coupons_After_Order_WooCommerce()->file ), array( 'woocommerce_admin_styles', 'jquery-ui-style' ), Coupons_After_Order_WooCommerce()->version );
+			wp_enqueue_script( 'admin-coupons-after-order-for-woocommerce', plugins_url( 'assets/js/woocommerce-coupons-after-order-admin.js', Coupons_After_Order_WooCommerce()->file ), array( 'jquery', 'wp-i18n' ), Coupons_After_Order_WooCommerce()->version, true );
 		
 			// Pass translation strings to JavaScript
 			$translation_strings = array(
@@ -81,7 +83,7 @@ class WCCAO_Admin {
 				'errorMessageEmptyEmail' => __('Please enter an email address.', 'coupons-after-order'),
 				'errorMessageFalseEmail' => __('Please enter a valid email address.', 'coupons-after-order'),
 			);
-			wp_localize_script( 'js-coupons-after-order-for-woocommerce', 'couponsAfterOrderTranslations', $translation_strings );
+			wp_localize_script( 'admin-coupons-after-order-for-woocommerce', 'couponsAfterOrderTranslations', $translation_strings );
 		}
 	}
 
@@ -424,4 +426,17 @@ class WCCAO_Admin {
 		// Return the result array.
 		return $result;
 	}
+
+	/*public function add_custom_settings_field($settings) {
+        $settings[] = array(
+            'title'    => __('My Coupons Endpoint', 'coupons-after-order'),
+            'desc'     => __('Enter your custom endpoint for My Coupons.', 'coupons-after-order'),
+            'id'       => 'my_coupons_endpoint',
+            'type'     => 'text',
+            'default'  => 'my-coupons',
+            'desc_tip' => true,
+        );
+
+    	return $settings;
+	}*/
 }

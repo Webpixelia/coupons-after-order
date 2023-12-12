@@ -21,7 +21,8 @@ $email_bt_font_size = isset( $_GET['coupons_after_order_email_bt_font_size'] ) ?
 $wccao_bt = '<a href="' . $email_bt_url . '" target="_blank" style="text-decoration:none;display:inline-block;padding:10px 30px;margin:10px 0;font-size:' . $email_bt_font_size . 'px;color:' . $email_bt_color . ';background:' . $email_bt_bg_color . ';">' . $email_bt_title . '</a>';
 
 // Shortcodes
-$content_email = str_replace( '{billing_first_name}', esc_html( $order->get_billing_first_name() ), $content_email );												
+$content_email = str_replace( '{billing_first_name}', esc_html( $order->get_billing_first_name() ), $content_email );
+$content_email = str_replace( '{billing_email}', esc_html( $order->get_billing_email() ), $content_email );
 $content_email = str_replace( '{coupons}', $coupons, $content_email );
 $content_email = str_replace( '{coupon_amount}', $coupon_amount, $content_email );
 $content_email = str_replace( '{order_total}', $order_total, $content_email );
@@ -64,6 +65,7 @@ $content_email = str_replace( '{shop_button}', $wccao_bt, $content_email );
 				background: linear-gradient(#bf4080,#8c5ead);
 				color: #fff;
 				text-align: center;
+				break-inside: avoid-column;
 			}
 			ul .prefix-coupon:not(:last-child) {margin-bottom:1em;}
 			ul .prefix-coupon .email-title-coupon {

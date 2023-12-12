@@ -101,6 +101,7 @@ function wccao_generate_coupons($order_id) {
  *               - 'limitUsage' (string): The usage limit for the coupon.
  *               - 'indivUseCoupon' (bool): Whether the coupon is for individual use only.
  *               - 'min_amount' (string): The minimum amount for the coupon.
+ *               - 'email_restriction' (bool): Whether the coupon is limited to the buyer's email
  *               - 'order_total' (float): The total amount of the order.
  *               - 'nber_coupons' (int): The number of coupons to be generated.
  *               - 'coupon_amount' (float): The amount for each coupon.
@@ -115,6 +116,7 @@ function wccao_generate_coupon_details($order_total) {
     $indivUse = get_option('coupons_after_order_individual_use', 'yes');
     $indivUseCoupon = ($indivUse === 'yes');
     $min_amount = get_option('coupons_after_order_min_amount');
+    $email_restriction = get_option('coupons_after_order_email_restriction', 'no');
   
     $nber_coupons = intval(get_option('coupons_after_order_count'));
     $coupon_amount = ($nber_coupons != 0) ? ($order_total / $nber_coupons) : 0; //$coupon_amount = $order_total / $nber_coupons;
@@ -122,7 +124,7 @@ function wccao_generate_coupon_details($order_total) {
     $min_order = empty($min_amount) ? $coupon_amount : max(tofloat($min_amount), $coupon_amount);
 
     return compact(
-        'coupon_prefix', 'validity_type', 'validity', 'limitUsage', 'indivUseCoupon', 'min_amount', 'order_total', 'nber_coupons', 'coupon_amount', 'min_order'
+        'coupon_prefix', 'validity_type', 'validity', 'limitUsage', 'indivUseCoupon', 'min_amount', 'email_restriction', 'order_total', 'nber_coupons', 'coupon_amount', 'min_order'
     );
 }
 
@@ -163,17 +165,18 @@ function wccao_get_validity($validity_type) {
 function wccao_generate_coupons_list($couponDetails, $order_id, $save = true) {
     $coupon_list = '<ul class="wccao-coupons-list">';
 
+    $link_coupons_email = new LinkCouponsEmail(); // Instantiate the class
+
     for ($i = 1; $i <= $couponDetails['nber_coupons']; $i++) {
         $coupon = wccao_generate_coupon_code($couponDetails, $order_id); // Get the WC_Coupon object
-        $url_site = get_home_url();
-        $parameter_link_coupon = get_option('coupons_after_order_url_parameter');
 
         if ($save) {
             $coupon->save(); // Save the coupon if necessary
         }
 
         $coupon_code = $coupon->get_code();
-        $coupon_url = esc_url($url_site . '/?' . $parameter_link_coupon . '=' . $coupon_code);
+
+        $coupon_url = $link_coupons_email->create_link_to_apply_coupon($coupon_code);
         $coupon_label = esc_html__('My coupon code', 'coupons-after-order');
 
         $coupon_list .= <<<HTML
@@ -209,6 +212,8 @@ function wccao_generate_coupons_list($couponDetails, $order_id, $save = true) {
 function wccao_generate_coupon_code($couponDetails, $order_id) {
     $random_number = mt_rand(10000, 99999);
     $couponPrefix = ($couponDetails['coupon_prefix']) ? esc_attr($couponDetails['coupon_prefix']) : 'ref';
+    $order = wc_get_order($order_id);
+    $email_restrictions = $couponDetails['email_restriction'] ? [$order->get_billing_email(),] : [];
 
     // Calculate the coupon amount
     $coupon_amount = $couponDetails['order_total'] / $couponDetails['nber_coupons']; // Directly use from $couponDetails
@@ -217,12 +222,34 @@ function wccao_generate_coupon_code($couponDetails, $order_id) {
     // Create the coupon
     $coupon = new WC_Coupon();
     $coupon->set_code($couponPrefix . $order_id . '-' . $random_number);
+    is_a($order, 'WC_Order') ? $coupon->set_description('Coupon for order #' . $order->get_order_number()) : null;
     $coupon->set_discount_type('fixed_cart');
     $coupon->set_amount($coupon_amount);
     $coupon->set_individual_use($couponDetails['indivUseCoupon']);
     $coupon->set_date_expires(strtotime($couponDetails['validity']));
     $coupon->set_minimum_amount($couponDetails['min_order']); // Minimum usage threshold
     $coupon->set_usage_limit($couponDetails['limitUsage']); // Usage limit
+    $coupon->set_email_restrictions($email_restrictions);
+
+    if (is_a($order, 'WC_Order')) :
+        // Retrieve the customer ID associated with the order
+        $customer_id = $order->get_customer_id();
+
+        // Retrieve the existing list of customer's coupons
+        $coupon_meta_key = '_wccao_customer_coupons';
+        $customer_coupons = get_user_meta($customer_id, $coupon_meta_key, true);
+
+        // If the list doesn't exist yet, initialize it as an empty array
+        if (!is_array($customer_coupons)) {
+            $customer_coupons = array();
+        }
+
+        // Add the coupon code to the list of customer's coupons
+        $customer_coupons[] = $coupon->get_code();
+
+        // Update the user meta with the new list of coupons
+        update_user_meta($customer_id, $coupon_meta_key, $customer_coupons);
+    endif;
 
     return $coupon;
 }
@@ -360,6 +387,7 @@ function register_coupons_after_order_fields() {
     ));
     register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_individual_use');
     register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_min_amount');
+    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_email_restriction');
     register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_prefix');
     register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_url_parameter');
     // Email
@@ -419,6 +447,7 @@ function coupons_after_order_tab_email_callback() {
    echo '<p class="wccao-descr-section-admin email-tab">' . __('Configure the settings of the email received by the buyer', 'coupons-after-order') . '</p>';  
    $shortcodes = [
         'billing_first_name' => __('Displaying customer name', 'coupons-after-order'),
+        'billing_email' => __('Displaying billing email, useful if coupons are limited to this email', 'coupons-after-order'),
         'coupons' => __('Displaying coupons in list form', 'coupons-after-order'),
         'coupon_amount' => __('Displaying the coupon amount', 'coupons-after-order'),
         'order_total' => __('Displaying the total order amount', 'coupons-after-order'),
@@ -502,6 +531,7 @@ function coupons_after_order_others_parameters_callback() {
    $limitUsage = absint($couponDetails['limitUsage']);
    $indivUseCoupon = $couponDetails['indivUseCoupon'];
    $min_amount = $couponDetails['min_amount'];
+   $emaillUseLimit = $couponDetails['email_restriction'];
    $decimal_separator = wc_get_price_decimal_separator();
    $coupon_prefix = sanitize_text_field($couponDetails['coupon_prefix']);
    $coupon_url_parameter = sanitize_text_field(get_option('coupons_after_order_url_parameter'));
@@ -524,6 +554,11 @@ function coupons_after_order_others_parameters_callback() {
         <label for="coupon-amount-min"><?php esc_html_e('Minimum amount:', 'coupons-after-order') ?></label>
         <input type="text" id="coupon-amount-min" name="coupons_after_order_min_amount" value="<?php echo esc_attr($min_amount); ?>" oninput="validateCouponAmount(this, 'minAmountError')" class="wccao_input_price" data-decimal="<?= esc_attr($decimal_separator); ?>" placeholder="<?php esc_html_e('No minimum', 'coupons-after-order') ?>" />&nbsp;<?php echo get_woocommerce_currency_symbol(); ?>     
         <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_html_e('If empty, it is the amount of the individual coupon.', 'coupons-after-order'); ?>"></span>
+    </div>
+    <div class="coupon-field-group">
+        <label for="coupon_email_restriction"><?php esc_html_e('Limit to the buyer email:', 'coupons-after-order') ?></label>
+        <input type="checkbox" id="coupon_email_restriction" name="coupons_after_order_email_restriction"  <?php checked($emaillUseLimit, 'yes'); ?> value="yes" />
+        <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_html_e('If checked, only the order billing email address will be able to benefit from the coupons generated', 'coupons-after-order'); ?>"></span>
     </div>
     <div class="coupon-field-group">
         <label for="coupon-prefix"><?php esc_html_e('Coupon prefix:', 'coupons-after-order') ?></label>

@@ -55,8 +55,16 @@ Yes, simply by checking or unchecking the “Enable Coupon after order” box in
 5. Version Tab
 6. Example of coupons generated
 7. Example of email sent
+8. "My coupons" on the account page
 
 == Changelog ==
+= 1.3.2 =
+* Added ability to limit usage to billing email address
+* Added metabox with qrcode in single coupon page
+* Added new section "My coupons" in the WooCommerce Account page
+* Added pop-up link to display customer's available coupons in cart and checkout pages
+* Fixed CSS Bugs
+
 = 1.3.1 =
 * Added send mail test
 * Added a link in the email coupons to redirect to the website and apply the coupon directly
