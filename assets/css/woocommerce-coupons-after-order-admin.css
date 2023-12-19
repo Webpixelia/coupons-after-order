@@ -111,11 +111,6 @@ input {font-weight: normal;}
     text-decoration: none;
 }
 
-#wccao-email-success {
-    color: green;
-    font-weight: 600;
-}
-
 /* Footer */
 #webpixelia-credit>* {
     vertical-align: middle;
@@ -134,4 +129,14 @@ input {font-weight: normal;}
 }
 #webpixelia-credit>a:hover {
     background-position:0px -98%; 
+}
+
+/* Notice */
+.email-message-send.error {
+    color: red;
+    font-weight: bold;
+}
+#wccao-email-success, .email-message-send.success {
+    color: green;
+    font-weight: bold;
 }

@@ -1,5 +1,11 @@
 "use strict";
 // Thanks to @ysdev_web
+function hideMessage(element) {
+  setTimeout(() => {
+    element.css('display', 'none');
+  }, 5000);
+}
+
 if (document.querySelector('.settings-tab')) {
   document.addEventListener('DOMContentLoaded', function () {
     ///////////////////////////////////
@@ -227,6 +233,7 @@ if (document.querySelector('.settings-tab')) {
               },
               success: function(response) {
                   $('#wccao-email-success').show();
+                  hideMessage($('#wccao-email-success'));
               },
               error: function(xhr, status, error) {
                 alert(errorMessageText);
@@ -245,4 +252,84 @@ if (document.querySelector('.settings-tab')) {
           return emailRegex.test(email);
         }
     });
- }
+} else if (document.querySelector('.misc-tab')) {
+  ///////////////////////////////////////////////
+  // Call method wccao_send_email_test in ajax //
+  ///////////////////////////////////////////////
+  jQuery(document).ready(function ($) {
+    $('#wccao_generate_manually_link').on('click', function (event) {
+      event.preventDefault();
+      let textArea = $('#coupons_after_order_emails_and_amounts');
+      let messageSpan = $('#wccao-email-message-notice');
+      let textAreaContent = textArea.val();
+      // Translatable variables
+      let errorUndefined = couponsAfterOrderTranslations.errorUndefined;
+      let errorAjaxRequest = couponsAfterOrderTranslations.errorAjaxRequest;
+      let successEmailsCouponsGenerated = couponsAfterOrderTranslations.successEmailsCouponsGenerated;
+      let errorInvalidFormat = couponsAfterOrderTranslations.errorInvalidFormat;
+
+      // Validation function
+      function validateTextarea(textareaValue) {
+        let regex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+;[0-9]+\.?[0-9]*$/gm;
+        return regex.test(textareaValue);
+      }
+
+      if (validateTextarea(textAreaContent)) {
+        // Construct an object with email-decimal value pairs
+        let lines = textAreaContent.split(/\r\n|\r|\n/);
+        let dataValuesArray = [];
+
+        for (let i = 0; i < lines.length; i++) {
+          let line = lines[i].trim();
+          if (line !== '') {
+            let [email, value] = line.split(';');
+            dataValuesArray.push({ email: email, value: parseFloat(value) });
+          }
+        }
+        
+        let jsonData = JSON.stringify(dataValuesArray);
+
+        // Send AJAX request
+        $.ajax({
+          type: 'POST',
+          dataType: 'html',
+          url: ajaxurl,
+          data: {
+            action: 'wccao_manually_generate_coupons',
+            security: wccao_manually_generate_coupons_nonce,
+            dataArray: jsonData,
+          },
+          success: function (response) {
+
+          },
+          error: function (xhr, status, error) {
+            let errorMessage = xhr.responseJSON ? xhr.responseJSON.data.message : errorUndefined;
+            let errorCode = xhr.responseJSON ? xhr.responseJSON.data.code : '';
+
+            messageSpan.html(errorMessage);
+            messageSpan.css('display', 'block');
+            messageSpan.addClass('error');
+            hideMessage(messageSpan);
+
+            console.error(errorAjaxRequest, errorMessage, errorCode);
+          },
+          complete: function () {
+            textArea.val('');
+          },
+        });
+
+        // Display a success message
+        messageSpan.html(successEmailsCouponsGenerated);
+        messageSpan.css('display', 'block');
+        messageSpan.addClass('success');
+        hideMessage(messageSpan);
+      } else {
+        // Display an error message
+        messageSpan.html(errorInvalidFormat);
+        messageSpan.css('display', 'block');
+        messageSpan.addClass('error');
+        hideMessage(messageSpan);
+      }
+    });
+  });
+}

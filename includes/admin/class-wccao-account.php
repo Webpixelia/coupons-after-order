@@ -169,11 +169,17 @@ class WCCAO_Account {
 
 		// Check the expiration date
 		if (method_exists($coupon, 'get_date_expires')) {
-			$current_time = current_time('timestamp');
-			$date_expires_timestamp = strtotime($coupon->get_date_expires());
+			$date_expires = $coupon->get_date_expires() ?? '';
+			if ($date_expires) {
+				$current_time = current_time('timestamp');
+				$date_expires_timestamp = strtotime($date_expires);
 
-			if ($current_time > $date_expires_timestamp) {
-				return false; // Expired coupon
+				if ($current_time > $date_expires_timestamp) {
+					return false; // Expired coupon
+				}
+			} else {
+				// Coupon has no expiration date
+				return true;
 			}
 		}
 

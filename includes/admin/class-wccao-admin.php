@@ -42,9 +42,10 @@ class WCCAO_Admin {
 		add_action( 'add_meta_boxes', array( $this, 'coupons_after_order_meta_box' ) );
 		add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'wccao_custom_orders_list_column_content' ), 20, 2 );
 		add_action( 'wp_ajax_wccao_send_email_test', array($this, 'wccao_send_email_test'));
+		add_action(	'wp_ajax_wccao_manually_generate_coupons', array($this, 'wccao_manually_generate_coupons'));
 		add_action( 'admin_body_class', array( $this, 'admin_body_class' ) );
 		add_action( 'current_screen', array( $this, 'current_screen' ) );
-		add_action('wccao_check_version_cron', array($this, 'perform_version_check_cron'));
+		add_action( 'wccao_check_version_cron', array($this, 'perform_version_check_cron'));
 
 		//add_filter('woocommerce_settings_pages', array($this, 'add_custom_settings_field'));
 
@@ -82,8 +83,17 @@ class WCCAO_Admin {
 				'errorMessageText' => __('Error sending test email. Please try again.', 'coupons-after-order'),
 				'errorMessageEmptyEmail' => __('Please enter an email address.', 'coupons-after-order'),
 				'errorMessageFalseEmail' => __('Please enter a valid email address.', 'coupons-after-order'),
+
+				'errorUndefined' => __('Undefined error', 'coupons-after-order'),
+				'errorAjaxRequest' => __('Error during AJAX request:', 'coupons-after-order'),
+				'successEmailsCouponsGenerated' => __('Successful processing for all email-value pairs.', 'coupons-after-order'),
+				'errorInvalidFormat' => __('The entry format is invalid. Please use the email;amount format.', 'coupons-after-order'),
 			);
 			wp_localize_script( 'admin-coupons-after-order-for-woocommerce', 'couponsAfterOrderTranslations', $translation_strings );
+			
+			// Nonce
+			$wccao_manually_generate_coupons_nonce = wp_create_nonce('wccao_manually_generate_coupons_nonce');
+			wp_add_inline_script('admin-coupons-after-order-for-woocommerce', 'var wccao_manually_generate_coupons_nonce = "' . $wccao_manually_generate_coupons_nonce . '";', 'before');
 		}
 	}
 
@@ -279,38 +289,111 @@ class WCCAO_Admin {
 	 * This function simulates an order with a given total amount, then generates coupons based on that amount. The coupons are then sent to the email address specified in the form data.
 	 *
 	 * @param string $user_email The email address of the email recipient.
+	 * @param float $order_total The total amount of the simulated order.
+	 * @param bool $save Whether to save the generated coupons to the database (optional, defaults to `true`).
+	 * @param bool $manual_generation Whether the generation is triggered manually (optional, defaults to `false`).
 	 *
 	 * @return void
 	 */
-	public static function wccao_send_email_test($user_email) {
-		// Dependencies
-		include_once WCCAO_ABSPATH . 'includes/admin/wccao-functions.php';
-	
-		// Retrieve and sanitize the user email address from the POST data
-		$user_email = isset($_POST['user_email']) ? sanitize_email($_POST['user_email']) : '';
-
+	public static function wccao_send_email($user_email, $order_total, $save = true, $manual_generation = false, $customer_email = null)
+	{
 		// Simulate dummy data
 		$order = new WC_Order();
 		$order->set_billing_email($user_email);
-		$order->set_total(100);
+		$order->set_total($order_total);
 		$order->set_currency(get_woocommerce_currency());
 		$current_time = current_time('mysql');
 		$date_created = new WC_DateTime($current_time);
 		$order->set_date_created($date_created);
-	
+
 		// Generate coupons based on the total amount of the order
 		$order_total = $order->get_total();
 		$couponDetails = wccao_generate_coupon_details($order_total);
-	
+
 		// Generate the list of coupons
-		$coupon_list = wccao_generate_coupons_list($couponDetails, $order->get_id(), $save = false);
-	
+		$coupon_list = wccao_generate_coupons_list($couponDetails, $order->get_id(), $save, $manual_generation, $customer_email);
+
 		// Call the existing function with dummy data and the generated coupons
 		wccao_send_coupons_email($order, $coupon_list, $couponDetails);
-	
+	}
+
+	/**
+	 * Sends a test email with the generated coupons.
+	 *
+	 * This function retrieves the email address from the form data and then calls the `wccao_send_email()` function to send the test email.
+	 *
+	 * @return void
+	 */
+	public function wccao_send_email_test()
+	{
+		// Retrieve the value of $_POST['user_email']
+		$user_email = isset($_POST['user_email']) ? sanitize_email($_POST['user_email']) : '';
+
+		// Define $manual_generation for test sending (optional)
+		$manual_generation = false; // By default, the sending simulates automatic behavior
+		$customer_email = null;
+
+		// Call the method by passing the arguments
+		self::wccao_send_email($user_email, 100, false, $manual_generation, $customer_email);
+
 		// Return the status of the email sending
-        $data = array('success' => true, 'data' => array('status' => 'success'));
-        wp_send_json_success($data);
+		$data = array('success' => true, 'data' => array('status' => 'success'));
+		wp_send_json_success($data);
+	}
+
+
+	/**
+	 * Generate and send coupons manually based on submitted data.
+	 *
+	 * This function processes AJAX requests for manual coupon generation. It expects
+	 * JSON data containing email addresses and order amounts for each coupon. It validates
+	 * the data, generates and sends email with coupons if valid, and returns a JSON response
+	 * indicating success or failure.
+	 *
+	 * @return void
+	 *
+	 * @since 1.0.0
+	 */
+	public function wccao_manually_generate_coupons()
+	{
+		// Check ajax reference
+		check_ajax_referer('wccao_manually_generate_coupons_nonce', 'security');
+
+		// Retrieve posted data
+		$dataArray = json_decode(stripslashes($_POST['dataArray']), true);
+
+		// Check if JSON conversion was successful
+		if ($dataArray === null) {
+			$dataError = array(
+				'error' => true,
+				'data' => array(
+					'status' => 'error',
+					'message' => __('Error decoding JSON.', 'coupons-after-order')
+				)
+			);
+			wp_send_json_error($dataError);
+			return;
+		}
+
+		// Process the array
+		foreach ($dataArray as $item) {
+			// Data
+			$custome_email = sanitize_email($item['email']);
+			$amount_order = floatval($item['value']);
+
+			self::wccao_send_email($custome_email, $amount_order, true, true, $custome_email);
+		}
+		
+		// Send a reply
+		$dataSuccessAll = array(
+			'success' => true,
+			'data' => array(
+				'status' => 'success',
+				'message' => __('Email sent.', 'coupons-after-order')
+			)
+		);
+		wp_send_json_success($dataSuccessAll);
+		wp_die();
 	}
 
 	/**
@@ -331,7 +414,6 @@ class WCCAO_Admin {
 	/**
 	 * Adds custom functionality to "Coupons after order for WooCommerce" admin pages.
 	 *
-	 * @date    7/4/20
 	 * @since   1.3.0
 	 *
 	 * @param   void

@@ -1,6 +1,9 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
+$first_name = isset($order) ? $order->get_billing_first_name() : __('Dear customer', 'coupons-after-order');
+$email_customer = isset($order) ? $order->get_billing_email() : $customer_email;
+
 $email_header = get_option('coupons_after_order_email_header');
 $startDate = date_i18n('j F Y');
 $endDate = date_i18n("j F Y", strtotime($couponDetails['validity']));
@@ -21,8 +24,8 @@ $email_bt_font_size = isset( $_GET['coupons_after_order_email_bt_font_size'] ) ?
 $wccao_bt = '<a href="' . $email_bt_url . '" target="_blank" style="text-decoration:none;display:inline-block;padding:10px 30px;margin:10px 0;font-size:' . $email_bt_font_size . 'px;color:' . $email_bt_color . ';background:' . $email_bt_bg_color . ';">' . $email_bt_title . '</a>';
 
 // Shortcodes
-$content_email = str_replace( '{billing_first_name}', esc_html( $order->get_billing_first_name() ), $content_email );
-$content_email = str_replace( '{billing_email}', esc_html( $order->get_billing_email() ), $content_email );
+$content_email = str_replace( '{billing_first_name}', esc_html($first_name ), $content_email );
+$content_email = str_replace( '{billing_email}', esc_html( $email_customer ), $content_email );
 $content_email = str_replace( '{coupons}', $coupons, $content_email );
 $content_email = str_replace( '{coupon_amount}', $coupon_amount, $content_email );
 $content_email = str_replace( '{order_total}', $order_total, $content_email );
@@ -51,14 +54,14 @@ $content_email = str_replace( '{shop_button}', $wccao_bt, $content_email );
 			}
 			ul .prefix-coupon {
 				padding: 1em;
-				-webkit-mask-image: radial-gradient(circle at 10px 40%, transparent 10px, red 10.5px), linear-gradient(90deg, transparent 25%, red 0, red 75%, transparent 0);
-				mask-image: radial-gradient(circle at 10px 40%, transparent 10px, red 10.5px), linear-gradient(90deg, transparent 25%, red 0, red 75%, transparent 0);
+				-webkit-mask-image: radial-gradient(circle at 10px 35%, transparent 10px, red 10.5px), linear-gradient(90deg, transparent 25%, red 0, red 75%, transparent 0);
+				mask-image: radial-gradient(circle at 10px 35%, transparent 10px, red 10.5px), linear-gradient(90deg, transparent 25%, red 0, red 75%, transparent 0);
 				-webkit-mask-size: 100%, 8px 2px;
 				mask-size: 100%, 8px 2px;
 				-webkit-mask-repeat: repeat, repeat-x;
 				mask-repeat: repeat, repeat-x;
-				-webkit-mask-position: -10px, 50% 39%;
-				mask-position: -10px, 50% 39%;
+				-webkit-mask-position: -10px, 50% 34%;
+				mask-position: -10px, 50% 34%;
 				-webkit-mask-composite: source-out;
 				mask-composite: subtract;
 				border-radius: 0.5rem;
