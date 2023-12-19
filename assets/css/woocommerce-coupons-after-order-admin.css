@@ -15,7 +15,7 @@
 
 .wccao-nav-tab.nav-tab-active, .wccao-nav-tab.nav-tab-active:focus, .wccao-nav-tab.nav-tab-active:focus:active, .wccao-nav-tab.nav-tab-active:hover {
     color:#702FFF;
-    background-color: #fff;;
+    background-color: #fff;
 }
 
 .wccao_section_admin {
@@ -84,7 +84,7 @@ input {font-weight: normal;}
 
 .woocommerce-help-tip:hover:before {
     content:'';
-    display: none;;
+    display: none;
 }
 
 .woocommerce-help-tip:hover::before {

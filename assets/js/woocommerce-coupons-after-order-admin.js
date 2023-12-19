@@ -51,7 +51,7 @@ if (document.querySelector('.settings-tab')) {
       const currentInput = document.getElementById(inputId);
 
       if (currentInput) {
-        currentInput.addEventListener('input', function (event) {
+        currentInput.addEventListener('input', function () {
           this.value = parseInt(this.value, 10) || ''; // If the conversion fails, leave the value empty
         });
       }
@@ -61,8 +61,6 @@ if (document.querySelector('.settings-tab')) {
     //////////////////////////////////////////
     // Value validation of the amount field //
     //////////////////////////////////////////
-    let decimalSeparator = getWooCommerceDecimalSeparator();
-
     function getWooCommerceDecimalSeparator() {
       // Get the HTML element that contains the decimal separator
       let decimalSeparatorElement = document.querySelector('.wccao_input_price');
@@ -73,12 +71,7 @@ if (document.querySelector('.settings-tab')) {
       return decimalSeparator;
     }
 
-    const inputElement = document.getElementById('coupon-amount-min');
-    inputElement.addEventListener('blur', function () {
-      if (!validateCouponAmount(this, 'minAmountError')) {
-        this.value = ''; // Clear field value only if entered incorrectly
-      }
-    });
+    let decimalSeparator = getWooCommerceDecimalSeparator();
 
     function validateCouponAmount(input, errorDivId) {
       let customErrorMessage = couponsAfterOrderTranslations.customErrorMessage;
@@ -112,6 +105,13 @@ if (document.querySelector('.settings-tab')) {
         return true;
       }
     }
+
+    const inputElement = document.getElementById('coupon-amount-min');
+    inputElement.addEventListener('blur', function () {
+      if (!validateCouponAmount(this, 'minAmountError')) {
+        this.value = ''; // Clear field value only if entered incorrectly
+      }
+    });
 
 } else if (document.querySelector('.email-tab')) {
     ////////////////////////
