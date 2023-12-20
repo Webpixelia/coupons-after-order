@@ -1,5 +1,7 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if (!defined('ABSPATH')) {
+	exit; // Exit if accessed directly.
+}
 
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 /**
@@ -37,17 +39,16 @@ class WCCAO_Admin {
 	 */
 	public function __construct() {
 		// Action
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
-		add_action( 'admin_menu', array( $this, 'add_wccao_admin_page' ) );
-		add_action( 'add_meta_boxes', array( $this, 'coupons_after_order_meta_box' ) );
-		add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'wccao_custom_orders_list_column_content' ), 20, 2 );
-		add_action( 'wp_ajax_wccao_send_email_test', array($this, 'wccao_send_email_test'));
-		add_action(	'wp_ajax_wccao_manually_generate_coupons', array($this, 'wccao_manually_generate_coupons'));
-		add_action( 'admin_body_class', array( $this, 'admin_body_class' ) );
-		add_action( 'current_screen', array( $this, 'current_screen' ) );
-		add_action( 'wccao_check_version_cron', array($this, 'perform_version_check_cron'));
-
-		//add_filter('woocommerce_settings_pages', array($this, 'add_custom_settings_field'));
+		add_action('admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
+		add_action('admin_menu', array( $this, 'add_wccao_admin_page' ) );
+		add_action('add_meta_boxes', array( $this, 'coupons_after_order_meta_box' ) );
+		add_action('manage_woocommerce_page_wc-orders_custom_column', array( $this, 'wccao_custom_orders_list_column_content' ), 20, 2 );
+		add_action('wp_ajax_wccao_send_email_test', array($this, 'wccao_send_email_test'));
+		add_action('wp_ajax_wccao_manually_generate_coupons', array($this, 'wccao_manually_generate_coupons'));
+		add_action('delete_post', array($this, 'wccao_delete_coupon_and_update_users'));
+		add_action('admin_body_class', array( $this, 'admin_body_class' ) );
+		add_action('current_screen', array( $this, 'current_screen' ) );
+		add_action('wccao_check_version_cron', array($this, 'perform_version_check_cron'));
 
 		// Cron Task
 		if (!wp_next_scheduled('wccao_check_version_cron')) {
@@ -55,8 +56,8 @@ class WCCAO_Admin {
 		}
 
 		// Filter
-		add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'wccao_custom_shop_order_column' ), 20 );
-		add_filter( 'plugin_action_links_' . WCCAO_PLUGIN_BASENAME, array( __CLASS__, 'plugin_action_links' ) );			
+		add_filter('manage_woocommerce_page_wc-orders_columns', array( $this, 'wccao_custom_shop_order_column' ), 20 );
+		add_filter('plugin_action_links_' . WCCAO_PLUGIN_BASENAME, array( __CLASS__, 'plugin_action_links' ) );			
 	}
 
 
@@ -397,6 +398,56 @@ class WCCAO_Admin {
 	}
 
 	/**
+	 * Deletes a coupon code from the user metadata for all users.
+	 *
+	 * This function iterates through all users and removes the specified
+	 * coupon code from the list of coupons associated with each user.
+	 * 
+	 * @since   1.3.4
+	 *
+	 * @param string $coupon_code The coupon code to be deleted from user metadata.
+	 */
+	private function wccao_delete_coupon_from_user_meta($coupon_code)
+	{
+		$users = get_users();
+
+		foreach ($users as $user) {
+			// Retrieve coupons associated with the user
+			$customer_coupons = get_user_meta($user->ID, '_wccao_customer_coupons', true);
+
+			if (is_array($customer_coupons) && in_array($coupon_code, $customer_coupons)) {
+				// Delete coupon from list
+				$updated_coupons = array_diff($customer_coupons, array($coupon_code));
+
+				// Update user metadata
+				update_user_meta($user->ID, '_wccao_customer_coupons', $updated_coupons);
+			}
+		}
+	}
+
+	/**
+	 * Deletes a shop coupon and updates user metadata accordingly.
+	 *
+	 * This function is triggered when a shop coupon is deleted, and it ensures
+	 * that the coupon code is removed from the list of coupons associated with
+	 * each user in their metadata.
+	 * 
+	 * @since   1.3.4
+	 *
+	 * @param int $post_id The ID of the shop coupon post being deleted.
+	 */
+	public function wccao_delete_coupon_and_update_users($post_id)
+	{
+		if (get_post_type($post_id) === 'shop_coupon') {
+			$coupon = new WC_Coupon($post_id);
+
+			$coupon_code = $coupon->get_code();
+
+			self::wccao_delete_coupon_from_user_meta($coupon_code);
+		}
+	}
+
+	/**
 	 * Appends custom admin body class.
 	 *
 	 * @since   1.3.0
@@ -462,7 +513,7 @@ class WCCAO_Admin {
 	 */
 	public static function plugin_action_links( $links ) {
 		$action_links = array(
-			'settings' => '<a href="' . admin_url( 'admin.php?page=' . WCCAO_Admin::WCCAO_ADMIN_SLUG ) . '" aria-label="' . esc_attr__( 'View WooCommerce settings', 'woocommerce' ) . '">' . esc_html__( 'Settings', 'woocommerce' ) . '</a>',
+			'settings' => '<a href="' . admin_url( 'admin.php?page=' . WCCAO_Admin::WCCAO_ADMIN_SLUG ) . '" aria-label="' . esc_attr__( 'View Coupons after order for WooCommerce settings', 'coupons-after-order' ) . '">' . esc_html__( 'Settings', 'coupons-after-order' ) . '</a>',
 		);
 
 		return array_merge( $action_links, $links );
@@ -508,17 +559,4 @@ class WCCAO_Admin {
 		// Return the result array.
 		return $result;
 	}
-
-	/*public function add_custom_settings_field($settings) {
-        $settings[] = array(
-            'title'    => __('My Coupons Endpoint', 'coupons-after-order'),
-            'desc'     => __('Enter your custom endpoint for My Coupons.', 'coupons-after-order'),
-            'id'       => 'my_coupons_endpoint',
-            'type'     => 'text',
-            'default'  => 'my-coupons',
-            'desc_tip' => true,
-        );
-
-    	return $settings;
-	}*/
 }

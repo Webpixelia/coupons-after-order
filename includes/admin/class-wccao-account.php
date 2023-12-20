@@ -1,5 +1,7 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if (!defined('ABSPATH')) {
+	exit; // Exit if accessed directly.
+}
 
 if (!class_exists('WCCAO_Account')) :
 
@@ -95,7 +97,7 @@ class WCCAO_Account {
 		// Retrieve all the coupons associated with the user
 		$coupon_meta_key = '_wccao_customer_coupons';
 		$customer_coupons = get_user_meta($user_id, $coupon_meta_key, true);
-	
+
 		// Display the coupons if any exist
 		if (!empty($customer_coupons)) {
 			echo '<p>' . esc_html__('Find your still valid personal coupons and their details here.', 'coupons-after-order') . '</p>';
@@ -167,6 +169,11 @@ class WCCAO_Account {
 			return false; // Invalid coupon
 		}
 
+		// Check the coupon status
+		if (method_exists($coupon, 'get_status') && $coupon->get_status() !== 'publish') {
+			return false; // Coupon is not published
+		}
+		
 		// Check the expiration date
 		if (method_exists($coupon, 'get_date_expires')) {
 			$date_expires = $coupon->get_date_expires() ?? '';

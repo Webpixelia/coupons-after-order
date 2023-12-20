@@ -6,7 +6,9 @@
  * @since		1.0.0
  */
 
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly.
+}
 
 /**
  * wccao_get_path
@@ -370,17 +372,17 @@ function register_coupons_after_order_settings()
 function register_coupons_after_order_sections()
 {
     add_settings_section('coupons_after_order_tab_settings', __('Coupons after order Settings', 'coupons-after-order'), 'coupons_after_order_tab_settings_callback', 'coupons-after-order-tab-settings-settings', array(
-        'before_section' => '<div class="wccao_section_admin">',
+        'before_section' => '<div class="wccao-section-admin">',
         'after_section'  => '</div>',
     ));
 
     add_settings_section('coupons_after_order_tab_email', __('Coupons after order Email', 'coupons-after-order'), 'coupons_after_order_tab_email_callback', 'coupons-after-order-tab-settings-email', array(
-        'before_section' => '<div class="wccao_section_admin">',
+        'before_section' => '<div class="wccao-section-admin">',
         'after_section'  => '</div>',
     ));
 
     add_settings_section('coupons_after_order_tab_misc', __('Coupons after order Misc', 'coupons-after-order'), 'coupons_after_order_tab_misc_callback', 'coupons-after-order-tab-settings-misc', array(
-        'before_section' => '<div class="wccao_section_admin">',
+        'before_section' => '<div class="wccao-section-admin">',
         'after_section'  => '</div>',
     ));
 
@@ -600,7 +602,7 @@ function coupons_after_order_others_parameters_callback()
     </div>
     <div class="coupon-field-group">
         <label for="coupon-amount-min"><?php esc_html_e('Minimum amount:', 'coupons-after-order') ?></label>
-        <input type="text" id="coupon-amount-min" name="coupons_after_order_min_amount" value="<?php echo esc_attr($min_amount); ?>" oninput="validateCouponAmount(this, 'minAmountError')" class="wccao_input_price" data-decimal="<?= esc_attr($decimal_separator); ?>" placeholder="<?php esc_html_e('No minimum', 'coupons-after-order') ?>" />&nbsp;<?php echo get_woocommerce_currency_symbol(); ?>
+        <input type="text" id="coupon-amount-min" name="coupons_after_order_min_amount" value="<?php echo esc_attr($min_amount); ?>" class="wccao_input_price" data-decimal="<?= esc_attr($decimal_separator); ?>" placeholder="<?php esc_html_e('No minimum', 'coupons-after-order') ?>" />&nbsp;<?php echo get_woocommerce_currency_symbol(); ?>
         <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_html_e('If empty, it is the amount of the individual coupon.', 'coupons-after-order'); ?>"></span>
     </div>
     <div class="coupon-field-group">

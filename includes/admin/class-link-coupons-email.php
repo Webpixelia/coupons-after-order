@@ -1,5 +1,7 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly.
+}
 
 // Inclusion de l'autoloader de Composer
 require_once WCCAO_ABSPATH . 'vendor/autoload.php';

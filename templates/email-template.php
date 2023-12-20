@@ -1,5 +1,7 @@
 <?php
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) {
+	exit; // Exit if accessed directly.
+}
 
 $first_name = isset($order) ? $order->get_billing_first_name() : __('Dear customer', 'coupons-after-order');
 $email_customer = isset($order) ? $order->get_billing_email() : $customer_email;
@@ -16,11 +18,11 @@ $order_total = wc_price( $couponDetails['order_total'] );
 $nb_coupons = esc_html( $couponDetails['nber_coupons'] );
 
 // Button
-$email_bt_title = isset( $_GET['coupons_after_order_email_bt_title'] ) ? wp_unslash( $_GET['coupons_after_order_email_bt_title'] ) : get_option('coupons_after_order_email_bt_title');
-$email_bt_url = isset( $_GET['coupons_after_order_email_bt_url'] ) ? wp_unslash( $_GET['coupons_after_order_email_bt_url'] ) : get_option('coupons_after_order_email_bt_url');
-$email_bt_color = isset( $_GET['coupons_after_order_email_bt_color'] ) ? wp_unslash( $_GET['coupons_after_order_email_bt_color'] ) : get_option('coupons_after_order_email_bt_color');
-$email_bt_bg_color = isset( $_GET['coupons_after_order_email_bt_bg_color'] ) ? wp_unslash( $_GET['coupons_after_order_email_bt_bg_color'] ) : get_option('coupons_after_order_email_bt_bg_color');
-$email_bt_font_size = isset( $_GET['coupons_after_order_email_bt_font_size'] ) ? wp_unslash( $_GET['coupons_after_order_email_bt_font_size'] ) : get_option('coupons_after_order_email_bt_font_size');
+$email_bt_title = isset( $_GET['coupons_after_order_email_bt_title'] ) ? sanitize_text_field(wp_unslash( $_GET['coupons_after_order_email_bt_title'] )) : get_option('coupons_after_order_email_bt_title');
+$email_bt_url = isset( $_GET['coupons_after_order_email_bt_url'] ) ? sanitize_url(wp_unslash( $_GET['coupons_after_order_email_bt_url'] )) : get_option('coupons_after_order_email_bt_url');
+$email_bt_color = isset( $_GET['coupons_after_order_email_bt_color'] ) ? sanitize_hex_color(wp_unslash( $_GET['coupons_after_order_email_bt_color'] )) : get_option('coupons_after_order_email_bt_color');
+$email_bt_bg_color = isset( $_GET['coupons_after_order_email_bt_bg_color'] ) ? sanitize_hex_color(wp_unslash( $_GET['coupons_after_order_email_bt_bg_color'] )) : get_option('coupons_after_order_email_bt_bg_color');
+$email_bt_font_size = isset( $_GET['coupons_after_order_email_bt_font_size'] ) ? absint(wp_unslash( $_GET['coupons_after_order_email_bt_font_size'] )) : get_option('coupons_after_order_email_bt_font_size');
 $wccao_bt = '<a href="' . $email_bt_url . '" target="_blank" style="text-decoration:none;display:inline-block;padding:10px 30px;margin:10px 0;font-size:' . $email_bt_font_size . 'px;color:' . $email_bt_color . ';background:' . $email_bt_bg_color . ';">' . $email_bt_title . '</a>';
 
 // Shortcodes

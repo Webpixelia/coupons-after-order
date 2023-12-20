@@ -6,6 +6,49 @@ function hideMessage(element) {
   }, 5000);
 }
 
+function validateCouponAmount(input, errorDivId, decimalSeparator) {
+  let customErrorMessage = couponsAfterOrderTranslations.customErrorMessage;
+  let validRegExp = new RegExp("^\\d*(\\" + decimalSeparator + "\\d*)?$");
+
+  let value = input.value;
+  let isValid = validRegExp.test(value);
+
+  let errorDiv = document.getElementById(errorDivId);
+
+  if (!isValid) {
+    if (!errorDiv) {
+      // Create error message div if needed
+      let errorDivMessage = document.createElement('div');
+      errorDivMessage.id = errorDivId;
+      errorDivMessage.textContent = customErrorMessage;
+      errorDivMessage.classList.add('wccao-error-tip');
+      input.parentNode.insertBefore(errorDivMessage, input.nextSibling);
+    }
+    return false;
+  } else {
+    if (errorDiv) {
+      // Remove error div if present
+      errorDiv.parentNode.removeChild(errorDiv);
+    }
+    return true;
+  }
+}
+
+function getDecimalSeparator(selector) {
+  // Get the HTML element that contains the decimal separator using the provided selector
+  const decimalSeparatorElement = document.querySelector(selector);
+
+  // Ensure the element exists before attempting to extract the separator
+  if (decimalSeparatorElement) {
+    // Extract decimal separator from data-decimal attribute
+    const decimalSeparator = decimalSeparatorElement.getAttribute('data-decimal');
+    return decimalSeparator;
+  } else {
+    console.error(`Element with selector "${selector}" not found.`);
+    return null; // Or a default separator if appropriate
+  }
+}
+
 if (document.querySelector('.settings-tab')) {
   document.addEventListener('DOMContentLoaded', function () {
     ///////////////////////////////////
@@ -19,15 +62,15 @@ if (document.querySelector('.settings-tab')) {
 
     function updateFieldDisplay() {
         if (validityTypeField[0].checked) {
-            validityDaysDiv.style.display = 'block';
-            validityDateDiv.style.display = 'none';
-            validityDaysField.setAttribute('required', 'required');
-            validityDateField.removeAttribute('required');
+          validityDaysDiv.style.display = 'block';
+          validityDateDiv.style.display = 'none';
+          validityDaysField.setAttribute('required', 'required');
+          validityDateField.removeAttribute('required');
         } else if (validityTypeField[1].checked) {
-            validityDaysDiv.style.display = 'none';
-            validityDateDiv.style.display = 'block';
-            validityDaysField.removeAttribute('required');
-            validityDateField.setAttribute('required', 'required');
+          validityDaysDiv.style.display = 'none';
+          validityDateDiv.style.display = 'block';
+          validityDaysField.removeAttribute('required');
+          validityDateField.setAttribute('required', 'required');
         }
     }
 
@@ -41,77 +84,34 @@ if (document.querySelector('.settings-tab')) {
         });
     });
   });
-    /////////////////////////////////
-    // Not allow decimal value in //
-    /////////////////////////////////
-    document.addEventListener('DOMContentLoaded', function () {
-    const inputIds = ['coupon-validity-days', 'coupons-after-order-count', 'coupon-validity-usage-limit'];
+  /////////////////////////////////
+  // Not allow decimal value in //
+  /////////////////////////////////
+  document.addEventListener('DOMContentLoaded', function () {
+  const inputIds = ['coupon-validity-days', 'coupons-after-order-count', 'coupon-validity-usage-limit'];
 
-    inputIds.forEach(function (inputId) {
-      const currentInput = document.getElementById(inputId);
+  inputIds.forEach(function (inputId) {
+    const currentInput = document.getElementById(inputId);
 
-      if (currentInput) {
-        currentInput.addEventListener('input', function () {
-          this.value = parseInt(this.value, 10) || ''; // If the conversion fails, leave the value empty
-        });
-      }
-    });
-    });
-
-    //////////////////////////////////////////
-    // Value validation of the amount field //
-    //////////////////////////////////////////
-    function getWooCommerceDecimalSeparator() {
-      // Get the HTML element that contains the decimal separator
-      let decimalSeparatorElement = document.querySelector('.wccao_input_price');
-
-      // Extract decimal separator from data-decimal attribute
-      let decimalSeparator = decimalSeparatorElement.getAttribute('data-decimal');
-
-      return decimalSeparator;
+    if (currentInput) {
+      currentInput.addEventListener('input', function () {
+        this.value = parseInt(this.value, 10) || ''; // If the conversion fails, leave the value empty
+      });
     }
+  });
+  });
 
-    let decimalSeparator = getWooCommerceDecimalSeparator();
+  //////////////////////////////////////////
+  // Value validation of the amount field //
+  //////////////////////////////////////////
+  const decimalSeparator = getDecimalSeparator('.wccao_input_price');
 
-    function validateCouponAmount(input, errorDivId) {
-      let customErrorMessage = couponsAfterOrderTranslations.customErrorMessage;
-      let validRegExp = new RegExp("^\\d*(\\" + decimalSeparator + "\\d*)?$");
-
-      let value = input.value;
-      let isValid = validRegExp.test(value);
-
-      let errorDiv = document.getElementById(errorDivId);
-
-      if (!isValid) {
-        if (!errorDiv) {
-          // Create a new <div> element to display the error message if it does not exist
-          let errorDivMessage = document.createElement('div');
-          errorDivMessage.id = errorDivId;
-          errorDivMessage.textContent = customErrorMessage;
-          errorDivMessage.classList.add('wccao_error_tip');
-
-          // Find the parent element of the input field
-          let inputParent = input.parentNode;
-
-          // Insert the newly created <div> element right after the input field
-          inputParent.insertBefore(errorDivMessage, input.nextSibling);
-        }
-        return false;
-      } else {
-        if (errorDiv) {
-          // Remove the <div> element if present (in case of previous error)
-          errorDiv.parentNode.removeChild(errorDiv);
-        }
-        return true;
-      }
+  const inputElement = document.getElementById('coupon-amount-min');
+  inputElement.addEventListener('blur', function () {
+    if (!validateCouponAmount(this, 'minAmountError', decimalSeparator)) {
+      this.value = ''; // Clear field value if invalid
     }
-
-    const inputElement = document.getElementById('coupon-amount-min');
-    inputElement.addEventListener('blur', function () {
-      if (!validateCouponAmount(this, 'minAmountError')) {
-        this.value = ''; // Clear field value only if entered incorrectly
-      }
-    });
+  });
 
 } else if (document.querySelector('.email-tab')) {
     ////////////////////////

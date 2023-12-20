@@ -7,6 +7,7 @@
     column-gap: 1em;
     row-gap: 1em;
 }
+
 ul .prefix-coupon {
     padding: .6em 1em;
     -webkit-mask-image: radial-gradient(circle at 10px 30%, transparent 10px, red 10.5px), linear-gradient(90deg, transparent 25%, red 0, red 75%, transparent 0);
@@ -24,6 +25,7 @@ ul .prefix-coupon {
     color: #fff;
     text-align: center;
     flex: 1 0 calc(33.33% - 1em);
+    max-width: calc(33.33% - 0.5em);
     box-sizing: border-box;
 }
 
@@ -38,32 +40,38 @@ ul .prefix-coupon .code-coupon .icon-copy {
     margin-left: 10px;
     cursor: pointer;
 }
+
 .text-code.copy-effect {
     background-color: #59a859;
     transition: background-color 1s ease;
 }
+
 ul .prefix-coupon .code-coupon .icon-copy img{
     width: 1em;
     height: 1em;
 }
+
 ul .prefix-coupon .details-coupon {
     list-style: none;
     font-size: .8em;
     padding-inline-start: 0;
     padding-top: 1em;
 }
+
 ul .prefix-coupon .details-coupon a {
     color:#fff;
 }
 
-@media screen and (max-width: 980px) {
+@media (max-width: 980px) {
     ul .prefix-coupon {
         flex: 1 0 calc(50% - 1em);
+        max-width: calc(50% - 0.5em);
     }
 }
 
-@media screen and (max-width: 467px) {
+@media (max-width: 467px) {
     ul .prefix-coupon {
         flex: 1 0 calc(100% - 1em);
+        max-width: 100%
     }
 }

@@ -18,13 +18,13 @@
     background-color: #fff;
 }
 
-.wccao_section_admin {
+.wccao-section-admin {
     border: 1px solid #cccacf;
     padding: 1em 1.5em;
     background-color: #fff;
 }
 
-.wccao-descr-section-admin:after {
+.wccao-descr-section-admin::after {
     content: "";
     display: block;
     border-bottom: 1px solid grey;
@@ -39,10 +39,12 @@
 }
 
 .coupon-field-group {margin-bottom:1.2em;}
+
 .coupon-field-group > label {font-weight: 600;}
+
 input {font-weight: normal;}
 
-.wccao_error_tip {
+.wccao-error-tip {
     max-width: 20em;
     line-height: 1.8em;
     position: absolute;
@@ -55,11 +57,11 @@ input {font-weight: normal;}
     text-align: center;
     border-radius: 3px;
     padding: 0.618em 1em;
-    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    box-shadow: 0 1px 3px rgba(0,0,0,20%);
     left: 25%;
 }
 
-.wccao_error_tip:after {
+.wccao-error-tip::after {
     content: "";
     display: block;
     border: 8px solid #d82223;
@@ -82,7 +84,7 @@ input {font-weight: normal;}
     list-style-position: inside;
 }
 
-.woocommerce-help-tip:hover:before {
+.woocommerce-help-tip:hover::before {
     content:'';
     display: none;
 }
@@ -102,7 +104,7 @@ input {font-weight: normal;}
     z-index: 9999;
     min-width: 100px;
     max-width: 200px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0 0 0 / 0.1);
 }
 
 .disabled-link {
@@ -115,20 +117,22 @@ input {font-weight: normal;}
 #webpixelia-credit>* {
     vertical-align: middle;
 }
+
 #webpixelia-credit>a {
     display: inline-block;
     position: relative;
     overflow: hidden;
     background-image:url('../img/logo_webpixelia_light_sprite.png'); 
-    background-position:0px -0px;
+    background-position:0 0;
     height: 30px;
     width: 136px;
     text-indent: 200px;
     -webkit-transition-duration: 600ms;
     transition-duration: 600ms;
 }
+
 #webpixelia-credit>a:hover {
-    background-position:0px -98%; 
+    background-position:0 -98%; 
 }
 
 /* Notice */
