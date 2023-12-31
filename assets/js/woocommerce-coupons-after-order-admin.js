@@ -50,10 +50,85 @@ function getDecimalSeparator(selector) {
 }
 
 if (document.querySelector('.settings-tab')) {
+  ///////////////////////////////////
+  // Validation start date coupon  //
+  ///////////////////////////////////
   document.addEventListener('DOMContentLoaded', function () {
-    ///////////////////////////////////
-    // Conditional fields admin page //
-    ///////////////////////////////////
+    const enabledStartDate = document.querySelectorAll('input[name="coupons_after_order_availability_start_enabled"]');
+    const divEnabledStartDate = document.getElementById('coupon_availability_date');
+    const startDateInput = document.getElementById('coupon_availability_start_date');
+
+    function updateDateFieldDisplay() {
+      if (enabledStartDate[0].checked) {
+        divEnabledStartDate.style.display = 'block';
+        startDateInput.setAttribute('required', 'required');
+      } else if (enabledStartDate[1].checked) {
+        divEnabledStartDate.style.display = 'none';
+        startDateInput.removeAttribute('required');
+      }
+    }
+
+    // Update the display on page load
+    updateDateFieldDisplay();
+
+    // Add an event handler for option changes
+    enabledStartDate.forEach(function (option) {
+      option.addEventListener('change', function () {
+        updateDateFieldDisplay();
+      });
+    });
+  });
+
+  let startDateInput = document.getElementById('coupon_availability_start_date');
+  let validityDateInput = document.getElementById('coupon-validity-date');
+
+  // Checks if elements exist before attaching event listeners
+  if (startDateInput && validityDateInput) {
+    startDateInput.addEventListener('change', function () {
+      validateDates();
+    });
+  }
+
+  function validateDates() {
+    // Checks if elements exist before accessing their values
+    if (!startDateInput || !validityDateInput) {
+      return;
+    }
+
+    let startDate = new Date(startDateInput.value);
+    let validityDate = new Date(validityDateInput.value);
+    let errorDivId = 'wccao-error-tip';
+    let errorMessageDatePosterior = couponsAfterOrderTranslations.errorMessageDatePosterior;
+
+    // Remove existing error div if present
+    let existingErrorDiv = document.getElementById(errorDivId);
+    if (existingErrorDiv) {
+      existingErrorDiv.parentNode.removeChild(existingErrorDiv);
+    }
+
+    // Check if start date is after validity date
+    if (startDate.getTime() > validityDate.getTime()) {
+      // Create error message div
+      let errorDivMessage = document.createElement('div');
+      errorDivMessage.id = errorDivId;
+      errorDivMessage.textContent = errorMessageDatePosterior;
+      errorDivMessage.classList.add('wccao-error-tip');
+
+      // Insert error div after the start date input
+      startDateInput.parentNode.insertBefore(errorDivMessage, startDateInput.nextSibling);
+
+      // Clear the start date for the user to choose another
+      startDateInput.value = '';
+      setTimeout(() => {
+        errorDivMessage.style.display = 'none';
+      }, 5000);
+    }
+  };
+
+  ///////////////////////////////////
+  // Conditional fields admin page //
+  ///////////////////////////////////
+  document.addEventListener('DOMContentLoaded', function () {
     const validityTypeField = document.querySelectorAll('input[name="coupons_after_order_validity_type"]');
     const validityDaysDiv = document.getElementById('coupon-validity-days-div');
     const validityDateDiv = document.getElementById('coupon-validity-date-div');
@@ -88,17 +163,17 @@ if (document.querySelector('.settings-tab')) {
   // Not allow decimal value in //
   /////////////////////////////////
   document.addEventListener('DOMContentLoaded', function () {
-  const inputIds = ['coupon-validity-days', 'coupons-after-order-count', 'coupon-validity-usage-limit'];
+    const inputIds = ['coupon-validity-days', 'coupons-after-order-count', 'coupon-validity-usage-limit'];
 
-  inputIds.forEach(function (inputId) {
-    const currentInput = document.getElementById(inputId);
+    inputIds.forEach(function (inputId) {
+      const currentInput = document.getElementById(inputId);
 
-    if (currentInput) {
-      currentInput.addEventListener('input', function () {
-        this.value = parseInt(this.value, 10) || ''; // If the conversion fails, leave the value empty
-      });
-    }
-  });
+      if (currentInput) {
+        currentInput.addEventListener('input', function () {
+          this.value = parseInt(this.value, 10) || ''; // If the conversion fails, leave the value empty
+        });
+      }
+    });
   });
 
   //////////////////////////////////////////

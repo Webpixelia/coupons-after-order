@@ -7,8 +7,8 @@ $first_name = isset($order) ? $order->get_billing_first_name() : __('Dear custom
 $email_customer = isset($order) ? $order->get_billing_email() : $customer_email;
 
 $email_header = get_option('coupons_after_order_email_header');
-$startDate = date_i18n('j F Y');
-$endDate = date_i18n("j F Y", strtotime($couponDetails['validity']));
+$startDate = date_i18n(get_option('date_format'), strtotime($couponDetails['start_date']));
+$endDate = date_i18n(get_option('date_format'), strtotime($couponDetails['validity']));
 $min_order = floatval($couponDetails['min_order']);
 $content_email = wpautop(get_option('coupons_after_order_email_content'));
 
@@ -105,7 +105,7 @@ $content_email = str_replace( '{shop_button}', $wccao_bt, $content_email );
 										$img = get_option( 'woocommerce_email_header_image' );
 
 										if ( $img ) {
-											echo '<p style="margin-top:0;"><img src="' . esc_url( $img ) . '" alt="' . esc_attr( get_bloginfo( 'name', 'display' ) ) . '" /></p>';
+											echo '<p style="margin-top:0;"><img style="max-height:150px;" src="' . esc_url( $img ) . '" alt="' . esc_attr( get_bloginfo( 'name', 'display' ) ) . '" /></p>';
 										}
 										?>
                                     </div>

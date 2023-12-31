@@ -10,6 +10,8 @@ function coupons_after_order_uninstall_conditionally() {
     if ($data_uninstall === 'yes') {
         $wccao_options = array(
             'coupons_after_order_enable',
+            'coupons_after_order_availability_start_enabled',
+            'coupons_after_order_availability_start_date',
             'coupons_after_order_validity_type',
             'coupons_after_order_validitydays',
             'coupons_after_order_validitydate',

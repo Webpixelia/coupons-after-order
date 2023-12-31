@@ -1,4 +1,5 @@
 <?php
+
 /**
  * WC Coupons After Order functions.
  *
@@ -77,8 +78,19 @@ function wccao_generate_coupons($order_id)
     if ($enable === 'yes') {
         // Retrieve missing variables
         $order = wc_get_order($order_id);
-        $subTotal = $order->get_subtotal();
-        $existCoupon = (float) $order->get_discount_total();
+
+        // Total amount order
+        $total = $order->get_total();
+
+        // Shipping costs excluded
+        $shipping_total = $order->get_shipping_total();
+        $shipping_total = is_numeric($shipping_total) ? (float) $shipping_total : 0;
+
+        // Coupons excluded
+        $existCoupon = $order->get_discount_total();
+        $existCoupon = is_numeric($existCoupon) ? (float) $existCoupon : 0;
+
+        $subTotal = (float) $total - $shipping_total;
         $order_total = (float) $subTotal - $existCoupon;
 
         $couponDetails = wccao_generate_coupon_details($order_total);
@@ -109,6 +121,8 @@ function wccao_generate_coupons($order_id)
  *
  * @return array Associative array containing coupon details.
  *               - 'coupon_prefix' (string): The coupon code prefix.
+ *               - 'enabled_start_date' (): Input radio indicating whether the start date is enabled ('yes' or 'no').
+ *               - 'start_date' (string): The start date for the coupon.
  *               - 'validity_type' (string): The type of validity for the coupon ('date' or 'days').
  *               - 'validity' (string): The validity duration for the coupon.
  *               - 'limitUsage' (string): The usage limit for the coupon.
@@ -123,9 +137,10 @@ function wccao_generate_coupons($order_id)
 function wccao_generate_coupon_details($order_total)
 {
     $coupon_prefix = get_option('coupons_after_order_prefix');
+    $enabled_start_date = get_option('coupons_after_order_availability_start_enabled');
+    $start_date = get_option('coupons_after_order_availability_start_date', date_i18n(get_option('date_format')));
     $validity_type = get_option('coupons_after_order_validity_type');
     $validity = wccao_get_validity($validity_type);
-
     $limitUsage = get_option('coupons_after_order_usage_limit', '1');
     $indivUse = get_option('coupons_after_order_individual_use', 'yes');
     $indivUseCoupon = ($indivUse === 'yes');
@@ -133,12 +148,14 @@ function wccao_generate_coupon_details($order_total)
     $email_restriction = get_option('coupons_after_order_email_restriction', 'no');
 
     $nber_coupons = intval(get_option('coupons_after_order_count'));
-    $coupon_amount = ($nber_coupons != 0) ? ($order_total / $nber_coupons) : 0; //$coupon_amount = $order_total / $nber_coupons;
+    $coupon_amount = ($nber_coupons != 0) ? ($order_total / $nber_coupons) : 0;
     $coupon_amount = round($coupon_amount, wc_get_price_decimals());
     $min_order = empty($min_amount) ? $coupon_amount : max(tofloat($min_amount), $coupon_amount);
 
     return compact(
         'coupon_prefix',
+        'enabled_start_date',
+        'start_date',
         'validity_type',
         'validity',
         'limitUsage',
@@ -197,7 +214,18 @@ function wccao_generate_coupons_list($couponDetails, $order_id, $save = true, $m
         $coupon = wccao_generate_coupon_code($couponDetails, $order_id, $manual_generation, $customer_email);
 
         if ($save) {
-            $coupon->save(); // Save the coupon if necessary
+            $coupon_id = $coupon->save(); // Save the coupon if necessary
+            // Update coupon release date if enabled_start_date
+            if ($couponDetails['enabled_start_date'] === 'yes') :
+                $new_date = strtotime($couponDetails['start_date']);
+                $updated_post = array(
+                    'ID' => $coupon_id,
+                    'post_date' => date_i18n('Y-m-d H:i:s', $new_date),
+                    'post_date_gmt' => get_gmt_from_date(date_i18n('Y-m-d H:i:s', $new_date)),
+                );
+
+                wp_update_post($updated_post);
+            endif;
         }
 
         $coupon_code = $coupon->get_code();
@@ -243,7 +271,7 @@ function wccao_generate_coupon_code($couponDetails, $order_id, $manual_generatio
     $random_number = mt_rand(10000, 99999);
     $couponPrefix = ($couponDetails['coupon_prefix']) ? esc_attr($couponDetails['coupon_prefix']) : 'ref';
     $order = wc_get_order($order_id);
-    
+
     // Calculate the coupon amount
     $coupon_amount = $couponDetails['order_total'] / $couponDetails['nber_coupons']; // Directly use from $couponDetails
     $coupon_amount = round($coupon_amount, wc_get_price_decimals());
@@ -354,7 +382,7 @@ function tofloat($num)
 
     return floatval(
         preg_replace("/[^0-9]/", "", substr($num, 0, $sep)) . '.' .
-        preg_replace("/[^0-9]/", "", substr($num, $sep + 1, strlen($num)))
+            preg_replace("/[^0-9]/", "", substr($num, $sep + 1, strlen($num)))
     );
 }
 
@@ -394,6 +422,7 @@ function register_coupons_after_order_fields()
     // Add fields to options
     // Settings
     add_settings_field('coupons_after_order_enable', __('Enable Coupon after order', 'coupons-after-order'), 'coupons_after_order_enable_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
+    add_settings_field('coupons_after_order_availability_start', __('Define start availability date', 'coupons-after-order'), 'coupons_after_order_validity_start_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
     add_settings_field('coupons_after_order_validity_type', __('Coupon Validity Type', 'coupons-after-order'), 'coupons_after_order_validity_type_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
     add_settings_field('coupons_after_order_validity', __('Coupon Validity', 'coupons-after-order'), 'coupons_after_order_validity_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
     add_settings_field('coupons_after_order_others_parameters', __('Other Parameters', 'coupons-after-order'), 'coupons_after_order_others_parameters_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
@@ -410,6 +439,9 @@ function register_coupons_after_order_fields()
     // Save settings 
     // Settings
     register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_enable');
+    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_availability_start_enabled');
+    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_availability_start_date');
+    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_availability_start');
     register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_validity_type');
     register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_validitydays', array(
         'type' => 'integer',
@@ -537,6 +569,34 @@ function coupons_after_order_enable_callback()
 <?php
 }
 
+function coupons_after_order_validity_start_callback()
+{
+    $availability_start_enabled = get_option('coupons_after_order_availability_start_enabled', 'no');
+    $availability_start_date = get_option('coupons_after_order_availability_start_date', date_i18n(get_option('date_format')));
+    $validitydate = get_option('coupons_after_order_validitydate');
+?>
+    <div id="coupon_availability_start_enabled" class="coupon-field-group">
+        <fieldset>
+            <legend><?php esc_html_e('Define start availability date?', 'coupons-after-order'); ?></legend>
+            <label for="coupon_availability_start_true">
+                <input type="radio" id="coupon_availability_start_true" name="coupons_after_order_availability_start_enabled" value="yes" <?php checked($availability_start_enabled, 'yes'); ?> />
+                <?php esc_html_e('Yes', 'coupons-after-order'); ?>
+            </label>
+            <br>
+            <label for="coupon_availability_start_false">
+                <input type="radio" id="coupon_availability_start_false" name="coupons_after_order_availability_start_enabled" value="no" <?php checked($availability_start_enabled, 'no'); ?> />
+                <?php esc_html_e('No', 'coupons-after-order'); ?>
+            </label>
+        </fieldset>
+    </div>
+    <div id="coupon_availability_date">
+        <label for="coupon_availability_start_date"><?php esc_html_e('Coupon Start Date:', 'coupons-after-order'); ?></label>
+        <input type="date" id="coupon_availability_start_date" name="coupons_after_order_availability_start_date" value="<?php echo esc_attr($availability_start_date); ?>" min="<?php echo date_i18n('Y-m-d'); ?>" max="<?php echo $validitydate; ?>" />
+        <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_html_e('Enter the desired date on which the coupon will be published and therefore valid. Please note, enter a date before the expiration date of the coupon if you have configured it.', 'coupons-after-order') ?>"></span>
+    </div>
+<?php
+}
+
 function coupons_after_order_validity_type_callback()
 {
     $validity_type = get_option('coupons_after_order_validity_type', 'days');
@@ -568,7 +628,7 @@ function coupons_after_order_validity_callback()
     </div>
     <div id="coupon-validity-date-div" class="coupon-field-group">
         <label for="coupon-validity-date" style="display: none;"><?php esc_html_e('Coupon Validity Date:', 'coupons-after-order'); ?></label>
-        <input type="date" id="coupon-validity-date" name="coupons_after_order_validitydate" value="<?php echo esc_attr($validitydate); ?>" min="<?php echo date('Y-m-d'); ?>" />
+        <input type="date" id="coupon-validity-date" name="coupons_after_order_validitydate" value="<?php echo esc_attr($validitydate); ?>" min="<?php echo date_i18n('Y-m-d'); ?>" />
     </div>
 <?php
 }

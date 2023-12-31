@@ -48,7 +48,8 @@ class WCCAO_Admin {
 		add_action('delete_post', array($this, 'wccao_delete_coupon_and_update_users'));
 		add_action('admin_body_class', array( $this, 'admin_body_class' ) );
 		add_action('current_screen', array( $this, 'current_screen' ) );
-		add_action('wccao_check_version_cron', array($this, 'perform_version_check_cron'));
+		add_action('wccao_check_version_cron', array( $this, 'perform_version_check_cron'));
+		add_action('manage_shop_coupon_posts_custom_column', array( $this, 'wccao_custom_coupon_column_content'), 10, 2);
 
 		// Cron Task
 		if (!wp_next_scheduled('wccao_check_version_cron')) {
@@ -57,7 +58,8 @@ class WCCAO_Admin {
 
 		// Filter
 		add_filter('manage_woocommerce_page_wc-orders_columns', array( $this, 'wccao_custom_shop_order_column' ), 20 );
-		add_filter('plugin_action_links_' . WCCAO_PLUGIN_BASENAME, array( __CLASS__, 'plugin_action_links' ) );			
+		add_filter('plugin_action_links_' . WCCAO_PLUGIN_BASENAME, array( __CLASS__, 'plugin_action_links' ) );
+		add_filter('manage_edit-shop_coupon_columns', array( $this, 'wccao_custom_coupon_column') );
 	}
 
 
@@ -77,6 +79,7 @@ class WCCAO_Admin {
 		
 			// Pass translation strings to JavaScript
 			$translation_strings = array(
+				'errorMessageDatePosterior' => __('The start date of validity cannot be later than the expiry date of the coupon.', 'coupons-after-order'),
 				/* translators: %s: price decimal separator */
 				'customErrorMessage' => sprintf( __( 'Please enter a numeric value and the defined decimal separator (%s), without thousands separators or currency symbols', 'coupons-after-order' ), wc_get_price_decimal_separator() ),
 				'textDisplayedToggle' => __('Show email template', 'coupons-after-order'),
@@ -119,7 +122,7 @@ class WCCAO_Admin {
         );
 	}
 
-
+ 
 	/**
 	 * Coupons after order admin page.
 	 *
@@ -250,22 +253,50 @@ class WCCAO_Admin {
 	}
 
 	/**
-	 * Function to customize columns in the WooCommerce orders list.
+	 * Adds a custom column after a specified key in the given columns array.
 	 *
-	 * @param array $columns Default columns in the orders list.
-	 * @return array Reordered columns with the new 'coupons_generated' column.
+	 * @param array  $columns              Existing columns array.
+	 * @param string $key_to_insert_after  The key after which the new column should be inserted.
+	 * @param string $new_key              The key for the new column.
+	 * @param string $new_label            The label for the new column.
+	 *
+	 * @return array                       Updated columns array with the new column added.
 	 */
-	public function wccao_custom_shop_order_column( $columns ) {
+	protected function add_custom_column_after_key($columns, $key_to_insert_after, $new_key, $new_label) {
 		$reordered_columns = array();
-		// Inserting columns to a specific location.
-		foreach ( $columns as $key => $column ) {
-			$reordered_columns[ $key ] = $column;
-			if ( 'order_status' === $key ) {
-				// Inserting after "Status" column.
-				$reordered_columns['coupons_generated'] = __('Coupons Generated', 'coupons-after-order');
+
+		foreach ($columns as $key => $column) {
+			$reordered_columns[$key] = $column;
+
+			if ($key === $key_to_insert_after) {
+				// Inserting after the specified key.
+				$reordered_columns[$new_key] = $new_label;
 			}
 		}
-		return $reordered_columns;
+
+    	return $reordered_columns;
+	}
+
+	/**
+	 * Uses the add_custom_column_after_key method for customizing shop order columns.
+	 *
+	 * @param array $columns  Existing columns array for shop orders.
+	 *
+	 * @return array          Updated columns array with the new column added.
+	 */
+	public function wccao_custom_shop_order_column($columns) {
+		return $this->add_custom_column_after_key($columns, 'order_status', 'coupons_generated', __('Coupons Generated', 'coupons-after-order'));
+	}
+
+	/**
+	 * Uses the add_custom_column_after_key method for customizing shop coupon columns.
+	 *
+	 * @param array $columns  Existing columns array for shop coupons.
+	 *
+	 * @return array          Updated columns array with the new column added.
+	 */
+	public function wccao_custom_coupon_column($columns) {
+		return $this->add_custom_column_after_key($columns, 'usage', 'start_date_coupon', __('Start date', 'coupons-after-order'));
 	}
 
 	/**
@@ -274,13 +305,33 @@ class WCCAO_Admin {
 	 * @param string $column   The name of the current column.
 	 * @param int    $order_id The order ID.
 	 */
-	public function wccao_custom_orders_list_column_content($column, $order_id) {
+	public function wccao_custom_orders_list_column_content($column, $order_id)
+	{
 		if ($column === 'coupons_generated') {
-				// Get custom order meta data.
-				$order = wc_get_order( $order_id );
-				$coupons_generated = $order->get_meta( '_coupons_generated', true );
-				echo $coupons_generated === 'yes' ? 'Yes' : 'No';
-				unset( $order );
+			// Get custom order meta data.
+			$order = wc_get_order($order_id);
+			$coupons_generated = $order->get_meta('_coupons_generated', true);
+			echo $coupons_generated === 'yes' ? 'Yes' : 'No';
+			unset($order);
+		}
+	}
+
+
+	/**
+	 * Custom callback to display content for the 'start_date_coupon' column in the coupon list.
+	 *
+	 * @param string $column  The name of the column being displayed.
+	 * @param int    $post_id The ID of the current post (coupon).
+	 */
+	public function wccao_custom_coupon_column_content($column, $post_id)
+	{
+		if ($column == 'start_date_coupon') {
+			$start_date = get_post_field('post_date', $post_id, 'raw');
+			if ($start_date) {
+				echo date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime($start_date));
+			} else {
+				echo __('No date', 'coupons-after-order');
+			}
 		}
 	}
 

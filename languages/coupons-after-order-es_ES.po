@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/coupons-after-"
 "order\n"
 "POT-Creation-Date: 2023-11-21T11:29:13+00:00\n"
-"PO-Revision-Date: 2023-12-20 15:55+0000\n"
+"PO-Revision-Date: 2023-12-31 14:43+0000\n"
 "Last-Translator: \n"
 "Language-Team: Spanish (Spain)\n"
 "Language: es_ES\n"
@@ -18,35 +18,35 @@ msgstr ""
 "X-Domain: coupons-after-order\n"
 "X-Loco-Version: 2.6.6; wp-6.4.1\n"
 
-#: includes/admin/wccao-functions.php:620
+#: includes/admin/wccao-functions.php:680
 msgid "\"apply_coupon\" by default"
 msgstr "\"apply_coupon\" por defecto"
 
-#: includes/admin/wccao-functions.php:615
+#: includes/admin/wccao-functions.php:675
 msgid "\"ref\" by default"
 msgstr "\"ref\" por defecto"
 
 #. translators: %s: plugin name
-#: includes/admin/class-wccao-admin.php:142
+#: includes/admin/class-wccao-admin.php:146
 msgid "%s Settings"
 msgstr "Configuración de %s"
 
 #. translators: %s: last version available
-#: includes/admin/class-wccao-admin.php:498
+#: includes/admin/class-wccao-admin.php:600
 msgid "A new version of the plugin (%s) is available. Please update it."
 msgstr ""
 "Hay disponible una nueva versión del plugin (%s). Por favor, actualícela."
 
-#: includes/admin/wccao-functions.php:658
+#: includes/admin/wccao-functions.php:718
 msgid "Add the items of your choice to your cart."
 msgstr "Añade los artículos de tu elección a tu carrito."
 
-#: includes/admin/class-wccao-account.php:151
-#: includes/admin/wccao-functions.php:204
+#: includes/admin/class-wccao-account.php:136
+#: includes/admin/wccao-functions.php:232
 msgid "Amount:"
 msgstr "Cantidad:"
 
-#: includes/admin/wccao-functions.php:322
+#: includes/admin/wccao-functions.php:350
 msgid ""
 "An error occurred while sending your coupons by email (Email template not "
 "found). Please contact us to collect your coupons."
@@ -55,41 +55,41 @@ msgstr ""
 "encontró la plantilla de correo electrónico). Por favor contáctenos para "
 "recoger sus cupones."
 
-#: includes/admin/class-wccao-account.php:160
+#: includes/admin/class-wccao-account.php:145
 msgid "Apply coupon"
 msgstr "Aplicar cupón"
 
 #. translators: %s: order ID
-#: includes/admin/wccao-functions.php:324
+#: includes/admin/wccao-functions.php:352
 msgid "As a reminder, here is your order number to communicate to us: %s"
 msgstr ""
 "Como recordatorio, aquí tienes tu número de pedido para comunicárnoslo: %s"
 
-#: includes/admin/wccao-functions.php:666
+#: includes/admin/wccao-functions.php:726
 msgid "Best regards"
 msgstr "Atentamente"
 
-#: includes/admin/wccao-functions.php:721
+#: includes/admin/wccao-functions.php:781
 msgid "Button background color:"
 msgstr "Color de fondo del botón:"
 
-#: includes/admin/wccao-functions.php:716
+#: includes/admin/wccao-functions.php:776
 msgid "Button color:"
 msgstr "Color del botón:"
 
-#: includes/admin/wccao-functions.php:726
+#: includes/admin/wccao-functions.php:786
 msgid "Button font size (px):"
 msgstr "Tamaño de fuente del botón (px):"
 
-#: includes/admin/wccao-functions.php:706
+#: includes/admin/wccao-functions.php:766
 msgid "Button title:"
 msgstr "Título del botón:"
 
-#: includes/admin/wccao-functions.php:711
+#: includes/admin/wccao-functions.php:771
 msgid "Button URL:"
 msgstr "URL del botón:"
 
-#: includes/admin/class-wccao-account.php:120
+#: includes/admin/class-wccao-account.php:105
 msgid ""
 "By clicking on Apply coupon, the coupon will be automatically added to the "
 "cart if its conditions are met. Otherwise, it will apply once the conditions "
@@ -99,7 +99,7 @@ msgstr ""
 "cesta si se cumplen sus condiciones. De lo contrario, se aplicará una vez se "
 "cumplan las condiciones (por ejemplo, importe mínimo)."
 
-#: includes/admin/wccao-functions.php:601
+#: includes/admin/wccao-functions.php:661
 msgid ""
 "Check this box if the promo code cannot be used in conjunction with other "
 "promo codes."
@@ -107,7 +107,7 @@ msgstr ""
 "Marque esta casilla si el código de promoción no se puede utilizar junto con "
 "otros códigos de promoción."
 
-#: includes/admin/wccao-functions.php:740
+#: includes/admin/wccao-functions.php:800
 msgid ""
 "Check this box if you would like to completely remove all of its data upon "
 "plugin deletion."
@@ -115,24 +115,24 @@ msgstr ""
 "Marque esta casilla si desea eliminar por completo todos sus datos al "
 "eliminar el complemento."
 
-#: includes/admin/wccao-functions.php:486
+#: includes/admin/wccao-functions.php:518
 msgid "Configure generated coupon settings"
 msgstr "Configuración de los cupones generados"
 
-#: includes/admin/wccao-functions.php:491
+#: includes/admin/wccao-functions.php:523
 msgid "Configure the settings of the email received by the buyer"
 msgstr ""
 "Configurar los ajustes del correo electrónico recibido por el comprador"
 
-#: includes/admin/wccao-functions.php:258
+#: includes/admin/wccao-functions.php:286
 msgid "Coupon for order #"
 msgstr "Cupón para el pedido #"
 
-#: includes/admin/wccao-functions.php:255
+#: includes/admin/wccao-functions.php:283
 msgid "Coupon generated manually for #"
 msgstr "Cupón generado manualmente para #"
 
-#: includes/admin/wccao-functions.php:614
+#: includes/admin/wccao-functions.php:674
 msgid "Coupon prefix:"
 msgstr "Prefijo de cupón:"
 
@@ -140,32 +140,36 @@ msgstr "Prefijo de cupón:"
 msgid "Coupon QR Code"
 msgstr "Código QR del cupón"
 
-#: includes/admin/wccao-functions.php:398
+#: includes/admin/wccao-functions.php:593
+msgid "Coupon Start Date:"
+msgstr "Fecha de inicio del cupón:"
+
+#: includes/admin/wccao-functions.php:427
 msgid "Coupon Validity"
 msgstr "Validez del Copón"
 
-#: includes/admin/wccao-functions.php:553
+#: includes/admin/wccao-functions.php:613
 msgid "Coupon Validity (Date)"
 msgstr "Validez del cupón (fecha)"
 
-#: includes/admin/wccao-functions.php:548
+#: includes/admin/wccao-functions.php:608
 msgid "Coupon Validity (Days)"
 msgstr "Validez del cupón (días)"
 
-#: includes/admin/wccao-functions.php:570
+#: includes/admin/wccao-functions.php:630
 msgid "Coupon Validity Date:"
 msgstr "Fecha de validez del cupón:"
 
-#: includes/admin/wccao-functions.php:565
+#: includes/admin/wccao-functions.php:625
 msgid "Coupon Validity Days:"
 msgstr "Días de validez del cupón:"
 
-#: includes/admin/wccao-functions.php:397
-#: includes/admin/wccao-functions.php:545
+#: includes/admin/wccao-functions.php:426
+#: includes/admin/wccao-functions.php:605
 msgid "Coupon Validity Type"
 msgstr "Tipo de validez del cupón"
 
-#: includes/admin/wccao-functions.php:379
+#: includes/admin/wccao-functions.php:407
 msgid "Coupons after order Email"
 msgstr "Correo electrónico Coupons after order"
 
@@ -173,7 +177,7 @@ msgstr "Correo electrónico Coupons after order"
 msgid "Coupons after order for WooCommerce"
 msgstr "Coupons after order for WooCommerce"
 
-#: includes/admin/class-wccao-admin.php:438
+#: includes/admin/class-wccao-admin.php:540
 msgid "Coupons after order for WooCommerce is powered by"
 msgstr "Cupones después de la orden para WooCommerce es impulsado por"
 
@@ -186,31 +190,31 @@ msgstr ""
 "¡Coupons after order for WooCommerce requieren que <a href=\"%s\" "
 "target=\"_blank\">WooCommerce</a> esté instalado y activado!."
 
-#: includes/admin/wccao-functions.php:384
+#: includes/admin/wccao-functions.php:412
 msgid "Coupons after order Misc"
 msgstr "Otros de Coupons after order"
 
-#: includes/admin/wccao-functions.php:374
+#: includes/admin/wccao-functions.php:402
 msgid "Coupons after order Settings"
 msgstr "Ajustes de Coupons after order"
 
-#: includes/admin/wccao-functions.php:389
+#: includes/admin/wccao-functions.php:417
 msgid "Coupons after order Version"
 msgstr "Versión de Coupons after order"
 
-#: includes/admin/class-wccao-account.php:235
+#: includes/admin/class-wccao-account.php:221
 msgid "Coupons Details"
 msgstr "Detalles de los cupones"
 
-#: includes/admin/class-wccao-admin.php:264
+#: includes/admin/class-wccao-admin.php:288
 msgid "Coupons Generated"
 msgstr "Cupones generados"
 
-#: includes/admin/class-wccao-admin.php:247
+#: includes/admin/class-wccao-admin.php:251
 msgid "Coupons generated:"
 msgstr "Cupones generados:"
 
-#: includes/admin/wccao-functions.php:567
+#: includes/admin/wccao-functions.php:627
 msgid "Days"
 msgstr "Días"
 
@@ -218,7 +222,15 @@ msgstr "Días"
 msgid "Dear customer"
 msgstr "Estimado cliente"
 
-#: includes/admin/wccao-functions.php:493
+#: includes/admin/wccao-functions.php:425
+msgid "Define start availability date"
+msgstr "Definir fecha de inicio de disponibilidad"
+
+#: includes/admin/wccao-functions.php:580
+msgid "Define start availability date?"
+msgstr "¿Definir fecha de inicio de disponibilidad?"
+
+#: includes/admin/wccao-functions.php:525
 msgid ""
 "Display of the customer's name in the event of an order or \"Dear customer\" "
 "if coupons generated manually"
@@ -226,45 +238,45 @@ msgstr ""
 "Visualización del nombre del cliente en caso de un pedido o \"Estimado "
 "cliente\" si los cupones se generan manualmente"
 
-#: includes/admin/wccao-functions.php:502
+#: includes/admin/wccao-functions.php:534
 msgid "Displaying a button"
 msgstr "Mostrar un botón"
 
-#: includes/admin/wccao-functions.php:494
+#: includes/admin/wccao-functions.php:526
 msgid "Displaying billing email, useful if coupons are limited to this email"
 msgstr ""
 "Mostrar correo electrónico de facturación, útil si los cupones se limitan a "
 "este correo electrónico"
 
-#: includes/admin/wccao-functions.php:495
+#: includes/admin/wccao-functions.php:527
 msgid "Displaying coupons in list form"
 msgstr "Mostrar cupones en forma de lista"
 
-#: includes/admin/wccao-functions.php:496
+#: includes/admin/wccao-functions.php:528
 msgid "Displaying the coupon amount"
 msgstr "Mostrar el monto del cupón"
 
-#: includes/admin/wccao-functions.php:500
+#: includes/admin/wccao-functions.php:532
 msgid "Displaying the date of the order"
 msgstr "Mostrar la fecha del pedido"
 
-#: includes/admin/wccao-functions.php:501
+#: includes/admin/wccao-functions.php:533
 msgid "Displaying the expiry date"
 msgstr "Mostrar la fecha de vencimiento"
 
-#: includes/admin/wccao-functions.php:499
+#: includes/admin/wccao-functions.php:531
 msgid "Displaying the minimum basket amount to use the coupon"
 msgstr "Mostrar el monto mínimo del carrito para usar el cupón"
 
-#: includes/admin/wccao-functions.php:498
+#: includes/admin/wccao-functions.php:530
 msgid "Displaying the number of coupons generated"
 msgstr "Mostrar el número de cupones generados"
 
-#: includes/admin/wccao-functions.php:497
+#: includes/admin/wccao-functions.php:529
 msgid "Displaying the total order amount"
 msgstr "Mostrar el monto total del pedido"
 
-#: includes/admin/wccao-functions.php:659
+#: includes/admin/wccao-functions.php:719
 msgid ""
 "During the payment process, enter one of these promo codes in the "
 "corresponding \"Promo Code\" box."
@@ -273,20 +285,20 @@ msgstr ""
 "la casilla correspondiente a ‘Código promocional’."
 
 #. translators: %s: minimum cart amount for coupon use
-#: includes/admin/wccao-functions.php:654
+#: includes/admin/wccao-functions.php:714
 msgid "Each promo code is valid for a minimum cart value of %s."
 msgstr ""
 "Cada código promocional es válido para un valor mínimo de carrito de %s."
 
-#: includes/admin/class-wccao-admin.php:149
+#: includes/admin/class-wccao-admin.php:153
 msgid "Email"
 msgstr "Correo electrónico"
 
-#: includes/admin/wccao-functions.php:405
+#: includes/admin/wccao-functions.php:434
 msgid "Email button"
 msgstr "Botón de correo electrónico"
 
-#: includes/admin/wccao-functions.php:639
+#: includes/admin/wccao-functions.php:699
 msgid "Email header:"
 msgstr "Encabezado del correo electrónico:"
 
@@ -294,28 +306,38 @@ msgstr "Encabezado del correo electrónico:"
 msgid "Email Model"
 msgstr "Modelo de correo electrónico"
 
-#: includes/admin/class-wccao-admin.php:392
+#: includes/admin/class-wccao-admin.php:444
 msgid "Email sent."
 msgstr "Email enviado."
 
-#: includes/admin/wccao-functions.php:401
+#: includes/admin/wccao-functions.php:430
 msgid "Email settings"
 msgstr "Ajustes del correo electrónico"
 
-#: includes/admin/wccao-functions.php:634
+#: includes/admin/wccao-functions.php:694
 msgid "Email subject:"
 msgstr "Asunto del correo electrónico:"
 
-#: includes/admin/wccao-functions.php:402
+#: includes/admin/wccao-functions.php:431
 msgid "Email text to customize with shortcodes"
 msgstr "Texto de correo electrónico para personalizar con códigos cortos"
 
-#: includes/admin/wccao-functions.php:396
-#: includes/admin/wccao-functions.php:535
+#: includes/admin/wccao-functions.php:424
+#: includes/admin/wccao-functions.php:567
 msgid "Enable Coupon after order"
 msgstr "Activar cupón después del pedido"
 
-#: includes/admin/wccao-functions.php:755
+#: includes/admin/wccao-functions.php:595
+msgid ""
+"Enter the desired date on which the coupon will be published and therefore "
+"valid. Please note, enter a date before the expiration date of the coupon if "
+"you have configured it."
+msgstr ""
+"Ingrese la fecha deseada en la que se publicará el cupón y, por lo tanto, "
+"será válido. Tenga en cuenta que ingrese una fecha anterior a la fecha de "
+"vencimiento del cupón si lo ha configurado."
+
+#: includes/admin/wccao-functions.php:815
 msgid ""
 "Enter the information as follows: \"email;order_amount\". The email and the "
 "amount must be separated by \";\" and the decimal separator is \".\""
@@ -324,31 +346,31 @@ msgstr ""
 "El correo electrónico y el importe deben ir separados por \";\" y el "
 "separador decimal es \".\""
 
-#: includes/admin/class-wccao-admin.php:371
+#: includes/admin/class-wccao-admin.php:423
 msgid "Error decoding JSON."
 msgstr "Error al descodificar JSON."
 
-#: includes/admin/class-wccao-admin.php:88
+#: includes/admin/class-wccao-admin.php:92
 msgid "Error during AJAX request:"
 msgstr "Error durante la solicitud AJAX:"
 
-#: includes/admin/class-wccao-admin.php:83
+#: includes/admin/class-wccao-admin.php:87
 msgid "Error sending test email. Please try again."
 msgstr "Error al enviar el correo electrónico de prueba. Inténtalo de nuevo."
 
-#: includes/admin/class-wccao-account.php:137
+#: includes/admin/class-wccao-account.php:122
 msgid "Expiration date:"
 msgstr "Fecha de caducidad:"
 
-#: includes/admin/wccao-functions.php:513
+#: includes/admin/wccao-functions.php:545
 msgid "Find here various administration options"
 msgstr "Encuentre aquí varias opciones de administración"
 
-#: includes/admin/class-wccao-account.php:118
+#: includes/admin/class-wccao-account.php:103
 msgid "Find your still valid personal coupons and their details here."
 msgstr "Encuentre aquí sus cupones personales aún válidos y sus detalles."
 
-#: includes/admin/wccao-functions.php:758
+#: includes/admin/wccao-functions.php:818
 msgid "Generate and send"
 msgstr "Generar y enviar"
 
@@ -360,33 +382,33 @@ msgstr ""
 "Generar cupones tras la finalización del pedido. La suma de los cupones será "
 "igual al importe del pedido."
 
-#: includes/admin/wccao-functions.php:408
+#: includes/admin/wccao-functions.php:437
 msgid "Generate coupons manually and send them directly"
 msgstr "Genere cupones manualmente y envíelos directamente"
 
-#: includes/admin/wccao-functions.php:207
+#: includes/admin/wccao-functions.php:235
 msgid "Gift coupon"
 msgstr "Cupón regalo"
 
-#: includes/admin/class-wccao-admin.php:501
+#: includes/admin/class-wccao-admin.php:603
 msgid "Great! You are using the latest version of "
 msgstr "¡Genial! Está utilizando la última versión de "
 
 #. translators: %s: buyer name
-#: includes/admin/wccao-functions.php:650
+#: includes/admin/wccao-functions.php:710
 msgid "Hello %s,"
 msgstr "Hola %s,"
 
 #. translators: %s: list of coupons generated
-#: includes/admin/wccao-functions.php:655
+#: includes/admin/wccao-functions.php:715
 msgid "Here are your promo codes: %s"
 msgstr "Aquí están tus códigos promocionales: %s"
 
-#: includes/admin/class-wccao-admin.php:82
+#: includes/admin/class-wccao-admin.php:86
 msgid "Hide email template"
 msgstr "Ocultar plantilla de correo electrónico"
 
-#: includes/admin/wccao-functions.php:596
+#: includes/admin/wccao-functions.php:656
 msgid "How many times this coupon can be used before it is void."
 msgstr "Cuántas veces se puede utilizar este cupón antes de que quede anulado."
 
@@ -398,11 +420,11 @@ msgstr "https://github.com/Webpixelia"
 msgid "https://webpixelia.com/"
 msgstr "https://webpixelia.com/"
 
-#: includes/admin/wccao-functions.php:447
+#: includes/admin/wccao-functions.php:479
 msgid "I'm enjoying it now"
 msgstr "Lo estoy disfrutando ahora"
 
-#: includes/admin/wccao-functions.php:611
+#: includes/admin/wccao-functions.php:671
 msgid ""
 "If checked, only the order billing email address will be able to benefit "
 "from the coupons generated"
@@ -410,11 +432,11 @@ msgstr ""
 "Si está marcado, solo la dirección de correo electrónico de facturación del "
 "pedido podrá beneficiarse de los cupones generados"
 
-#: includes/admin/wccao-functions.php:621
+#: includes/admin/wccao-functions.php:681
 msgid "If empty, by default, it is \"apply_coupon\""
 msgstr "Si está vacío, por defecto es \"apply_coupon\""
 
-#: includes/admin/wccao-functions.php:616
+#: includes/admin/wccao-functions.php:676
 #| msgid ""
 #| "(If empty, by default, it is <strong>\"ref\"</strong> and the code is in "
 #| "this form \"refOrderID-RandomNumber\")"
@@ -425,12 +447,12 @@ msgstr ""
 "Si está vacío, de forma predeterminada, es \"ref\" y el código tiene este "
 "formato \"refIDpedido-NúmeroAeatorio\""
 
-#: includes/admin/wccao-functions.php:606
+#: includes/admin/wccao-functions.php:666
 #| msgid "%s (If empty, it is the amount of the individual coupon.)"
 msgid "If empty, it is the amount of the individual coupon."
 msgstr "Si está vacío, es el monto del cupón individual."
 
-#: includes/admin/wccao-functions.php:664
+#: includes/admin/wccao-functions.php:724
 msgid ""
 "If you have any questions or need assistance, our customer service team is "
 "here to help."
@@ -438,62 +460,70 @@ msgstr ""
 "Si tiene alguna pregunta o necesita ayuda, nuestro equipo de atención al "
 "cliente está aquí para ayudarle."
 
-#: includes/admin/wccao-functions.php:599
+#: includes/admin/wccao-functions.php:659
 msgid "Individual use only:"
 msgstr "Solo uso individual:"
 
-#: includes/admin/wccao-functions.php:523
+#: includes/admin/wccao-functions.php:555
 msgid "Installed version "
 msgstr "Versión instalada "
 
-#: includes/admin/class-wccao-account.php:139
+#: includes/admin/class-wccao-account.php:124
 msgid "Invalid expiration date format"
 msgstr "Formato de fecha de caducidad no válido"
 
-#: includes/admin/wccao-functions.php:609
+#: includes/admin/wccao-functions.php:669
 msgid "Limit to the buyer email:"
 msgstr "Límite al correo electrónico del comprador:"
 
-#: includes/admin/wccao-functions.php:594
+#: includes/admin/wccao-functions.php:654
 msgid "Limit Usage of Coupons Generated:"
 msgstr "Limitar el uso de los cupones generados:"
 
-#: includes/admin/wccao-functions.php:604
+#: includes/admin/wccao-functions.php:664
 msgid "Minimum amount:"
 msgstr "Importe mínimo:"
 
-#: includes/admin/class-wccao-admin.php:150
+#: includes/admin/class-wccao-admin.php:154
 msgid "Misc"
 msgstr "Otros"
 
-#: includes/admin/wccao-functions.php:207
+#: includes/admin/wccao-functions.php:235
 msgid "My coupon code"
 msgstr "Mi código de cupón"
 
 #: includes/admin/class-wccao-account.php:66
 #: includes/admin/class-wccao-account.php:77
-#: includes/admin/class-wccao-account.php:247
+#: includes/admin/class-wccao-account.php:233
 msgid "My Coupons"
 msgstr "Mis cupones"
 
-#: includes/admin/class-wccao-account.php:142
+#: includes/admin/wccao-functions.php:588
+msgid "No"
+msgstr "No"
+
+#: includes/admin/class-wccao-admin.php:333
+msgid "No date"
+msgstr "Sin fecha"
+
+#: includes/admin/class-wccao-account.php:127
 msgid "No expiration date"
 msgstr "Sin fecha de vencimiento"
 
-#: includes/admin/wccao-functions.php:605
+#: includes/admin/wccao-functions.php:665
 msgid "No minimum"
 msgstr "Sin mínimo"
 
-#: includes/admin/wccao-functions.php:590
+#: includes/admin/wccao-functions.php:650
 msgid "Number of Coupons Generated:"
 msgstr "Número de cupones generados:"
 
-#: includes/admin/wccao-functions.php:399
+#: includes/admin/wccao-functions.php:428
 msgid "Other Parameters"
 msgstr "Otros parámetros"
 
 #. translators: %s: price decimal separator
-#: includes/admin/class-wccao-admin.php:80
+#: includes/admin/class-wccao-admin.php:84
 msgid ""
 "Please enter a numeric value and the defined decimal separator (%s), without "
 "thousands separators or currency symbols"
@@ -501,16 +531,16 @@ msgstr ""
 "Ingrese un valor numérico y el separador decimal definido (%s), sin "
 "separadores de miles ni símbolos de moneda"
 
-#: includes/admin/class-wccao-admin.php:85
+#: includes/admin/class-wccao-admin.php:89
 msgid "Please enter a valid email address."
 msgstr "Por favor, introduce una dirección de correo electrónico válida."
 
-#: includes/admin/class-wccao-admin.php:84
+#: includes/admin/class-wccao-admin.php:88
 msgid "Please enter an email address."
 msgstr "Por favor introduzca una dirección de correo eléctronico."
 
 #. translators: %2$s: end date of validity of generated coupons
-#: includes/admin/wccao-functions.php:662
+#: includes/admin/wccao-functions.php:722
 msgid ""
 "Please note that these promo codes are valid from %1$s until %2$s and cannot "
 "be combined in a single order."
@@ -518,11 +548,11 @@ msgstr ""
 "Tenga en cuenta que estos códigos promocionales son válidos desde %1$s hasta "
 "%2$s y no pueden ser combinados en un solo pedido."
 
-#: includes/admin/class-wccao-account.php:152
+#: includes/admin/class-wccao-account.php:137
 msgid "Remaining uses:"
 msgstr "Usos restantes:"
 
-#: includes/admin/wccao-functions.php:407
+#: includes/admin/wccao-functions.php:436
 msgid "Remove data on uninstall"
 msgstr "Eliminar datos al desinstalar"
 
@@ -534,21 +564,25 @@ msgstr "Guarda el cupón y se generará el código QR"
 msgid "Send email test"
 msgstr "Enviar correo electrónico de prueba"
 
-#: includes/admin/class-wccao-admin.php:148
-#: includes/admin/class-wccao-admin.php:465
+#: includes/admin/class-wccao-admin.php:152
+#: includes/admin/class-wccao-admin.php:567
 msgid "Settings"
 msgstr "Ajustes"
 
-#: includes/admin/wccao-functions.php:504
+#: includes/admin/wccao-functions.php:536
 msgid "Shortcodes:"
 msgstr "Códigos cortos:"
 
-#: includes/admin/class-wccao-admin.php:81
+#: includes/admin/class-wccao-admin.php:85
 #: templates/html-email-template-preview-admin.php:18
 msgid "Show email template"
 msgstr "Mostrar plantilla de correo electrónico"
 
-#: includes/admin/class-wccao-admin.php:89
+#: includes/admin/class-wccao-admin.php:299
+msgid "Start date"
+msgstr "Fecha de inicio"
+
+#: includes/admin/class-wccao-admin.php:93
 msgid "Successful processing for all email-value pairs."
 msgstr ""
 "Procesamiento satisfactorio de todos los pares correo electrónico-valor."
@@ -557,27 +591,35 @@ msgstr ""
 msgid "Test email sent successfully!"
 msgstr "¡El correo electrónico de prueba se envió correctamente!"
 
-#: includes/admin/wccao-functions.php:665
+#: includes/admin/wccao-functions.php:725
 msgid "Thank you for your loyalty. We hope you enjoy this special."
 msgstr "Gracias por tu lealtad. Esperamos que disfrutes de este especial."
 
-#: includes/admin/wccao-functions.php:441
+#: includes/admin/wccao-functions.php:473
 msgid "Thank you for your order"
 msgstr "Gracias por tu pedido"
 
 #. translators: %s: coupon amount
-#: includes/admin/wccao-functions.php:660
+#: includes/admin/wccao-functions.php:720
 msgid "The discount of %s will be automatically applied to your order."
 msgstr "El descuento del %s se aplicará automáticamente a tu pedido."
 
-#: includes/admin/class-wccao-admin.php:90
+#: includes/admin/class-wccao-admin.php:94
 msgid "The entry format is invalid. Please use the email;amount format."
 msgstr ""
 "El formato de entrada no es válido. Utilice el formato de correo electrónico;"
 "monto."
 
+#: includes/admin/class-wccao-admin.php:82
+msgid ""
+"The start date of validity cannot be later than the expiry date of the "
+"coupon."
+msgstr ""
+"La fecha de inicio de validez no puede ser posterior a la fecha de "
+"vencimiento del cupón."
+
 #. translators: %3$s: amount of each coupon
-#: includes/admin/wccao-functions.php:653
+#: includes/admin/wccao-functions.php:713
 msgid ""
 "To thank you, we are sending you your promo codes corresponding to our full "
 "refund offer. You spent %1$s on your last purchase, entitling you to %2$s "
@@ -589,34 +631,34 @@ msgstr ""
 "valor de %3$s."
 
 #. translators: %s: list of coupons generated
-#: includes/admin/wccao-functions.php:656
+#: includes/admin/wccao-functions.php:716
 msgid ""
 "To use these promo codes on your next purchase, simply follow these steps:"
 msgstr ""
 "Para usar estos códigos promocionales en tu próxima compra, simplemente "
 "sigue estos pasos:"
 
-#: includes/admin/class-wccao-admin.php:505
+#: includes/admin/class-wccao-admin.php:607
 msgid "Unable to check the latest version of the plugin."
 msgstr "No se puede comprobar la última versión del plugin."
 
-#: includes/admin/class-wccao-admin.php:87
+#: includes/admin/class-wccao-admin.php:91
 msgid "Undefined error"
 msgstr "Error indefinido"
 
-#: includes/admin/class-wccao-account.php:156
+#: includes/admin/class-wccao-account.php:141
 msgid "Unlimited"
 msgstr "Ilimitado"
 
-#: includes/admin/wccao-functions.php:619
+#: includes/admin/wccao-functions.php:679
 msgid "URL Parameter link:"
 msgstr "Enlace de parámetro en URL:"
 
-#: includes/admin/class-wccao-admin.php:151
+#: includes/admin/class-wccao-admin.php:155
 msgid "Version"
 msgstr "Versión"
 
-#: includes/admin/class-wccao-admin.php:465
+#: includes/admin/class-wccao-admin.php:567
 msgid "View Coupons after order for WooCommerce settings"
 msgstr "Ver configuración de Coupons after order for WooCommerce"
 
@@ -625,7 +667,7 @@ msgid "View directly below the changes you made in the text editors"
 msgstr ""
 "Vea directamente debajo los cambios que realizó en los editores de texto"
 
-#: includes/admin/class-wccao-account.php:218
+#: includes/admin/class-wccao-account.php:204
 msgid "View my coupons"
 msgstr "Ver mis cupones"
 
@@ -633,7 +675,11 @@ msgstr "Ver mis cupones"
 msgid "Webpixelia"
 msgstr "Webpixelia"
 
-#: includes/admin/class-wccao-account.php:119
+#: includes/admin/wccao-functions.php:583
+msgid "Yes"
+msgstr "Sí"
+
+#: includes/admin/class-wccao-account.php:104
 msgid ""
 "You can click the Copy icon next to the code to copy the code or click Apply "
 "coupon."
@@ -651,12 +697,12 @@ msgid "You can view the email template that will be sent to the buyer:"
 msgstr ""
 "Puede ver la plantilla de correo electrónico que se enviará al comprador:"
 
-#: includes/admin/class-wccao-account.php:167
+#: includes/admin/class-wccao-account.php:152
 msgid "You don't have any coupons yet."
 msgstr "Aún no tienes ningún cupón."
 
 #. translators: %s: shop
-#: includes/admin/wccao-functions.php:438
+#: includes/admin/wccao-functions.php:470
 #| msgid "Your Promo Codes to Enjoy the Refund Offer"
 msgid "Your promo codes to enjoy the refund offer at %s"
 msgstr ""

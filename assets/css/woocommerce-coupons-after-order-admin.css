@@ -84,7 +84,7 @@ input {font-weight: normal;}
     list-style-position: inside;
 }
 
-.woocommerce-help-tip:hover::before {
+.woocommerce-help-tip::before {
     content:'';
     display: none;
 }
