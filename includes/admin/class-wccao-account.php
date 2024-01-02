@@ -11,15 +11,15 @@ class WCCAO_Account {
 
 	public function __construct() {
 		add_action('wp_enqueue_scripts', array($this, 'wccao_enqueue_frontend_css'));
-		register_activation_hook(__FILE__, array($this, 'activate_plugin'));
-		add_action('init', array($this, 'add_endpoint'));
-		add_filter('query_vars', array($this, 'add_query_vars'), 0);
-		add_filter('woocommerce_account_menu_items', array($this, 'add_menu_item'));
-		add_filter('the_title', array($this, 'endpoint_title'));
-		add_action('woocommerce_account_' . $this->key_page . '_endpoint', array($this, 'endpoint_my_coupons_content'));
-		add_action('woocommerce_before_cart', array($this, 'add_popup_link_to_display_coupons'));
-		add_action('woocommerce_before_checkout_form', array($this, 'add_popup_link_to_display_coupons'));
-		add_action('wp_footer', array($this, 'display_popup_coupons_script'));
+		register_activation_hook(__FILE__, array($this, 'wccao_activate_plugin'));
+		add_action('init', array($this, 'wccao_add_endpoint'));
+		add_filter('query_vars', array($this, 'wccao_add_query_vars'), 0);
+		add_filter('woocommerce_account_menu_items', array($this, 'wccao_add_menu_item'));
+		add_filter('the_title', array($this, 'wccao_endpoint_title'));
+		add_action('woocommerce_account_' . $this->key_page . '_endpoint', array($this, 'wccao_endpoint_my_coupons_content'));
+		add_action('woocommerce_before_cart', array($this, 'wccao_add_popup_link_to_display_coupons'));
+		add_action('woocommerce_before_checkout_form', array($this, 'wccao_add_popup_link_to_display_coupons'));
+		add_action('wp_footer', array($this, 'wccao_display_popup_coupons_script'));
 	}
 
 	public function wccao_enqueue_frontend_css() {
@@ -27,8 +27,8 @@ class WCCAO_Account {
 		wp_enqueue_script( 'frontend-coupons-after-order-for-woocommerce', plugins_url( 'assets/js/woocommerce-coupons-after-order-frontend.js', Coupons_After_Order_WooCommerce()->file ), array( 'jquery', 'wp-i18n' ), Coupons_After_Order_WooCommerce()->version, true );
 	}
 
-	public function activate_plugin() {
-		$this->add_endpoint();
+	public function wccao_activate_plugin() {
+		$this->wccao_add_endpoint();
 		flush_rewrite_rules();
 	}
 
@@ -36,7 +36,7 @@ class WCCAO_Account {
 	 * Adds a custom endpoint for $key_page to WordPress rewrite rules.
 	 * This allows for the creation of a dedicated URL for handling "My Coupons" functionality.
 	 */
-	public function add_endpoint() {
+	public function wccao_add_endpoint() {
 		add_rewrite_endpoint($this->key_page, EP_ROOT | EP_PAGES);
 	}
 
@@ -47,7 +47,7 @@ class WCCAO_Account {
 	 * @param array $vars An array of existing query variables.
 	 * @return array The modified array with the addition of $key_page.
 	 */
-	public function add_query_vars($vars) {
+	public function wccao_add_query_vars($vars) {
 		$vars[] = $this->key_page;
 		return $vars;
 	}
@@ -60,7 +60,7 @@ class WCCAO_Account {
 	 * @param array $items An array of user account menu items.
 	 * @return array The modified array with the addition of $key_page.
 	 */
-	public function add_menu_item($items) {
+	public function wccao_add_menu_item($items) {
 		$logout = $items['customer-logout'];
 		unset($items['customer-logout']);
 		$items[$this->key_page] = __('My Coupons', 'coupons-after-order');
@@ -71,7 +71,7 @@ class WCCAO_Account {
 	/**
 	* Endpoint title.
 	*/
-	public function endpoint_title($title) {
+	public function wccao_endpoint_title($title) {
 		global $wp_query;
 		if (isset($wp_query->query_vars[$this->key_page]) && is_account_page()) {
 			return __('My Coupons', 'coupons-after-order');
@@ -90,7 +90,7 @@ class WCCAO_Account {
 	 * @since 1.3.2
 	 * @access public
 	 */
-	public function endpoint_my_coupons_content() {
+	public function wccao_endpoint_my_coupons_content() {
 		// Get the user ID of the currently logged-in user
 		$user_id = get_current_user_id();
 	
@@ -108,7 +108,7 @@ class WCCAO_Account {
 				// Retrieve coupon object
 				$coupon = new WC_Coupon($coupon_code);
 				$link_coupons_email_instance = new LinkCouponsEmail();
-				$coupon_url = $link_coupons_email_instance->create_link_to_apply_coupon($coupon_code);
+				$coupon_url = $link_coupons_email_instance->wccao_create_link_to_apply_coupon($coupon_code);
 
 				// Expiration date management
 				$expiration_date = $coupon->get_date_expires();
@@ -200,7 +200,7 @@ class WCCAO_Account {
 	}
 
 	// Add the link to the cart page
-	public function add_popup_link_to_display_coupons() {
+	public function wccao_add_popup_link_to_display_coupons() {
 		echo '<p><a href="#" class="open-popup-link">' . esc_html__('View my coupons', 'coupons-after-order') . '</a></p>';
 	}
 	
@@ -209,7 +209,7 @@ class WCCAO_Account {
 	 *
 	 * @return void
 	 */
-	public function display_popup_coupons_script() {
+	public function wccao_display_popup_coupons_script() {
 		?>
 		<script type="text/javascript">
 			jQuery(document).ready(function($) {
@@ -218,7 +218,7 @@ class WCCAO_Account {
 					var popup = window.open('', 'CouponPopup', 'width=600,height=400,scrollbars=yes,resizable=yes');
 					popup.document.write('<html><head>');
 					popup.document.write('<link rel="stylesheet" type="text/css" href="' + '<?php echo plugins_url( 'assets/css/woocommerce-coupons-after-order-frontend.css', Coupons_After_Order_WooCommerce()->file ); ?>' + '">');
-					popup.document.write('<title><?php _e('Coupons Details', 'coupons-after-order'); ?></title></head><body><div style="padding:2rem">');
+					popup.document.write('<title><?php esc_html_e('Coupons Details', 'coupons-after-order'); ?></title></head><body><div style="padding:2rem">');
 					popup.document.write(content);
 					popup.document.write('</div>');
 					popup.document.write('<script type="text/javascript" src="' + '<?php echo plugins_url( "assets/js/woocommerce-coupons-after-order-frontend.js", Coupons_After_Order_WooCommerce()->file ); ?>' + '"><\/script>');
@@ -230,7 +230,7 @@ class WCCAO_Account {
 				$('.open-popup-link').on('click', function(e) {
 					e.preventDefault();
 					// Get the contents of the method and send it to the popup opening function
-					var content = '<h1><?php echo esc_html__('My Coupons', 'coupons-after-order'); ?></h1>' + <?php ob_start(); $this->endpoint_my_coupons_content(); echo json_encode(ob_get_clean()); ?>;
+					var content = '<h1><?php echo esc_html__('My Coupons', 'coupons-after-order'); ?></h1>' + <?php ob_start(); $this->wccao_endpoint_my_coupons_content(); echo json_encode(ob_get_clean()); ?>;
 					openPopup(content);
 				});
 			});

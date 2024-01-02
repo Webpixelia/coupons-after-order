@@ -161,12 +161,12 @@ class Coupons_After_Order_WooCommerce {
 		deactivate_plugins(plugin_basename(__FILE__));
 		$url_wc = 'http://wordpress.org/extend/plugins/woocommerce/';
 		$error_message = sprintf(
-		/* translators: %s: link to WooCommerce website */	
-			__('Coupons After Order for WooCommerce requires <a href="%s" target="_blank">WooCommerce</a> to be installed & activated!.', 'coupons-after-order'), 
+			/* translators: %s: link to WooCommerce website */
+			__('Coupons After Order for WooCommerce requires <a href="%s" target="_blank">WooCommerce</a> to be installed & activated!.', 'coupons-after-order'),
 			$url_wc
 		);
 
-		printf('<div class="error"><p>%s</p></div>', $error_message); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		printf('<div class="error"><p>%s</p></div>', esc_html($error_message)); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
     /**

@@ -15,8 +15,8 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
     class LinkCouponsEmail {
 
         public function __construct() {
-            add_action('template_redirect', array($this, 'apply_coupon_via_parameter'));
-            add_action('woocommerce_cart_calculate_fees', array($this, 'check_and_apply_coupon'));
+            add_action('template_redirect', array($this, 'wccao_apply_coupon_via_parameter'));
+            add_action('woocommerce_cart_calculate_fees', array($this, 'wccao_check_and_apply_coupon'));
             add_action('add_meta_boxes', array($this, 'wccao_qrcode_meta_box'));
         }
 
@@ -32,13 +32,13 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
          * 
          * @param string $parameter_link_coupon The name of the URL parameter used to pass the coupon code.
          */
-        public function apply_coupon_via_parameter() {
+        public function wccao_apply_coupon_via_parameter() {
             $parameter_link_coupon = get_option('coupons_after_order_url_parameter');
             if (isset($_GET[$parameter_link_coupon])) {                
                 $coupon_code = sanitize_text_field($_GET[$parameter_link_coupon]);
                 
                 if (wc_coupons_enabled() && wc_get_coupon_id_by_code($coupon_code)) {
-                    if ($this->check_cart_conditions($coupon_code)) {
+                    if ($this->wccao_check_cart_conditions($coupon_code)) {
                         WC()->cart->apply_coupon($coupon_code);
                         setcookie('wccao_applied_coupon', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN);
                     } else {
@@ -66,7 +66,7 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
          *
          * @return bool True if the coupon meets all conditions and can be applied, false otherwise.
          */
-        public function check_cart_conditions($coupon_code) {
+        public function wccao_check_cart_conditions($coupon_code) {
             // Récupérer le coupon basé sur le code
             $coupon = new WC_Coupon($coupon_code);
             
@@ -110,12 +110,12 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
          *
          * @param WC_Cart $cart The WooCommerce cart object.
          */
-        public function check_and_apply_coupon($cart) {
+        public function wccao_check_and_apply_coupon($cart) {
             if (isset($_COOKIE['applied_coupon']) && !empty($_COOKIE['applied_coupon'])) {
                 $coupon_code = sanitize_text_field($_COOKIE['applied_coupon']);
         
                 if (!in_array($coupon_code, $cart->get_applied_coupons())) {
-                    if ($this->check_cart_conditions($coupon_code)) {
+                    if ($this->wccao_check_cart_conditions($coupon_code)) {
                         $cart->apply_coupon($coupon_code);
                         setcookie('applied_coupon', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN);
                     }
@@ -139,7 +139,7 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
          *
          * @return string The link to apply the coupon code.
          */
-        public function create_link_to_apply_coupon($coupon_code) {
+        public function wccao_create_link_to_apply_coupon($coupon_code) {
             $parameter_link_coupon = get_option('coupons_after_order_url_parameter');
             return add_query_arg($parameter_link_coupon, $coupon_code, home_url());
         }
@@ -160,7 +160,7 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
             if ($post_type === 'shop_coupon') {
                 add_meta_box(
                     'wccao_qr_code',
-                    __('Coupon QR Code', 'coupons-after-order'),
+                    esc_html__('Coupon QR Code', 'coupons-after-order'),
                     array($this, 'wccao_qrcode_meta_box_callback'),
                     'shop_coupon',
                     'side',
@@ -181,7 +181,7 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
          *
          * @return string The SVG representation of the QR code image.
          */
-        public function generate_qr_code_image($coupon_url) {
+        public function wccao_generate_qr_code_image($coupon_url) {
             $qrCode = \BaconQrCode\Encoder\Encoder::encode($coupon_url, \BaconQrCode\Common\ErrorCorrectionLevel::L());
             $renderer = new \BaconQrCode\Renderer\ImageRenderer(
                 new \BaconQrCode\Renderer\RendererStyle\RendererStyle(200),
@@ -202,7 +202,7 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
          *
          * @return string The base64-encoded PNG representation of the QR code image.
          */
-        public function generate_qr_code_image_base64($coupon_url) {
+        public function wccao_generate_qr_code_image_base64($coupon_url) {
             $renderer = new ImageRenderer(
                 new RendererStyle(150),
                 new ImagickImageBackEnd()
@@ -228,12 +228,12 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
         public function wccao_qrcode_meta_box_callback($post) {
             $coupon_code = $post->post_name;
             if ($post->ID) {
-                $coupon_url = $this->create_link_to_apply_coupon($coupon_code);
-                $qrCodeImageBase64 = $this->generate_qr_code_image_base64($coupon_url);
+                $coupon_url = $this->wccao_create_link_to_apply_coupon($coupon_code);
+                $qrCodeImageBase64 = $this->wccao_generate_qr_code_image_base64($coupon_url);
 
                 printf('<div id="wccao-qr-code"><img src="%s" alt="QR Code"></div>', $qrCodeImageBase64);
             } else {
-                echo '<p>'.__('Save coupon then QR code will be generated','coupons-after-order').'</p>';
+                echo '<p>' . esc_html__('Save coupon then QR code will be generated','coupons-after-order') . '</p>';
             }
         }
         

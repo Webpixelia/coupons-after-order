@@ -23,7 +23,7 @@ $email_bt_url = isset( $_GET['coupons_after_order_email_bt_url'] ) ? sanitize_ur
 $email_bt_color = isset( $_GET['coupons_after_order_email_bt_color'] ) ? sanitize_hex_color(wp_unslash( $_GET['coupons_after_order_email_bt_color'] )) : get_option('coupons_after_order_email_bt_color');
 $email_bt_bg_color = isset( $_GET['coupons_after_order_email_bt_bg_color'] ) ? sanitize_hex_color(wp_unslash( $_GET['coupons_after_order_email_bt_bg_color'] )) : get_option('coupons_after_order_email_bt_bg_color');
 $email_bt_font_size = isset( $_GET['coupons_after_order_email_bt_font_size'] ) ? absint(wp_unslash( $_GET['coupons_after_order_email_bt_font_size'] )) : get_option('coupons_after_order_email_bt_font_size');
-$wccao_bt = '<a href="' . $email_bt_url . '" target="_blank" style="text-decoration:none;display:inline-block;padding:10px 30px;margin:10px 0;font-size:' . $email_bt_font_size . 'px;color:' . $email_bt_color . ';background:' . $email_bt_bg_color . ';">' . $email_bt_title . '</a>';
+$wccao_bt = '<a href="' . esc_url($email_bt_url) . '" target="_blank" style="text-decoration:none;display:inline-block;padding:10px 30px;margin:10px 0;font-size:' . $email_bt_font_size . 'px;color:' . $email_bt_color . ';background:' . $email_bt_bg_color . ';">' . $email_bt_title . '</a>';
 
 // Shortcodes
 $content_email = str_replace( '{billing_first_name}', esc_html($first_name ), $content_email );
@@ -91,8 +91,8 @@ $content_email = str_replace( '{shop_button}', $wccao_bt, $content_email );
 			}
 		</style>
 	</head>
-	<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="background-color: <?= get_option('woocommerce_email_background_color'); ?>; padding: 0; text-align: center;">
-		<table width="100%" id="outer_wrapper" style="background-color: <?= get_option('woocommerce_email_background_color'); ?>;">
+	<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="background-color: <?php echo get_option('woocommerce_email_background_color'); ?>; padding: 0; text-align: center;">
+		<table width="100%" id="outer_wrapper" style="background-color: <?php echo get_option('woocommerce_email_background_color'); ?>;">
 			<tr>
 				<td><!-- Spacer for consistent sizing and layout across email clients. --></td>
 				<td width="600">
@@ -113,7 +113,7 @@ $content_email = str_replace( '{shop_button}', $wccao_bt, $content_email );
 										<tr>
 											<td align="center" valign="top">
 												<!-- Header -->
-												<table border="0" cellpadding="0" cellspacing="0" width="100%" id="template_header" style='background-color: <?= get_option('woocommerce_email_base_color'); ?>; color: #fff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; border-radius: 3px 3px 0 0;'>
+												<table border="0" cellpadding="0" cellspacing="0" width="100%" id="template_header" style='background-color: <?php echo get_option('woocommerce_email_base_color'); ?>; color: #fff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; border-radius: 3px 3px 0 0;'>
 													<tr>
 														<td id="header_wrapper" style="padding: 36px 48px; display: block;">
 															<h1 style='font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 30px; font-weight: 300; line-height: 150%; margin: 0; text-align: left; text-shadow: 0 1px 0 #9976c2; color: #fff; background-color: inherit;'><?php echo esc_attr($email_header) ; ?></h1>
