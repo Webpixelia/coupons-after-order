@@ -231,7 +231,7 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
                 $coupon_url = $this->wccao_create_link_to_apply_coupon($coupon_code);
                 $qrCodeImageBase64 = $this->wccao_generate_qr_code_image_base64($coupon_url);
 
-                printf('<div id="wccao-qr-code"><img src="%s" alt="QR Code"></div>', $qrCodeImageBase64);
+                printf('<div id="wccao-qr-code"><img src="%s" alt="QR Code"></div>', esc_attr($qrCodeImageBase64));
             } else {
                 echo '<p>' . esc_html__('Save coupon then QR code will be generated','coupons-after-order') . '</p>';
             }

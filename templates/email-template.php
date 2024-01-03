@@ -43,7 +43,7 @@ $content_email = str_replace( '{shop_button}', $wccao_bt, $content_email );
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=<?php bloginfo( 'charset' ); ?>" />
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
-		<title><?php echo get_bloginfo( 'name', 'display' ); ?></title>
+		<title><?php echo esc_html(get_bloginfo( 'name', 'display' )); ?></title>
 		<style>
 			.wccao-coupons-list {
 			    list-style-type: none;
@@ -91,8 +91,8 @@ $content_email = str_replace( '{shop_button}', $wccao_bt, $content_email );
 			}
 		</style>
 	</head>
-	<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="background-color: <?php echo get_option('woocommerce_email_background_color'); ?>; padding: 0; text-align: center;">
-		<table width="100%" id="outer_wrapper" style="background-color: <?php echo get_option('woocommerce_email_background_color'); ?>;">
+	<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="background-color: <?php echo esc_attr(get_option('woocommerce_email_background_color')); ?>; padding: 0; text-align: center;">
+		<table width="100%" id="outer_wrapper" style="background-color: <?php echo esc_attr(get_option('woocommerce_email_background_color')); ?>;">
 			<tr>
 				<td><!-- Spacer for consistent sizing and layout across email clients. --></td>
 				<td width="600">
@@ -113,7 +113,7 @@ $content_email = str_replace( '{shop_button}', $wccao_bt, $content_email );
 										<tr>
 											<td align="center" valign="top">
 												<!-- Header -->
-												<table border="0" cellpadding="0" cellspacing="0" width="100%" id="template_header" style='background-color: <?php echo get_option('woocommerce_email_base_color'); ?>; color: #fff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; border-radius: 3px 3px 0 0;'>
+												<table border="0" cellpadding="0" cellspacing="0" width="100%" id="template_header" style='background-color: <?php echo esc_attr(get_option('woocommerce_email_base_color')); ?>; color: #fff; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; border-radius: 3px 3px 0 0;'>
 													<tr>
 														<td id="header_wrapper" style="padding: 36px 48px; display: block;">
 															<h1 style='font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 30px; font-weight: 300; line-height: 150%; margin: 0; text-align: left; text-shadow: 0 1px 0 #9976c2; color: #fff; background-color: inherit;'><?php echo esc_attr($email_header) ; ?></h1>

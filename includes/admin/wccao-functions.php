@@ -268,7 +268,7 @@ function wccao_generate_coupons_list($couponDetails, $order_id, $save = true, $m
  */
 function wccao_generate_coupon_code($couponDetails, $order_id, $manual_generation = false, $customer_email = null)
 {
-    $random_number = mt_rand(10000, 99999);
+    $random_number = wp_rand(10000, 99999);
     $couponPrefix = ($couponDetails['coupon_prefix']) ? esc_attr($couponDetails['coupon_prefix']) : 'ref';
     $order = wc_get_order($order_id);
 
@@ -550,9 +550,11 @@ function wccao_tab_version_callback()
     $wccao_admin_instance = new WCCAO_Admin();
     $result = $wccao_admin_instance->wccao_perform_version_check_cron();
     $notice = $result['notice'];
+    $installed_version = Coupons_After_Order_WooCommerce()->version;
 
     echo '<div class="version-tab notice inline ' . esc_attr($notice) . '">';
-    echo '<h3 class="has-icon">' . esc_html__('Installed version ', 'coupons-after-order') . Coupons_After_Order_WooCommerce()->version . '</h3>';
+    // translators: %s: Installed version placeholder
+    echo '<h3 class="has-icon">' . sprintf(esc_html__('Installed version %s', 'coupons-after-order'), esc_html($installed_version)) . '</h3>';
     echo esc_html($result['message']);
     echo '</div>';
 }
@@ -591,7 +593,7 @@ function wccao_validity_start_callback()
     </div>
     <div id="coupon_availability_date">
         <label for="coupon_availability_start_date"><?php esc_html_e('Coupon Start Date:', 'coupons-after-order'); ?></label>
-        <input type="date" id="coupon_availability_start_date" name="coupons_after_order_availability_start_date" value="<?php echo esc_attr($availability_start_date); ?>" min="<?php echo date_i18n('Y-m-d'); ?>" max="<?php echo $validitydate; ?>" />
+        <input type="date" id="coupon_availability_start_date" name="coupons_after_order_availability_start_date" value="<?php echo esc_attr($availability_start_date); ?>" min="<?php echo esc_attr(date_i18n('Y-m-d')); ?>" max="<?php echo esc_attr($validitydate); ?>" />
         <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_attr_e('Enter the desired date on which the coupon will be published and therefore valid. Please note, enter a date before the expiration date of the coupon if you have configured it.', 'coupons-after-order') ?>"></span>
     </div>
 <?php
@@ -628,7 +630,7 @@ function wccao_validity_callback()
     </div>
     <div id="coupon-validity-date-div" class="coupon-field-group">
         <label for="coupon-validity-date" style="display: none;"><?php esc_html_e('Coupon Validity Date:', 'coupons-after-order'); ?></label>
-        <input type="date" id="coupon-validity-date" name="coupons_after_order_validitydate" value="<?php echo esc_attr($validitydate); ?>" min="<?php echo date_i18n('Y-m-d'); ?>" />
+        <input type="date" id="coupon-validity-date" name="coupons_after_order_validitydate" value="<?php echo esc_attr($validitydate); ?>" min="<?php echo esc_attr(date_i18n('Y-m-d')); ?>" />
     </div>
 <?php
 }
@@ -662,7 +664,7 @@ function wccao_others_parameters_callback()
     </div>
     <div class="coupon-field-group">
         <label for="coupon-amount-min"><?php esc_html_e('Minimum amount:', 'coupons-after-order') ?></label>
-        <input type="text" id="coupon-amount-min" name="coupons_after_order_min_amount" value="<?php echo esc_attr($min_amount); ?>" class="wccao_input_price" data-decimal="<?php echo esc_attr($decimal_separator); ?>" placeholder="<?php esc_html_e('No minimum', 'coupons-after-order') ?>" />&nbsp;<?php echo get_woocommerce_currency_symbol(); ?>
+        <input type="text" id="coupon-amount-min" name="coupons_after_order_min_amount" value="<?php echo esc_attr($min_amount); ?>" class="wccao_input_price" data-decimal="<?php echo esc_attr($decimal_separator); ?>" placeholder="<?php echo esc_html__('No minimum', 'coupons-after-order'); ?>" />&nbsp;<?php echo esc_html(get_woocommerce_currency_symbol()); ?>
         <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_attr_e('If empty, it is the amount of the individual coupon.', 'coupons-after-order'); ?>"></span>
     </div>
     <div class="coupon-field-group">

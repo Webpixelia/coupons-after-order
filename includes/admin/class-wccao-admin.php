@@ -143,7 +143,7 @@ class WCCAO_Admin {
         <div class="wrap">
             <h2><?php 
 			/* translators: %s: plugin name */
-			printf( esc_html__('%s Settings', 'coupons-after-order'), WCCAO_Admin::WCCAO_PLUGIN_NAME ); 
+			printf( esc_html__('%s Settings', 'coupons-after-order'), esc_html(WCCAO_Admin::WCCAO_PLUGIN_NAME) ); 
 			?>
 			</h2>
 		
@@ -160,7 +160,7 @@ class WCCAO_Admin {
 
 			<nav class="wccao-nav-bar nav-tab-wrapper">
 				<?php foreach ($tabs as $tab_key => $tab_label) : ?>
-					<a href="<?php echo admin_url( 'admin.php?page=' . WCCAO_Admin::WCCAO_ADMIN_SLUG ) . '&tab=' . esc_attr( $tab_key ); ?>" class="wccao-nav-tab nav-tab <?php echo ($current_tab === $tab_key) ? 'nav-tab-active' : ''; ?>">
+					<a href="<?php echo esc_url(admin_url( 'admin.php?page=' . WCCAO_Admin::WCCAO_ADMIN_SLUG ) . '&tab=' . esc_attr( $tab_key )); ?>" class="wccao-nav-tab nav-tab <?php echo ($current_tab === $tab_key) ? 'nav-tab-active' : ''; ?>">
 						<?php echo esc_html($tab_label); ?>
 					</a>
 				<?php endforeach; ?>
@@ -171,9 +171,7 @@ class WCCAO_Admin {
             <form method="post" action="options.php">
 			<?php
 			// Display sections and fields for WooCommerce settings
-			$tab = isset($_GET['tab']) ? $_GET['tab'] : 'settings';
-
-			switch ($tab) {
+			switch ($current_tab) {
 				case 'settings':
 					settings_fields('coupons-after-order-tab-settings-settings');
 					do_settings_sections('coupons-after-order-tab-settings-settings');
@@ -204,7 +202,7 @@ class WCCAO_Admin {
 
             if (!isset($_GET['tab']) || $_GET['tab'] !== 'version') {
 				submit_button();
-			}					
+			}
         	?>
             </form>
         </div>
@@ -328,7 +326,7 @@ class WCCAO_Admin {
 		if ($column == 'start_date_coupon') {
 			$start_date = get_post_field('post_date', $post_id, 'raw');
 			if ($start_date) {
-				echo date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime($start_date));
+				echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime($start_date)));
 			} else {
 				echo esc_html__('No date', 'coupons-after-order');
 			}
