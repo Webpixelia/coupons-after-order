@@ -10,9 +10,9 @@ use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 
-if ( ! class_exists( 'LinkCouponsEmail' ) ) :
+if ( ! class_exists( 'WCCAO_LinkCouponsEmail' ) ) :
 
-    class LinkCouponsEmail {
+    class WCCAO_LinkCouponsEmail {
 
         public function __construct() {
             add_action('template_redirect', array($this, 'wccao_apply_coupon_via_parameter'));
@@ -239,6 +239,6 @@ if ( ! class_exists( 'LinkCouponsEmail' ) ) :
         
     }
 
-    new LinkCouponsEmail;
+    new WCCAO_LinkCouponsEmail;
 
 endif;

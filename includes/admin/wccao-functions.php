@@ -208,7 +208,7 @@ function wccao_generate_coupons_list($couponDetails, $order_id, $save = true, $m
 {
     $coupon_list = '<ul class="wccao-coupons-list">';
 
-    $link_coupons_email = new LinkCouponsEmail();
+    $link_coupons_email = new WCCAO_LinkCouponsEmail();
 
     for ($i = 1; $i <= $couponDetails['nber_coupons']; $i++) {
         $coupon = wccao_generate_coupon_code($couponDetails, $order_id, $manual_generation, $customer_email);
@@ -234,19 +234,19 @@ function wccao_generate_coupons_list($couponDetails, $order_id, $save = true, $m
         $coupon_url = $link_coupons_email->wccao_create_link_to_apply_coupon($coupon_code);
         $coupon_label = $manual_generation ? esc_html__('Gift coupon', 'coupons-after-order') : esc_html__('My coupon code', 'coupons-after-order');
 
-        $coupon_list .= <<<HTML
-            <li class="prefix-coupon">
-                <span class="email-title-coupon">
+        $coupon_list .= "
+            <li class=\"prefix-coupon\">
+                <span class=\"email-title-coupon\">
                     {$coupon_label} {$i}
                 </span>
                 <br>
-                <span class="coupon_amount">{$coupon_amount}</span>
+                <span class=\"coupon_amount\">{$coupon_amount}</span>
                 <br>
-                <span class="email-code-coupon">
-                    <a href="{$coupon_url}" target="_blank">{$coupon_code}</a>
+                <span class=\"email-code-coupon\">
+                    <a href=\"{$coupon_url}\" target=\"_blank\">{$coupon_code}</a>
                 </span>
             </li>
-        HTML;
+        ";
     }
     $coupon_list .= '</ul>';
 
@@ -547,15 +547,11 @@ function wccao_tab_misc_callback()
 
 function wccao_tab_version_callback()
 {
-    $wccao_admin_instance = new WCCAO_Admin();
-    $result = $wccao_admin_instance->wccao_perform_version_check_cron();
-    $notice = $result['notice'];
-    $installed_version = Coupons_After_Order_WooCommerce()->version;
+    $installed_version = WCCAO_Coupons_After_Order_WooCommerce()->version;
 
-    echo '<div class="version-tab notice inline ' . esc_attr($notice) . '">';
+    echo '<div class="version-tab notice inline">';
     // translators: %s: Installed version placeholder
     echo '<h3 class="has-icon">' . sprintf(esc_html__('Installed version %s', 'coupons-after-order'), esc_html($installed_version)) . '</h3>';
-    echo esc_html($result['message']);
     echo '</div>';
 }
 

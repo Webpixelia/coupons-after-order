@@ -4,7 +4,7 @@
 * Plugin URI: https://github.com/Webpixelia
 * Description: Generate coupons after order completion. The sum of the coupons will be equal to the amount of the order.
 * Author: Webpixelia
-* Version: 1.3.5
+* Version: 1.3.6
 * Author URI: https://webpixelia.com/
 * Requires PHP: 7.1
 * Requires at least: 5.0
@@ -22,16 +22,16 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Class Coupons_After_Order_WooCommerce.
+ * Class WCCAO_Coupons_After_Order_WooCommerce.
  *
- * Main Coupons_After_Order_WooCommerce class initializes the plugin.
+ * Main WCCAO_Coupons_After_Order_WooCommerce class initializes the plugin.
  *
- * @class		Coupons_After_Order_WooCommerce
+ * @class		WCCAO_Coupons_After_Order_WooCommerce
  * @version		1.0.0
  * @author		Jonathan Webpixelia
  */
 
-class Coupons_After_Order_WooCommerce {
+class WCCAO_Coupons_After_Order_WooCommerce {
 
 	protected $admin;
 
@@ -41,7 +41,7 @@ class Coupons_After_Order_WooCommerce {
 	 * @since 1.0.0
 	 * @var string $version Plugin version number.
 	 */
-	public $version = '1.3.5';
+	public $version = '1.3.6';
 
 
 	/**
@@ -54,24 +54,24 @@ class Coupons_After_Order_WooCommerce {
 
 
     /**
-	 * Instance of Coupons_After_Order_WooCommerce.
+	 * Instance of WCCAO_Coupons_After_Order_WooCommerce.
 	 *
 	 * @since 1.0.0
 	 * @access protected
-	 * @var object $instance The instance of Coupons_After_Order_WooCommerce.
+	 * @var object $instance The instance of WCCAO_Coupons_After_Order_WooCommerce.
 	 */
 	protected static $instance = null;
 
 	/**
-	 * Main Coupons_After_Order_WooCommerce Instance
+	 * Main WCCAO_Coupons_After_Order_WooCommerce Instance
 	 *
-	 * Ensures only one instance of Coupons_After_Order_WooCommerce is loaded or can be loaded.
+	 * Ensures only one instance of WCCAO_Coupons_After_Order_WooCommerce is loaded or can be loaded.
 	 *
 	 * @version 1.0.0
 	 * @since   1.0.0
 	 *
 	 * @static
-	 * @return  Coupons_After_Order_WooCommerce - Main instance
+	 * @return  WCCAO_Coupons_After_Order_WooCommerce - Main instance
 	 */
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {
@@ -206,22 +206,22 @@ add_action( 'before_woocommerce_init', function() {
 } );
 
 
-if ( ! function_exists( 'Coupons_After_Order_WooCommerce' ) ) {
+if ( ! function_exists( 'WCCAO_Coupons_After_Order_WooCommerce' ) ) {
 
 	/**
-	 * The main function responsible for returning the Coupons_After_Order_WooCommerce object.
+	 * The main function responsible for returning the WCCAO_Coupons_After_Order_WooCommerce object.
 	 *
 	 * Use this function like you would a global variable, except without needing to declare the global.
 	 *
-	 * Example: <?php Coupons_After_Order_WooCommerce()->method_name(); ?>
+	 * Example: <?php WCCAO_Coupons_After_Order_WooCommerce()->method_name(); ?>
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return object Coupons_After_Order_WooCommerce class object.
+	 * @return object WCCAO_Coupons_After_Order_WooCommerce class object.
 	 */
-	function Coupons_After_Order_WooCommerce() {
-		return Coupons_After_Order_WooCommerce::instance();
+	function WCCAO_Coupons_After_Order_WooCommerce() {
+		return WCCAO_Coupons_After_Order_WooCommerce::instance();
 	}
 }
 
-Coupons_After_Order_WooCommerce();
+WCCAO_Coupons_After_Order_WooCommerce();

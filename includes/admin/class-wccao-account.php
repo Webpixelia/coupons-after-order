@@ -26,8 +26,8 @@ if (!class_exists('WCCAO_Account')) :
 
 		public function wccao_enqueue_frontend_css()
 		{
-			wp_enqueue_style('frontend-coupons-after-order-for-woocommerce', plugins_url('assets/css/woocommerce-coupons-after-order-frontend.css', Coupons_After_Order_WooCommerce()->file), '', Coupons_After_Order_WooCommerce()->version);
-			wp_enqueue_script('frontend-coupons-after-order-for-woocommerce', plugins_url('assets/js/woocommerce-coupons-after-order-frontend.js', Coupons_After_Order_WooCommerce()->file), array('jquery', 'wp-i18n'), Coupons_After_Order_WooCommerce()->version, true);
+			wp_enqueue_style('frontend-coupons-after-order-for-woocommerce', plugins_url('assets/css/woocommerce-coupons-after-order-frontend.css', WCCAO_Coupons_After_Order_WooCommerce()->file), '', WCCAO_Coupons_After_Order_WooCommerce()->version);
+			wp_enqueue_script('frontend-coupons-after-order-for-woocommerce', plugins_url('assets/js/woocommerce-coupons-after-order-frontend.js', WCCAO_Coupons_After_Order_WooCommerce()->file), array('jquery', 'wp-i18n'), WCCAO_Coupons_After_Order_WooCommerce()->version, true);
 		}
 
 		public function wccao_activate_plugin()
@@ -116,7 +116,8 @@ if (!class_exists('WCCAO_Account')) :
 				foreach ($customer_coupons as $coupon_code) {
 					// Retrieve coupon object
 					$coupon = new WC_Coupon($coupon_code);
-					$link_coupons_email_instance = new LinkCouponsEmail();
+					$escaped_amount = esc_html($coupon->get_amount());
+					$link_coupons_email_instance = new WCCAO_LinkCouponsEmail();
 					$coupon_url = $link_coupons_email_instance->wccao_create_link_to_apply_coupon($coupon_code);
 
 					// Expiration date management
@@ -142,7 +143,7 @@ if (!class_exists('WCCAO_Account')) :
 						echo '<li class="prefix-coupon">';
 						echo '<p class="code-coupon"><span class="text-code" id="coupon_' . esc_attr($coupon_code) . '">' . esc_html($coupon_code) . '</span><span class="icon-copy" onclick="copyCouponCode(\'' . esc_attr($coupon_code) . '\')"><img src="' . esc_url(plugin_dir_url(WCCAO_PLUGIN_BASENAME) . 'assets/img/copy-icon.png') . '" title="Click to Copy" width="16" height="16"></span></p>';
 						echo '<ul class="details-coupon">';
-						echo '<li>' . esc_html__('Amount:', 'coupons-after-order') . ' ' . esc_html(wc_price($coupon->get_amount())) . '</li>';
+						echo '<li>' . esc_html__('Amount:', 'coupons-after-order') . ' ' . wc_price($escaped_amount) . '</li>';
 						echo '<li>' . esc_html__('Remaining uses:', 'coupons-after-order') . ' ';
 						if ($coupon->get_usage_limit() !== 0) {
 							echo esc_html($remainingUses);
@@ -150,7 +151,7 @@ if (!class_exists('WCCAO_Account')) :
 							echo esc_html__('Unlimited', 'coupons-after-order');
 						}
 						echo '</li>';
-						echo esc_html($expiration_text);
+						echo $expiration_text;
 						echo '<li>' . sprintf('<a href="%1$s">%2$s</a>', esc_url($coupon_url), esc_html__('Apply coupon', 'coupons-after-order')) . '</li>';
 						echo '</ul>';
 						echo '</li>';
@@ -229,11 +230,11 @@ if (!class_exists('WCCAO_Account')) :
 					function openPopup(content) {
 						var popup = window.open('', 'CouponPopup', 'width=600,height=400,scrollbars=yes,resizable=yes');
 						popup.document.write('<html><head>');
-						popup.document.write('<link rel="stylesheet" type="text/css" href="' + '<?php echo esc_url(plugins_url('assets/css/woocommerce-coupons-after-order-frontend.css', Coupons_After_Order_WooCommerce()->file)); ?>' + '">');
+						popup.document.write('<link rel="stylesheet" type="text/css" href="' + '<?php echo esc_url(plugins_url('assets/css/woocommerce-coupons-after-order-frontend.css', WCCAO_Coupons_After_Order_WooCommerce()->file)); ?>' + '">');
 						popup.document.write('<title><?php esc_html_e('Coupons Details', 'coupons-after-order'); ?></title></head><body><div style="padding:2rem">');
 						popup.document.write(content);
 						popup.document.write('</div>');
-						popup.document.write('<script type="text/javascript" src="' + '<?php echo esc_url(plugins_url("assets/js/woocommerce-coupons-after-order-frontend.js", Coupons_After_Order_WooCommerce()->file)); ?>' + '"><\/script>');
+						popup.document.write('<script type="text/javascript" src="' + '<?php echo esc_url(plugins_url("assets/js/woocommerce-coupons-after-order-frontend.js", WCCAO_Coupons_After_Order_WooCommerce()->file)); ?>' + '"><\/script>');
 						popup.document.write('</body></html>');
 						popup.document.close();
 					}

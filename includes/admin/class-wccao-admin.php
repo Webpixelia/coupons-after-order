@@ -48,7 +48,6 @@ class WCCAO_Admin {
 		add_action('delete_post', array($this, 'wccao_delete_coupon_and_update_users'));
 		add_action('admin_body_class', array( $this, 'wccao_admin_body_class' ) );
 		add_action('current_screen', array( $this, 'wccao_current_screen' ) );
-		add_action('wccao_check_version_cron', array( $this, 'wccao_perform_version_check_cron'));
 		add_action('manage_shop_coupon_posts_custom_column', array( $this, 'wccao_custom_coupon_column_content'), 10, 2);
 
 		// Cron Task
@@ -74,8 +73,8 @@ class WCCAO_Admin {
 		$current_screen = get_current_screen();
 
 		if ( strpos( $current_screen->id, WCCAO_Admin::WCCAO_ADMIN_SLUG ) !== false ) {
-			wp_enqueue_style( 'admin-coupons-after-order-for-woocommerce', plugins_url( 'assets/css/woocommerce-coupons-after-order-admin.css', Coupons_After_Order_WooCommerce()->file ), array( 'woocommerce_admin_styles', 'jquery-ui-style' ), Coupons_After_Order_WooCommerce()->version );
-			wp_enqueue_script( 'admin-coupons-after-order-for-woocommerce', plugins_url( 'assets/js/woocommerce-coupons-after-order-admin.js', Coupons_After_Order_WooCommerce()->file ), array( 'jquery', 'wp-i18n' ), Coupons_After_Order_WooCommerce()->version, true );
+			wp_enqueue_style( 'admin-coupons-after-order-for-woocommerce', plugins_url( 'assets/css/woocommerce-coupons-after-order-admin.css', WCCAO_Coupons_After_Order_WooCommerce()->file ), array( 'woocommerce_admin_styles', 'jquery-ui-style' ), WCCAO_Coupons_After_Order_WooCommerce()->version );
+			wp_enqueue_script( 'admin-coupons-after-order-for-woocommerce', plugins_url( 'assets/js/woocommerce-coupons-after-order-admin.js', WCCAO_Coupons_After_Order_WooCommerce()->file ), array( 'jquery', 'wp-i18n' ), WCCAO_Coupons_After_Order_WooCommerce()->version, true );
 		
 			// Pass translation strings to JavaScript
 			$translation_strings = array(
@@ -155,7 +154,7 @@ class WCCAO_Admin {
 				'version'  => __('Version', 'coupons-after-order'),
 			);
 
-			$current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'settings';
+			$current_tab = isset($_GET['tab']) ? sanitize_key(($_GET['tab'])) : 'settings';
 			?>
 
 			<nav class="wccao-nav-bar nav-tab-wrapper">
@@ -406,14 +405,17 @@ class WCCAO_Admin {
 	 */
 	public function wccao_manually_generate_coupons()
 	{
+		// Retrieve posted data
+		$dataArray_raw = isset($_POST['dataArray']) ? $_POST['dataArray'] : array();
+
 		// Check ajax reference
 		check_ajax_referer('wccao_manually_generate_coupons_nonce', 'security');
 
-		// Retrieve posted data
-		$dataArray = json_decode(stripslashes($_POST['dataArray']), true);
+		// Validation and cleaning of JSON data
+		$dataArray = json_decode(wp_unslash($dataArray_raw), true);
 
 		// Check if JSON conversion was successful
-		if ($dataArray === null) {
+		if (json_last_error() !== JSON_ERROR_NONE || !is_array($dataArray)) {
 			$dataError = array(
 				'error' => true,
 				'data' => array(
@@ -424,12 +426,12 @@ class WCCAO_Admin {
 			wp_send_json_error($dataError);
 			return;
 		}
-
+		
 		// Process the array
 		foreach ($dataArray as $item) {
 			// Data
 			$custome_email = sanitize_email($item['email']);
-			$amount_order = floatval($item['value']);
+			$amount_order = wc_format_decimal(floatval($item['value']), wc_get_price_decimals());
 
 			self::wccao_send_email($custome_email, $amount_order, true, true, $custome_email);
 		}
@@ -547,7 +549,7 @@ class WCCAO_Admin {
 	 * @return string The modified update footer HTML with the plugin version.
 	 */
 	public function wccao_update_footer( $html ) {
-		$version = Coupons_After_Order_WooCommerce()->version;
+		$version = WCCAO_Coupons_After_Order_WooCommerce()->version;
 		$html = '<span>Version ' . $version . '</span>';
 
 		return $html;
@@ -566,46 +568,5 @@ class WCCAO_Admin {
 		);
 
 		return array_merge( $action_links, $links );
-	}
-
-	/**
-	 * Perform a version check using GitHub API to determine if a new version of the plugin is available.
-	 *
-	 * Return the result array containing the notice type and message.
-	 */
-	public function wccao_perform_version_check_cron() {
-		$github_url = 'https://api.github.com/repos/Webpixelia/coupons-after-order/releases/latest';
-
-		// Perform a request to the GitHub API.
-		$response = wp_remote_get($github_url);
-
-		// Initialize the result array.
-		$result = array('notice' => '', 'message' => '');
-
-		// Check if the request was successful.
-		if (!is_wp_error($response)) {
-			// Parse the JSON response.
-			$body = wp_remote_retrieve_body($response);
-			$data = json_decode($body);
-
-			$latest_version = $data->tag_name;
-			$current_version = Coupons_After_Order_WooCommerce()->version;
-
-			// Compare versions.
-			if (version_compare($current_version, $latest_version, '<')) {
-				$result['notice'] = 'notice-error';
-				/* translators: %s: last version available */
-				$result['message'] = sprintf(__('A new version of the plugin (%s) is available. Please update it.', 'coupons-after-order'), $latest_version);
-			} else {
-				$result['notice'] = 'notice-success';
-				$result['message'] = __('Great! You are using the latest version of ', 'coupons-after-order') . WCCAO_Admin::WCCAO_PLUGIN_NAME;
-			}
-		} else {
-			// Error during the request to the GitHub API.
-			$result['message'] = __('Unable to check the latest version of the plugin.', 'coupons-after-order');
-		}
-
-		// Return the result array.
-		return $result;
 	}
 }

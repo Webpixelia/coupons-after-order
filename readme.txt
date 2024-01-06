@@ -2,7 +2,7 @@
 Contributors: marocweb
 Donate link: https://buymeacoffee.com/webpixelia
 Tags: ecommerce, woocommerce, coupon, woocommerce order
-Stable tag: 1.3.5
+Stable tag: 1.3.6
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.1
@@ -58,6 +58,12 @@ Yes, simply by checking or unchecking the “Enable Coupon after order” box in
 8. "My coupons" on the account page
 
 == Changelog ==
+= 1.3.6 =
+* Removed version check on Github
+* Removed HEREDOC syntax to adhere to the WordPress guidelines
+* Improved security for data
+* Fixed variable escape bug
+
 = 1.3.5 =
 * Added ability to set a future publication date for generated coupons ("Scheduled" status)
 * Improved translation
