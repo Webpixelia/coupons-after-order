@@ -6,11 +6,11 @@ if (!defined('ABSPATH')) {
 $first_name = isset($order) ? $order->get_billing_first_name() : __('Dear customer', 'coupons-after-order');
 $email_customer = isset($order) ? $order->get_billing_email() : $customer_email;
 
-$email_header = get_option('coupons_after_order_email_header');
+$email_header = get_option('wccao_coupons_after_order_email_header');
 $startDate = date_i18n(get_option('date_format'), strtotime($couponDetails['start_date']));
 $endDate = date_i18n(get_option('date_format'), strtotime($couponDetails['validity']));
 $min_order = floatval($couponDetails['min_order']);
-$content_email = wpautop(get_option('coupons_after_order_email_content'));
+$content_email = wpautop(get_option('wccao_coupons_after_order_email_content'));
 
 $coupons = $coupon_list;
 $coupon_amount = wc_price( $couponDetails['coupon_amount'] );
@@ -18,11 +18,11 @@ $order_total = wc_price( $couponDetails['order_total'] );
 $nb_coupons = esc_html( $couponDetails['nber_coupons'] );
 
 // Button
-$email_bt_title = isset( $_GET['coupons_after_order_email_bt_title'] ) ? sanitize_text_field(wp_unslash( $_GET['coupons_after_order_email_bt_title'] )) : get_option('coupons_after_order_email_bt_title');
-$email_bt_url = isset( $_GET['coupons_after_order_email_bt_url'] ) ? sanitize_url(wp_unslash( $_GET['coupons_after_order_email_bt_url'] )) : get_option('coupons_after_order_email_bt_url');
-$email_bt_color = isset( $_GET['coupons_after_order_email_bt_color'] ) ? sanitize_hex_color(wp_unslash( $_GET['coupons_after_order_email_bt_color'] )) : get_option('coupons_after_order_email_bt_color');
-$email_bt_bg_color = isset( $_GET['coupons_after_order_email_bt_bg_color'] ) ? sanitize_hex_color(wp_unslash( $_GET['coupons_after_order_email_bt_bg_color'] )) : get_option('coupons_after_order_email_bt_bg_color');
-$email_bt_font_size = isset( $_GET['coupons_after_order_email_bt_font_size'] ) ? absint(wp_unslash( $_GET['coupons_after_order_email_bt_font_size'] )) : get_option('coupons_after_order_email_bt_font_size');
+$email_bt_title = isset( $_GET['wccao_coupons_after_order_email_bt_title'] ) ? sanitize_text_field(wp_unslash( $_GET['wccao_coupons_after_order_email_bt_title'] )) : get_option('wccao_coupons_after_order_email_bt_title');
+$email_bt_url = isset( $_GET['wccao_coupons_after_order_email_bt_url'] ) ? sanitize_url(wp_unslash( $_GET['wccao_coupons_after_order_email_bt_url'] )) : get_option('wccao_coupons_after_order_email_bt_url');
+$email_bt_color = isset( $_GET['wccao_coupons_after_order_email_bt_color'] ) ? sanitize_hex_color(wp_unslash( $_GET['wccao_coupons_after_order_email_bt_color'] )) : get_option('wccao_coupons_after_order_email_bt_color');
+$email_bt_bg_color = isset( $_GET['wccao_coupons_after_order_email_bt_bg_color'] ) ? sanitize_hex_color(wp_unslash( $_GET['wccao_coupons_after_order_email_bt_bg_color'] )) : get_option('wccao_coupons_after_order_email_bt_bg_color');
+$email_bt_font_size = isset( $_GET['wccao_coupons_after_order_email_bt_font_size'] ) ? absint(wp_unslash( $_GET['wccao_coupons_after_order_email_bt_font_size'] )) : get_option('wccao_coupons_after_order_email_bt_font_size');
 $wccao_bt = '<a href="' . esc_url($email_bt_url) . '" target="_blank" style="text-decoration:none;display:inline-block;padding:10px 30px;margin:10px 0;font-size:' . $email_bt_font_size . 'px;color:' . $email_bt_color . ';background:' . $email_bt_bg_color . ';">' . $email_bt_title . '</a>';
 
 // Shortcodes

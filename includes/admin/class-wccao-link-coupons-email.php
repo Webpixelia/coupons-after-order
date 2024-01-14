@@ -24,7 +24,7 @@ if ( ! class_exists( 'WCCAO_LinkCouponsEmail' ) ) :
          * Applies a coupon code received via URL parameter to the WooCommerce cart.
          *
          * This function checks for a coupon code passed through a URL parameter
-         * with the name defined in the "coupons_after_order_url_parameter"
+         * with the name defined in the "wccao_coupons_after_order_url_parameter"
          * option and applies it to the cart if valid and meets cart conditions.
          *
          * @since 1.3.1
@@ -33,7 +33,7 @@ if ( ! class_exists( 'WCCAO_LinkCouponsEmail' ) ) :
          * @param string $parameter_link_coupon The name of the URL parameter used to pass the coupon code.
          */
         public function wccao_apply_coupon_via_parameter() {
-            $parameter_link_coupon = get_option('coupons_after_order_url_parameter');
+            $parameter_link_coupon = get_option('wccao_coupons_after_order_url_parameter');
             if (isset($_GET[$parameter_link_coupon])) {                
                 $coupon_code = sanitize_text_field($_GET[$parameter_link_coupon]);
                 
@@ -140,7 +140,7 @@ if ( ! class_exists( 'WCCAO_LinkCouponsEmail' ) ) :
          * @return string The link to apply the coupon code.
          */
         public function wccao_create_link_to_apply_coupon($coupon_code) {
-            $parameter_link_coupon = get_option('coupons_after_order_url_parameter');
+            $parameter_link_coupon = get_option('wccao_coupons_after_order_url_parameter');
             return add_query_arg($parameter_link_coupon, $coupon_code, home_url());
         }
         

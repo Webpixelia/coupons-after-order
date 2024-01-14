@@ -54,7 +54,7 @@ if (document.querySelector('.settings-tab')) {
   // Validation start date coupon  //
   ///////////////////////////////////
   document.addEventListener('DOMContentLoaded', function () {
-    const enabledStartDate = document.querySelectorAll('input[name="coupons_after_order_availability_start_enabled"]');
+    const enabledStartDate = document.querySelectorAll('input[name="wccao_coupons_after_order_availability_start_enabled"]');
     const divEnabledStartDate = document.getElementById('coupon_availability_date');
     const startDateInput = document.getElementById('coupon_availability_start_date');
 
@@ -129,7 +129,7 @@ if (document.querySelector('.settings-tab')) {
   // Conditional fields admin page //
   ///////////////////////////////////
   document.addEventListener('DOMContentLoaded', function () {
-    const validityTypeField = document.querySelectorAll('input[name="coupons_after_order_validity_type"]');
+    const validityTypeField = document.querySelectorAll('input[name="wccao_coupons_after_order_validity_type"]');
     const validityDaysDiv = document.getElementById('coupon-validity-days-div');
     const validityDateDiv = document.getElementById('coupon-validity-date-div');
     const validityDaysField = document.getElementById('coupon-validity-days');
@@ -334,7 +334,7 @@ if (document.querySelector('.settings-tab')) {
   jQuery(document).ready(function ($) {
     $('#wccao_generate_manually_link').on('click', function (event) {
       event.preventDefault();
-      let textArea = $('#coupons_after_order_emails_and_amounts');
+      let textArea = $('#wccao_coupons_after_order_emails_and_amounts');
       let messageSpan = $('#wccao-email-message-notice');
       let textAreaContent = textArea.val();
       // Translatable variables

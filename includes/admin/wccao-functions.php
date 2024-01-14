@@ -68,11 +68,11 @@ function wccao_is_pro()
  *
  * @since 1.0.0
  */
-add_action('woocommerce_order_status_completed', 'wccao_generate_coupons');
+add_action('woocommerce_order_status_completed', 'wccao_generate_coupons', 10, 1);
 
 function wccao_generate_coupons($order_id)
 {
-    $enable = get_option('coupons_after_order_enable');
+    $enable = get_option('wccao_coupons_after_order_enable');
 
     // Check if checkbox Enable is checked
     if ($enable === 'yes') {
@@ -136,18 +136,18 @@ function wccao_generate_coupons($order_id)
  */
 function wccao_generate_coupon_details($order_total)
 {
-    $coupon_prefix = get_option('coupons_after_order_prefix');
-    $enabled_start_date = get_option('coupons_after_order_availability_start_enabled');
-    $start_date = get_option('coupons_after_order_availability_start_date', date_i18n(get_option('date_format')));
-    $validity_type = get_option('coupons_after_order_validity_type');
+    $coupon_prefix = get_option('wccao_coupons_after_order_prefix');
+    $enabled_start_date = get_option('wccao_coupons_after_order_availability_start_enabled');
+    $start_date = get_option('wccao_coupons_after_order_availability_start_date', date_i18n(get_option('date_format')));
+    $validity_type = get_option('wccao_coupons_after_order_validity_type');
     $validity = wccao_get_validity($validity_type);
-    $limitUsage = get_option('coupons_after_order_usage_limit', '1');
-    $indivUse = get_option('coupons_after_order_individual_use', 'yes');
+    $limitUsage = get_option('wccao_coupons_after_order_usage_limit', '1');
+    $indivUse = get_option('wccao_coupons_after_order_individual_use', 'yes');
     $indivUseCoupon = ($indivUse === 'yes');
-    $min_amount = get_option('coupons_after_order_min_amount');
-    $email_restriction = get_option('coupons_after_order_email_restriction', 'no');
+    $min_amount = get_option('wccao_coupons_after_order_min_amount');
+    $email_restriction = get_option('wccao_coupons_after_order_email_restriction', 'no');
 
-    $nber_coupons = intval(get_option('coupons_after_order_count'));
+    $nber_coupons = intval(get_option('wccao_coupons_after_order_count'));
     $coupon_amount = ($nber_coupons != 0) ? ($order_total / $nber_coupons) : 0;
     $coupon_amount = round($coupon_amount, wc_get_price_decimals());
     $min_order = empty($min_amount) ? $coupon_amount : max(wccao_tofloat($min_amount), $coupon_amount);
@@ -183,9 +183,9 @@ function wccao_generate_coupon_details($order_total)
 function wccao_get_validity($validity_type)
 {
     if ($validity_type === 'date') {
-        return get_option('coupons_after_order_validitydate');
+        return get_option('wccao_coupons_after_order_validitydate');
     } elseif ($validity_type === 'days') {
-        $validity_days = intval(get_option('coupons_after_order_validitydays'));
+        $validity_days = intval(get_option('wccao_coupons_after_order_validitydays'));
         return '+' . $validity_days . ' days';
     }
     return '';
@@ -211,22 +211,7 @@ function wccao_generate_coupons_list($couponDetails, $order_id, $save = true, $m
     $link_coupons_email = new WCCAO_LinkCouponsEmail();
 
     for ($i = 1; $i <= $couponDetails['nber_coupons']; $i++) {
-        $coupon = wccao_generate_coupon_code($couponDetails, $order_id, $manual_generation, $customer_email);
-
-        if ($save) {
-            $coupon_id = $coupon->save(); // Save the coupon if necessary
-            // Update coupon release date if enabled_start_date
-            if ($couponDetails['enabled_start_date'] === 'yes') :
-                $new_date = strtotime($couponDetails['start_date']);
-                $updated_post = array(
-                    'ID' => $coupon_id,
-                    'post_date' => date_i18n('Y-m-d H:i:s', $new_date),
-                    'post_date_gmt' => get_gmt_from_date(date_i18n('Y-m-d H:i:s', $new_date)),
-                );
-
-                wp_update_post($updated_post);
-            endif;
-        }
+        $coupon = wccao_generate_coupon_code($couponDetails, $order_id, $save, $manual_generation, $customer_email);
 
         $coupon_code = $coupon->get_code();
         $coupon_amount = esc_html__('Amount:', 'coupons-after-order') . ' ' . wc_price($coupon->get_amount());
@@ -266,7 +251,7 @@ function wccao_generate_coupons_list($couponDetails, $order_id, $save = true, $m
  *
  * @return WC_Coupon The generated WooCommerce coupon object.
  */
-function wccao_generate_coupon_code($couponDetails, $order_id, $manual_generation = false, $customer_email = null)
+function wccao_generate_coupon_code($couponDetails, $order_id, $save = true, $manual_generation = false, $customer_email = null)
 {
     $random_number = wp_rand(10000, 99999);
     $couponPrefix = ($couponDetails['coupon_prefix']) ? esc_attr($couponDetails['coupon_prefix']) : 'ref';
@@ -296,6 +281,21 @@ function wccao_generate_coupon_code($couponDetails, $order_id, $manual_generatio
     $coupon->set_date_expires(strtotime($couponDetails['validity']));
     $coupon->set_minimum_amount($couponDetails['min_order']); // Minimum usage threshold
     $coupon->set_usage_limit($couponDetails['limitUsage']); // Usage limit
+
+    if ($save) {
+        $coupon_id = $coupon->save(); // Save the coupon if necessary
+        // Update coupon release date if enabled_start_date
+        if ($couponDetails['enabled_start_date'] === 'yes') :
+            $new_date = strtotime($couponDetails['start_date']);
+            $updated_post = array(
+                'ID' => $coupon_id,
+                'post_date' => date_i18n('Y-m-d H:i:s', $new_date),
+                'post_date_gmt' => get_gmt_from_date(date_i18n('Y-m-d H:i:s', $new_date)),
+            );
+
+            wp_update_post($updated_post);
+        endif;
+    }
 
     if (is_a($order, 'WC_Order')) :
         // Retrieve the customer ID associated with the order
@@ -336,7 +336,7 @@ function wccao_send_coupons_email($order, $coupon_list, $couponDetails)
     $customer_email = $order->get_billing_email();
 
     // Get subject line from options
-    $subject = get_option('coupons_after_order_email_subject');
+    $subject = get_option('wccao_coupons_after_order_email_subject');
 
     // Get custom email template path
     $template_path = plugin_dir_path(dirname(dirname(__FILE__))) . 'templates/email-template.php';
@@ -421,85 +421,84 @@ function wccao_register_fields()
 {
     // Add fields to options
     // Settings
-    add_settings_field('coupons_after_order_enable', __('Enable Coupon after order', 'coupons-after-order'), 'wccao_enable_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
-    add_settings_field('coupons_after_order_availability_start', __('Define start availability date', 'coupons-after-order'), 'wccao_validity_start_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
-    add_settings_field('coupons_after_order_validity_type', __('Coupon Validity Type', 'coupons-after-order'), 'wccao_validity_type_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
-    add_settings_field('coupons_after_order_validity', __('Coupon Validity', 'coupons-after-order'), 'wccao_validity_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
-    add_settings_field('coupons_after_order_others_parameters', __('Other Parameters', 'coupons-after-order'), 'wccao_others_parameters_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
+    add_settings_field('wccao_coupons_after_order_enable', __('Enable Coupon after order', 'coupons-after-order'), 'wccao_enable_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
+    add_settings_field('wccao_coupons_after_order_availability_start', __('Define start availability date', 'coupons-after-order'), 'wccao_validity_start_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
+    add_settings_field('wccao_coupons_after_order_validity_type', __('Coupon Validity Type', 'coupons-after-order'), 'wccao_validity_type_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
+    add_settings_field('wccao_coupons_after_order_validity', __('Coupon Validity', 'coupons-after-order'), 'wccao_validity_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
+    add_settings_field('wccao_coupons_after_order_others_parameters', __('Other Parameters', 'coupons-after-order'), 'wccao_others_parameters_callback', 'coupons-after-order-tab-settings-settings', 'coupons_after_order_tab_settings');
     // Email
-    add_settings_field('coupons_after_order_email_config', __('Email settings', 'coupons-after-order'), 'wccao_email_config_callback', 'coupons-after-order-tab-settings-email', 'coupons_after_order_tab_email');
-    add_settings_field('coupons_after_order_email_content', __('Email text to customize with shortcodes', 'coupons-after-order'), function () {
+    add_settings_field('wccao_coupons_after_order_email_config', __('Email settings', 'coupons-after-order'), 'wccao_email_config_callback', 'coupons-after-order-tab-settings-email', 'coupons_after_order_tab_email');
+    add_settings_field('wccao_coupons_after_order_email_content', __('Email text to customize with shortcodes', 'coupons-after-order'), function () {
         wccao_email_callback();
     }, 'coupons-after-order-tab-settings-email', 'coupons_after_order_tab_email');
-    add_settings_field('coupons_after_order_email_button', __('Email button', 'coupons-after-order'), 'wccao_email_button_callback', 'coupons-after-order-tab-settings-email', 'coupons_after_order_tab_email');
+    add_settings_field('wccao_coupons_after_order_email_button', __('Email button', 'coupons-after-order'), 'wccao_email_button_callback', 'coupons-after-order-tab-settings-email', 'coupons_after_order_tab_email');
     // Misc
-    add_settings_field('coupons_after_order_data_uninstall', __('Remove data on uninstall', 'coupons-after-order'), 'wccao_miscellaneous_data_uninstall_callback', 'coupons-after-order-tab-settings-misc', 'coupons_after_order_tab_misc');
-    add_settings_field('coupons_after_order_emails_and_amounts', __('Generate coupons manually and send them directly', 'coupons-after-order'), 'wccao_miscellaneous_emails_and_amounts_callback', 'coupons-after-order-tab-settings-misc', 'coupons_after_order_tab_misc');
+    add_settings_field('wccao_coupons_after_order_data_uninstall', __('Remove data on uninstall', 'coupons-after-order'), 'wccao_miscellaneous_data_uninstall_callback', 'coupons-after-order-tab-settings-misc', 'coupons_after_order_tab_misc');
+    add_settings_field('wccao_coupons_after_order_emails_and_amounts', __('Generate coupons manually and send them directly', 'coupons-after-order'), 'wccao_miscellaneous_emails_and_amounts_callback', 'coupons-after-order-tab-settings-misc', 'coupons_after_order_tab_misc');
 
     // Save settings 
     // Settings
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_enable');
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_availability_start_enabled');
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_availability_start_date');
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_availability_start');
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_validity_type');
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_validitydays', array(
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_enable');
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_availability_start_enabled');
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_availability_start_date');
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_validity_type');
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_validitydays', array(
         'type' => 'integer',
         'sanitize_callback' => 'absint',
         'default' => 30,
     ));
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_validitydate');
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_count', array(
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_validitydate');
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_count', array(
         'type' => 'integer',
         'sanitize_callback' => 'absint',
         'default' => 4,
     ));
 
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_usage_limit', array(
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_usage_limit', array(
         'type' => 'integer',
         'sanitize_callback' => 'absint'
     ));
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_individual_use');
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_min_amount');
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_email_restriction');
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_prefix');
-    register_setting('coupons-after-order-tab-settings-settings', 'coupons_after_order_url_parameter');
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_individual_use');
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_min_amount');
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_email_restriction');
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_prefix');
+    register_setting('coupons-after-order-tab-settings-settings', 'wccao_coupons_after_order_url_parameter');
     // Email
-    register_setting('coupons-after-order-tab-settings-email', 'coupons_after_order_email_subject', array(
+    register_setting('coupons-after-order-tab-settings-email', 'wccao_coupons_after_order_email_subject', array(
         /* translators: %s: shop */
         'default' => sprintf(__('Your promo codes to enjoy the refund offer at %s', 'coupons-after-order'), get_bloginfo('name')),
     ));
-    register_setting('coupons-after-order-tab-settings-email', 'coupons_after_order_email_header', array(
+    register_setting('coupons-after-order-tab-settings-email', 'wccao_coupons_after_order_email_header', array(
         'default' => __('Thank you for your order', 'coupons-after-order'),
     ));
-    register_setting('coupons-after-order-tab-settings-email', 'coupons_after_order_email_content');
-    register_setting('coupons-after-order-tab-settings-email', 'coupons_after_order_email_bt_title', array(
+    register_setting('coupons-after-order-tab-settings-email', 'wccao_coupons_after_order_email_content');
+    register_setting('coupons-after-order-tab-settings-email', 'wccao_coupons_after_order_email_bt_title', array(
         'type' => 'string',
         'sanitize_callback' => 'sanitize_text_field',
         'default' => __('I\'m enjoying it now', 'coupons-after-order'),
     ));
-    register_setting('coupons-after-order-tab-settings-email', 'coupons_after_order_email_bt_url', array(
+    register_setting('coupons-after-order-tab-settings-email', 'wccao_coupons_after_order_email_bt_url', array(
         'type' => 'string',
         'sanitize_callback' => 'sanitize_url',
         'default' => get_home_url(),
     ));
-    register_setting('coupons-after-order-tab-settings-email', 'coupons_after_order_email_bt_color', array(
+    register_setting('coupons-after-order-tab-settings-email', 'wccao_coupons_after_order_email_bt_color', array(
         'type' => 'string',
         'sanitize_callback' => 'sanitize_hex_color',
         'default' => '#ffffff',
     ));
-    register_setting('coupons-after-order-tab-settings-email', 'coupons_after_order_email_bt_bg_color', array(
+    register_setting('coupons-after-order-tab-settings-email', 'wccao_coupons_after_order_email_bt_bg_color', array(
         'type' => 'string',
         'sanitize_callback' => 'sanitize_hex_color',
         'default' => get_option('woocommerce_email_base_color'),
     ));
-    register_setting('coupons-after-order-tab-settings-email', 'coupons_after_order_email_bt_font_size', array(
+    register_setting('coupons-after-order-tab-settings-email', 'wccao_coupons_after_order_email_bt_font_size', array(
         'type' => 'integer',
         'sanitize_callback' => 'absint',
         'default' => '16',
     ));
     // Misc
-    register_setting('coupons-after-order-tab-settings-misc', 'coupons_after_order_data_uninstall');
+    register_setting('coupons-after-order-tab-settings-misc', 'wccao_coupons_after_order_data_uninstall');
 }
 
 add_action('admin_init', 'wccao_register_settings');
@@ -558,10 +557,10 @@ function wccao_tab_version_callback()
 // Fields
 function wccao_enable_callback()
 {
-    $enable = get_option('coupons_after_order_enable', 'no');
+    $enable = get_option('wccao_coupons_after_order_enable', 'no');
 ?>
-    <label for="coupons_after_order_enable">
-        <input type="checkbox" id="coupons_after_order_enable" name="coupons_after_order_enable" <?php checked($enable, 'yes'); ?> value="yes" />
+    <label for="wccao_coupons_after_order_enable">
+        <input type="checkbox" id="wccao_coupons_after_order_enable" name="wccao_coupons_after_order_enable" <?php checked($enable, 'yes'); ?> value="yes" />
         <?php esc_html_e('Enable Coupon after order', 'coupons-after-order'); ?>
     </label>
 <?php
@@ -569,27 +568,27 @@ function wccao_enable_callback()
 
 function wccao_validity_start_callback()
 {
-    $availability_start_enabled = get_option('coupons_after_order_availability_start_enabled', 'no');
-    $availability_start_date = get_option('coupons_after_order_availability_start_date', date_i18n(get_option('date_format')));
-    $validitydate = get_option('coupons_after_order_validitydate');
+    $availability_start_enabled = get_option('wccao_coupons_after_order_availability_start_enabled', 'no');
+    $availability_start_date = get_option('wccao_coupons_after_order_availability_start_date', date_i18n(get_option('date_format')));
+    $validitydate = get_option('wccao_coupons_after_order_validitydate');
 ?>
     <div id="coupon_availability_start_enabled" class="coupon-field-group">
         <fieldset>
             <legend><?php esc_html_e('Define start availability date?', 'coupons-after-order'); ?></legend>
             <label for="coupon_availability_start_true">
-                <input type="radio" id="coupon_availability_start_true" name="coupons_after_order_availability_start_enabled" value="yes" <?php checked($availability_start_enabled, 'yes'); ?> />
+                <input type="radio" id="coupon_availability_start_true" name="wccao_coupons_after_order_availability_start_enabled" value="yes" <?php checked($availability_start_enabled, 'yes'); ?> />
                 <?php esc_html_e('Yes', 'coupons-after-order'); ?>
             </label>
             <br>
             <label for="coupon_availability_start_false">
-                <input type="radio" id="coupon_availability_start_false" name="coupons_after_order_availability_start_enabled" value="no" <?php checked($availability_start_enabled, 'no'); ?> />
+                <input type="radio" id="coupon_availability_start_false" name="wccao_coupons_after_order_availability_start_enabled" value="no" <?php checked($availability_start_enabled, 'no'); ?> />
                 <?php esc_html_e('No', 'coupons-after-order'); ?>
             </label>
         </fieldset>
     </div>
-    <div id="coupon_availability_date">
+    <div id="coupon_availability_date" class="coupon-field-group">
         <label for="coupon_availability_start_date"><?php esc_html_e('Coupon Start Date:', 'coupons-after-order'); ?></label>
-        <input type="date" id="coupon_availability_start_date" name="coupons_after_order_availability_start_date" value="<?php echo esc_attr($availability_start_date); ?>" min="<?php echo esc_attr(date_i18n('Y-m-d')); ?>" max="<?php echo esc_attr($validitydate); ?>" />
+        <input type="date" id="coupon_availability_start_date" name="wccao_coupons_after_order_availability_start_date" value="<?php echo esc_attr($availability_start_date); ?>" min="<?php echo esc_attr(date_i18n('Y-m-d')); ?>" max="<?php echo esc_attr($validitydate); ?>" />
         <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_attr_e('Enter the desired date on which the coupon will be published and therefore valid. Please note, enter a date before the expiration date of the coupon if you have configured it.', 'coupons-after-order') ?>"></span>
     </div>
 <?php
@@ -597,17 +596,17 @@ function wccao_validity_start_callback()
 
 function wccao_validity_type_callback()
 {
-    $validity_type = get_option('coupons_after_order_validity_type', 'days');
+    $validity_type = get_option('wccao_coupons_after_order_validity_type', 'days');
 ?>
     <fieldset>
         <legend style="display:none;"><?php esc_html_e('Coupon Validity Type', 'coupons-after-order'); ?></legend>
         <label>
-            <input type="radio" name="coupons_after_order_validity_type" value="days" <?php checked($validity_type, 'days'); ?> />
+            <input type="radio" name="wccao_coupons_after_order_validity_type" value="days" <?php checked($validity_type, 'days'); ?> />
             <?php esc_html_e('Coupon Validity (Days)', 'coupons-after-order'); ?>
         </label>
         <br>
         <label>
-            <input type="radio" name="coupons_after_order_validity_type" value="date" <?php checked($validity_type, 'date'); ?> />
+            <input type="radio" name="wccao_coupons_after_order_validity_type" value="date" <?php checked($validity_type, 'date'); ?> />
             <?php esc_html_e('Coupon Validity (Date)', 'coupons-after-order'); ?>
         </label>
     </fieldset>
@@ -616,17 +615,17 @@ function wccao_validity_type_callback()
 
 function wccao_validity_callback()
 {
-    $validitydays = get_option('coupons_after_order_validitydays');
-    $validitydate = get_option('coupons_after_order_validitydate');
+    $validitydays = get_option('wccao_coupons_after_order_validitydays');
+    $validitydate = get_option('wccao_coupons_after_order_validitydate');
 ?>
     <div id="coupon-validity-days-div" class="coupon-field-group">
         <label for="coupon-validity-days" style="display: none;"><?php esc_html_e('Coupon Validity Days:', 'coupons-after-order'); ?></label>
-        <input type="number" id="coupon-validity-days" name="coupons_after_order_validitydays" value="<?php echo esc_attr($validitydays); ?>" step="1" min="1" />
+        <input type="number" id="coupon-validity-days" name="wccao_coupons_after_order_validitydays" value="<?php echo esc_attr($validitydays); ?>" step="1" min="1" />
         <?php esc_html_e('Days', 'coupons-after-order'); ?>
     </div>
     <div id="coupon-validity-date-div" class="coupon-field-group">
         <label for="coupon-validity-date" style="display: none;"><?php esc_html_e('Coupon Validity Date:', 'coupons-after-order'); ?></label>
-        <input type="date" id="coupon-validity-date" name="coupons_after_order_validitydate" value="<?php echo esc_attr($validitydate); ?>" min="<?php echo esc_attr(date_i18n('Y-m-d')); ?>" />
+        <input type="date" id="coupon-validity-date" name="wccao_coupons_after_order_validitydate" value="<?php echo esc_attr($validitydate); ?>" min="<?php echo esc_attr(date_i18n('Y-m-d')); ?>" />
     </div>
 <?php
 }
@@ -642,40 +641,40 @@ function wccao_others_parameters_callback()
     $emaillUseLimit = $couponDetails['email_restriction'];
     $decimal_separator = wc_get_price_decimal_separator();
     $coupon_prefix = sanitize_text_field($couponDetails['coupon_prefix']);
-    $coupon_url_parameter = sanitize_text_field(get_option('coupons_after_order_url_parameter'));
+    $coupon_url_parameter = sanitize_text_field(get_option('wccao_coupons_after_order_url_parameter'));
 ?>
     <div class="coupon-field-group">
         <label for="coupons-after-order-count"><?php esc_html_e('Number of Coupons Generated:', 'coupons-after-order') ?></label>
-        <input type="number" id="coupons-after-order-count" name="coupons_after_order_count" value="<?php echo esc_attr($nber_coupons); ?>" step="1" min="1" required />
+        <input type="number" id="coupons-after-order-count" name="wccao_coupons_after_order_count" value="<?php echo esc_attr($nber_coupons); ?>" step="1" min="1" required />
     </div>
     <div class="coupon-field-group">
         <label for="coupon-validity-usage-limit"><?php esc_html_e('Limit Usage of Coupons Generated:', 'coupons-after-order') ?></label>
-        <input type="number" id="coupon-validity-usage-limit" name="coupons_after_order_usage_limit" value="<?php echo esc_attr($limitUsage); ?>" step="1" min="1" required />
+        <input type="number" id="coupon-validity-usage-limit" name="wccao_coupons_after_order_usage_limit" value="<?php echo esc_attr($limitUsage); ?>" step="1" min="1" required />
         <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_attr_e('How many times this coupon can be used before it is void.', 'coupons-after-order') ?>"></span>
     </div>
     <div class="coupon-field-group">
         <label for="coupon_individual_use"><?php esc_html_e('Individual use only:', 'coupons-after-order') ?></label>
-        <input type="checkbox" id="coupon_individual_use" name="coupons_after_order_individual_use" <?php checked($indivUseCoupon, true); ?> value="yes" />
+        <input type="checkbox" id="coupon_individual_use" name="wccao_coupons_after_order_individual_use" <?php checked($indivUseCoupon, true); ?> value="yes" />
         <span class="wccao-input-description"><?php esc_html_e('Check this box if the promo code cannot be used in conjunction with other promo codes.', 'coupons-after-order') ?></span>
     </div>
     <div class="coupon-field-group">
         <label for="coupon-amount-min"><?php esc_html_e('Minimum amount:', 'coupons-after-order') ?></label>
-        <input type="text" id="coupon-amount-min" name="coupons_after_order_min_amount" value="<?php echo esc_attr($min_amount); ?>" class="wccao_input_price" data-decimal="<?php echo esc_attr($decimal_separator); ?>" placeholder="<?php echo esc_html__('No minimum', 'coupons-after-order'); ?>" />&nbsp;<?php echo esc_html(get_woocommerce_currency_symbol()); ?>
+        <input type="text" id="coupon-amount-min" name="wccao_coupons_after_order_min_amount" value="<?php echo esc_attr($min_amount); ?>" class="wccao_input_price" data-decimal="<?php echo esc_attr($decimal_separator); ?>" placeholder="<?php echo esc_html__('No minimum', 'coupons-after-order'); ?>" />&nbsp;<?php echo esc_html(get_woocommerce_currency_symbol()); ?>
         <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_attr_e('If empty, it is the amount of the individual coupon.', 'coupons-after-order'); ?>"></span>
     </div>
     <div class="coupon-field-group">
         <label for="coupon_email_restriction"><?php esc_html_e('Limit to the buyer email:', 'coupons-after-order') ?></label>
-        <input type="checkbox" id="coupon_email_restriction" name="coupons_after_order_email_restriction" <?php checked($emaillUseLimit, 'yes'); ?> value="yes" />
+        <input type="checkbox" id="coupon_email_restriction" name="wccao_coupons_after_order_email_restriction" <?php checked($emaillUseLimit, 'yes'); ?> value="yes" />
         <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_attr_e('If checked, only the order billing email address will be able to benefit from the coupons generated', 'coupons-after-order'); ?>"></span>
     </div>
     <div class="coupon-field-group">
         <label for="coupon-prefix"><?php esc_html_e('Coupon prefix:', 'coupons-after-order') ?></label>
-        <input type="text" id="coupon-prefix" name="coupons_after_order_prefix" value="<?php echo esc_attr($coupon_prefix); ?>" pattern="[a-z]+" title="<?php echo esc_html('Only lowercase characters, no numbers', 'coupons-after-order') ?>" placeholder="<?php echo esc_html__('"ref" by default', 'coupons-after-order'); ?>" />
+        <input type="text" id="coupon-prefix" name="wccao_coupons_after_order_prefix" value="<?php echo esc_attr($coupon_prefix); ?>" pattern="[a-z]+" title="<?php echo esc_html('Only lowercase characters, no numbers', 'coupons-after-order') ?>" placeholder="<?php echo esc_html__('"ref" by default', 'coupons-after-order'); ?>" />
         <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_attr_e('If empty, by default, it is "ref" and the code is in this form "refOrderID-RandomNumber"', 'coupons-after-order'); ?>"></span>
     </div>
     <div class="coupon-field-group">
         <label for="coupon_url_parameter"><?php esc_html_e('URL Parameter link:', 'coupons-after-order') ?></label>
-        <input type="text" id="coupon_url_parameter" name="coupons_after_order_url_parameter" value="<?php echo esc_attr($coupon_url_parameter); ?>" pattern="[a-z]+" title="<?php echo esc_html('Only lowercase characters, no numbers', 'coupons-after-order') ?>" placeholder="<?php echo esc_html__('"apply_coupon" by default', 'coupons-after-order'); ?>" />
+        <input type="text" id="coupon_url_parameter" name="wccao_coupons_after_order_url_parameter" value="<?php echo esc_attr($coupon_url_parameter); ?>" pattern="[a-z]+" title="<?php echo esc_html('Only lowercase characters, no numbers', 'coupons-after-order') ?>" placeholder="<?php echo esc_html__('"apply_coupon" by default', 'coupons-after-order'); ?>" />
         <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_attr_e('If empty, by default, it is "apply_coupon"', 'coupons-after-order'); ?>"></span>
     </div>
 <?php
@@ -683,19 +682,19 @@ function wccao_others_parameters_callback()
 
 function wccao_email_config_callback()
 {
-    $email_subject = get_option('coupons_after_order_email_subject');
-    $email_header = get_option('coupons_after_order_email_header');
+    $email_subject = get_option('wccao_coupons_after_order_email_subject');
+    $email_header = get_option('wccao_coupons_after_order_email_header');
     $couponDetails = wccao_generate_coupon_details(0);
     $coupon_prefix = sanitize_text_field($couponDetails['coupon_prefix']);
 ?>
     <div class="coupon-field-group">
         <label for="email_subject" style="display: flex; align-items: center;"><?php esc_html_e('Email subject:', 'coupons-after-order') ?>
-            <input type="text" id="email_subject" name="coupons_after_order_email_subject" value="<?php echo esc_attr($email_subject); ?>" style="flex:auto;" />
+            <input type="text" id="email_subject" name="wccao_coupons_after_order_email_subject" value="<?php echo esc_attr($email_subject); ?>" style="flex:auto;" />
         </label>
     </div>
     <div class="coupon-field-group">
         <label for="email_header" style="display: flex; align-items: center;"><?php esc_html_e('Email header:', 'coupons-after-order') ?>
-            <input type="text" id="email_header" name="coupons_after_order_email_header" value="<?php echo esc_attr($email_header); ?>" style="flex:auto;" />
+            <input type="text" id="email_header" name="wccao_coupons_after_order_email_header" value="<?php echo esc_attr($email_header); ?>" style="flex:auto;" />
         </label>
     </div>
     <input type="hidden" id="hidden-coupon-prefix" name="hidden_coupon_prefix" value="<?php echo esc_attr($coupon_prefix); ?>" />
@@ -733,7 +732,7 @@ function wccao_html_email_content()
  */
 function wccao_email_callback()
 {
-    $option_name = 'coupons_after_order_email_content';
+    $option_name = 'wccao_coupons_after_order_email_content';
     $default_content = wccao_html_email_content();
 
     $options = get_option($option_name);
@@ -753,36 +752,36 @@ function wccao_email_callback()
 
 function wccao_email_button_callback()
 {
-    $email_bt_title = get_option('coupons_after_order_email_bt_title');
-    $email_bt_url = get_option('coupons_after_order_email_bt_url');
-    $email_bt_color = get_option('coupons_after_order_email_bt_color');
-    $email_bt_bg_color = get_option('coupons_after_order_email_bt_bg_color');
-    $email_bt_font_size = get_option('coupons_after_order_email_bt_font_size');
+    $email_bt_title = get_option('wccao_coupons_after_order_email_bt_title');
+    $email_bt_url = get_option('wccao_coupons_after_order_email_bt_url');
+    $email_bt_color = get_option('wccao_coupons_after_order_email_bt_color');
+    $email_bt_bg_color = get_option('wccao_coupons_after_order_email_bt_bg_color');
+    $email_bt_font_size = get_option('wccao_coupons_after_order_email_bt_font_size');
 ?>
     <div class="bt-preview"><a id="emailButton" href="#" target="_blank" style="text-decoration:none;display:inline-block;padding:10px 30px;margin:10px 0;"></a></div>
     <div class="coupon-field-group">
         <label for="wccao_email_bt_title"><?php esc_html_e('Button title:', 'coupons-after-order') ?>
-            <input type="text" id="wccao_email_bt_title" name="coupons_after_order_email_bt_title" value="<?php echo esc_attr($email_bt_title); ?>" />
+            <input type="text" id="wccao_email_bt_title" name="wccao_coupons_after_order_email_bt_title" value="<?php echo esc_attr($email_bt_title); ?>" />
         </label>
     </div>
     <div class="coupon-field-group">
         <label for="wccao_email_bt_url"><?php esc_html_e('Button URL:', 'coupons-after-order') ?>
-            <input type="url" id="wccao_email_bt_url" name="coupons_after_order_email_bt_url" value="<?php echo esc_attr($email_bt_url); ?>" />
+            <input type="url" id="wccao_email_bt_url" name="wccao_coupons_after_order_email_bt_url" value="<?php echo esc_attr($email_bt_url); ?>" />
         </label>
     </div>
     <div class="coupon-field-group">
         <label for="wccao_email_bt_color"><?php esc_html_e('Button color:', 'coupons-after-order') ?>
-            <input type="color" id="wccao_email_bt_color" name="coupons_after_order_email_bt_color" value="<?php echo esc_attr($email_bt_color); ?>" />
+            <input type="color" id="wccao_email_bt_color" name="wccao_coupons_after_order_email_bt_color" value="<?php echo esc_attr($email_bt_color); ?>" />
         </label>
     </div>
     <div class="coupon-field-group">
         <label for="wccao_email_bt_bg_color"><?php esc_html_e('Button background color:', 'coupons-after-order') ?>
-            <input type="color" id="wccao_email_bt_bg_color" name="coupons_after_order_email_bt_bg_color" value="<?php echo esc_attr($email_bt_bg_color); ?>" />
+            <input type="color" id="wccao_email_bt_bg_color" name="wccao_coupons_after_order_email_bt_bg_color" value="<?php echo esc_attr($email_bt_bg_color); ?>" />
         </label>
     </div>
     <div class="coupon-field-group">
         <label for="wccao_email_bt_font_size"><?php esc_html_e('Button font size (px):', 'coupons-after-order') ?>
-            <input type="number" id="wccao_email_bt_font_size" name="coupons_after_order_email_bt_font_size" value="<?php echo esc_attr($email_bt_font_size); ?>" min="1" />
+            <input type="number" id="wccao_email_bt_font_size" name="wccao_coupons_after_order_email_bt_font_size" value="<?php echo esc_attr($email_bt_font_size); ?>" min="1" />
         </label>
     </div>
 <?php
@@ -790,11 +789,11 @@ function wccao_email_button_callback()
 
 function wccao_miscellaneous_data_uninstall_callback()
 {
-    $data_uninstall = get_option('coupons_after_order_data_uninstall', 'no');
+    $data_uninstall = get_option('wccao_coupons_after_order_data_uninstall', 'no');
 ?>
     <div class="coupon-field-group">
-        <label for="coupons_after_order_data_uninstall">
-            <input type="checkbox" id="coupons_after_order_data_uninstall" name="coupons_after_order_data_uninstall" <?php checked($data_uninstall, 'yes'); ?> value="yes" />
+        <label for="wccao_coupons_after_order_data_uninstall">
+            <input type="checkbox" id="wccao_coupons_after_order_data_uninstall" name="wccao_coupons_after_order_data_uninstall" <?php checked($data_uninstall, 'yes'); ?> value="yes" />
             <?php esc_html_e('Check this box if you would like to completely remove all of its data upon plugin deletion.', 'coupons-after-order'); ?>
         </label>
     </div>
@@ -808,8 +807,8 @@ function wccao_miscellaneous_emails_and_amounts_callback()
     flex-direction: column;
     align-items: flex-start;
     gap: 1em;">
-        <label for="coupons_after_order_emails_and_amounts">
-            <textarea id="coupons_after_order_emails_and_amounts" name="coupons_after_order_emails_and_amounts" placeholder="mon-email@gmail.om;45.5" rows="4" cols="50"></textarea>
+        <label for="wccao_coupons_after_order_emails_and_amounts">
+            <textarea id="wccao_coupons_after_order_emails_and_amounts" name="wccao_coupons_after_order_emails_and_amounts" placeholder="mon-email@gmail.om;45.5" rows="4" cols="50"></textarea>
             <span class="woocommerce-help-tip" tabindex="0" aria-label="<?php esc_attr_e('Enter the information as follows: "email;order_amount". The email and the amount must be separated by ";" and the decimal separator is "."', 'coupons-after-order'); ?>"></span>
 
         </label>

@@ -4,7 +4,7 @@
 * Plugin URI: https://github.com/Webpixelia
 * Description: Generate coupons after order completion. The sum of the coupons will be equal to the amount of the order.
 * Author: Webpixelia
-* Version: 1.3.6
+* Version: 1.3.7
 * Author URI: https://webpixelia.com/
 * Requires PHP: 7.1
 * Requires at least: 5.0
@@ -41,7 +41,7 @@ class WCCAO_Coupons_After_Order_WooCommerce {
 	 * @since 1.0.0
 	 * @var string $version Plugin version number.
 	 */
-	public $version = '1.3.6';
+	public $version = '1.3.7';
 
 
 	/**
@@ -117,7 +117,7 @@ class WCCAO_Coupons_After_Order_WooCommerce {
 			$this->admin = new WCCAO_Admin();
 		}
 
-		require_once WCCAO_ABSPATH . 'includes/admin/class-link-coupons-email.php';
+		require_once WCCAO_ABSPATH . 'includes/admin/class-wccao-link-coupons-email.php';
 		require_once WCCAO_ABSPATH . 'includes/admin/class-wccao-account.php';
 
 		// Include PRO.

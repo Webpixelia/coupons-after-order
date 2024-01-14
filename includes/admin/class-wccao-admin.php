@@ -4,6 +4,7 @@ if (!defined('ABSPATH')) {
 }
 
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+use Automattic\WooCommerce\Utilities\OrderUtil;
 /**
  * Admin class.
  *
@@ -42,25 +43,18 @@ class WCCAO_Admin {
 		add_action('admin_enqueue_scripts', array( $this, 'wccao_enqueue_scripts' ), 20 );
 		add_action('admin_menu', array( $this, 'wccao_add_admin_page' ) );
 		add_action('add_meta_boxes', array( $this, 'wccao_meta_box' ) );
-		add_action('manage_woocommerce_page_wc-orders_custom_column', array( $this, 'wccao_custom_orders_list_column_content' ), 20, 2 );
 		add_action('wp_ajax_wccao_send_email_test', array($this, 'wccao_send_email_test'));
 		add_action('wp_ajax_wccao_manually_generate_coupons', array($this, 'wccao_manually_generate_coupons'));
 		add_action('delete_post', array($this, 'wccao_delete_coupon_and_update_users'));
 		add_action('admin_body_class', array( $this, 'wccao_admin_body_class' ) );
 		add_action('current_screen', array( $this, 'wccao_current_screen' ) );
 		add_action('manage_shop_coupon_posts_custom_column', array( $this, 'wccao_custom_coupon_column_content'), 10, 2);
-
-		// Cron Task
-		if (!wp_next_scheduled('wccao_check_version_cron')) {
-			wp_schedule_event(time(), 'daily', 'wccao_check_version_cron');
-		}
-
+		add_action('woocommerce_init', array($this, 'wccao_register_custom_column_hooks'));
+		
 		// Filter
-		add_filter('manage_woocommerce_page_wc-orders_columns', array( $this, 'wccao_custom_shop_order_column' ), 20 );
 		add_filter('plugin_action_links_' . WCCAO_PLUGIN_BASENAME, array( __CLASS__, 'wccao_plugin_action_links' ) );
 		add_filter('manage_edit-shop_coupon_columns', array( $this, 'wccao_custom_coupon_column') );
 	}
-
 
 	/**
 	 * Enqueue scripts.
@@ -250,6 +244,25 @@ class WCCAO_Admin {
 	}
 
 	/**
+	 * Registers necessary hooks for managing custom columns in the WooCommerce orders list,
+	 * adapting to whether High-Performance Order Storage (HPOS) is enabled or not.
+	 *
+	 * @since 1.3.7
+	 */
+	public function wccao_register_custom_column_hooks()
+	{
+		if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+			// High-Performance Order Storage is enabled
+			add_action('manage_woocommerce_page_wc-orders_custom_column', array($this, 'wccao_custom_orders_list_column_content'), 20, 2);
+			add_filter('manage_woocommerce_page_wc-orders_columns', array($this, 'wccao_custom_shop_order_column'), 20);
+		} else {
+			// High-Performance Order Storage is not enabled
+			add_action('manage_shop_order_posts_custom_column', array($this, 'wccao_custom_orders_list_column_content'), 20, 2);
+			add_filter('manage_edit-shop_order_columns', array($this, 'wccao_custom_shop_order_column'), 20);
+		}
+	}
+
+	/**
 	 * Adds a custom column after a specified key in the given columns array.
 	 *
 	 * @param array  $columns              Existing columns array.
@@ -406,13 +419,13 @@ class WCCAO_Admin {
 	public function wccao_manually_generate_coupons()
 	{
 		// Retrieve posted data
-		$dataArray_raw = isset($_POST['dataArray']) ? $_POST['dataArray'] : array();
+		$dataArray_raw = isset($_POST['dataArray']) ? sanitize_text_field(wp_unslash($_POST['dataArray'])) : '';
 
 		// Check ajax reference
 		check_ajax_referer('wccao_manually_generate_coupons_nonce', 'security');
 
 		// Validation and cleaning of JSON data
-		$dataArray = json_decode(wp_unslash($dataArray_raw), true);
+		$dataArray = json_decode($dataArray_raw, true);
 
 		// Check if JSON conversion was successful
 		if (json_last_error() !== JSON_ERROR_NONE || !is_array($dataArray)) {

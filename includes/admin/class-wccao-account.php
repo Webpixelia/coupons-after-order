@@ -129,12 +129,12 @@ if (!class_exists('WCCAO_Account')) :
 						// Check if conversion to timestamp was successful
 						if ($expiration_timestamp !== false) {
 							$formatted_expiration_date = date_i18n(get_option('date_format'), $expiration_timestamp);
-							$expiration_text = '<li>' . esc_html__('Expiration date:', 'coupons-after-order') . ' ' . $formatted_expiration_date . '</li>';
+							$expiration_text = __('Expiration date:', 'coupons-after-order') . ' ' . $formatted_expiration_date;
 						} else {
-							$expiration_text = '<li>' . esc_html__('Invalid expiration date format', 'coupons-after-order') . '</li>';
+							$expiration_text = __('Invalid expiration date format', 'coupons-after-order');
 						}
 					} else {
-						$expiration_text = '<li>' . esc_html__('No expiration date', 'coupons-after-order') . '</li>';
+						$expiration_text = __('No expiration date', 'coupons-after-order') . '</li>';
 					}
 
 					$remainingUses = $coupon->get_usage_limit() - $coupon->get_usage_count();
@@ -151,7 +151,7 @@ if (!class_exists('WCCAO_Account')) :
 							echo esc_html__('Unlimited', 'coupons-after-order');
 						}
 						echo '</li>';
-						echo $expiration_text;
+						echo '<li>' . esc_html($expiration_text) . '</li>';
 						echo '<li>' . sprintf('<a href="%1$s">%2$s</a>', esc_url($coupon_url), esc_html__('Apply coupon', 'coupons-after-order')) . '</li>';
 						echo '</ul>';
 						echo '</li>';

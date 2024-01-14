@@ -2,7 +2,7 @@
 Contributors: marocweb
 Donate link: https://buymeacoffee.com/webpixelia
 Tags: ecommerce, woocommerce, coupon, woocommerce order
-Stable tag: 1.3.6
+Stable tag: 1.3.7
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.1
@@ -58,6 +58,10 @@ Yes, simply by checking or unchecking the “Enable Coupon after order” box in
 8. "My coupons" on the account page
 
 == Changelog ==
+= 1.3.7 =
+* Added new method to register custom column hooks for both HPOS and non-HPOS environments
+* Implemented changes to be in compliance with WordPress guidelines
+
 = 1.3.6 =
 * Removed version check on Github
 * Removed HEREDOC syntax to adhere to the WordPress guidelines
