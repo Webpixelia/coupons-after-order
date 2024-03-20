@@ -11,6 +11,7 @@ if (!function_exists('wccao_uninstall_conditionally')) {
         if ($data_uninstall === 'yes') {
             $wccao_options = array(
                 'wccao_coupons_after_order_enable',
+                //'wccao_coupons_after_order_event_trigger',
                 'wccao_coupons_after_order_availability_start_enabled',
                 'wccao_coupons_after_order_availability_start_date',
                 'wccao_coupons_after_order_validity_type',
@@ -31,7 +32,9 @@ if (!function_exists('wccao_uninstall_conditionally')) {
                 'wccao_coupons_after_order_email_bt_color',
                 'wccao_coupons_after_order_email_bt_bg_color',
                 'wccao_coupons_after_order_email_bt_font_size',
-                'wccao_coupons_after_order_data_uninstall'
+                'wccao_coupons_after_order_coupon_font_color',
+                'wccao_coupons_after_order_coupon_bg_color',
+                'wccao_coupons_after_order_data_uninstall',	
             );
 
             foreach ($wccao_options as $wcao_option) {

@@ -2,10 +2,10 @@
 Contributors: marocweb
 Donate link: https://buymeacoffee.com/webpixelia
 Tags: ecommerce, woocommerce, coupon, woocommerce order
-Stable tag: 1.3.7
+Stable tag: 1.3.8
 Requires at least: 5.0
-Tested up to: 6.4
-Requires PHP: 7.1
+Tested up to: 6.5
+Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,9 +43,13 @@ In the search field type \"Coupons after order for WooCommerce\" and click Searc
 
 == Frequently Asked Questions ==
 = Is this plugin free? =
-Yes, completely
+Yes, completely.
 = Is it possible to activate/deactivate the generation of coupons after an order? =
-Yes, simply by checking or unchecking the “Enable Coupon after order” box in the plugin settings
+Yes, simply by checking or unchecking the “Enable Coupon after order” box in the plugin settings.
+= Can coupons be generated manually? =
+Yes, and this can be done in bulk.
+= Is the email sent customizable? =
+Yes, completely. You can compose the content of the desired email using shortcodes. The color of the coupons as well as the Call to Action (CTA) are also customizable.
 
 == Screenshots ==
 1. Settings access
@@ -58,6 +62,13 @@ Yes, simply by checking or unchecking the “Enable Coupon after order” box in
 8. "My coupons" on the account page
 
 == Changelog ==
+= 1.3.8, Mar 19, 2024 =
+* Check : compatibility with WooCommerce 8.6.X
+* Check : compatibility with WordPress 6.5 based on 6.5 RC2
+* Add: Customization options for the appearance of coupons in the customer email
+* Improvement: Refactored code for creating administration fields: new class WCCAO_Fields_Register
+* Fix: Bug related to empty email if the admin page is not saved initially
+
 = 1.3.7 =
 * Added new method to register custom column hooks for both HPOS and non-HPOS environments
 * Implemented changes to be in compliance with WordPress guidelines

@@ -4,10 +4,10 @@
 //////////////////////////////////////////////////
 function copyCouponCode(couponCode) {
   // Select the text element to copy
-  var couponTextElement = document.getElementById('coupon_' + couponCode);
+  let couponTextElement = document.getElementById('coupon_' + couponCode);
 
   // Create a text range to select content
-  var range = document.createRange();
+  let range = document.createRange();
   range.selectNode(couponTextElement);
 
   // Select text in range

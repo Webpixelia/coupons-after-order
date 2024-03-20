@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
 
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 use Automattic\WooCommerce\Utilities\OrderUtil;
+
 /**
  * Admin class.
  *
@@ -15,7 +16,8 @@ use Automattic\WooCommerce\Utilities\OrderUtil;
  * @package		Coupon after order for WooCommerce
  * @version		1.0.0
  */
-class WCCAO_Admin {
+class WCCAO_Admin
+{
 
 	/**
 	 * Plugin name
@@ -38,22 +40,26 @@ class WCCAO_Admin {
 	 *
 	 * @since 1.0.0
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		// Action
-		add_action('admin_enqueue_scripts', array( $this, 'wccao_enqueue_scripts' ), 20 );
-		add_action('admin_menu', array( $this, 'wccao_add_admin_page' ) );
-		add_action('add_meta_boxes', array( $this, 'wccao_meta_box' ) );
+		add_action('admin_enqueue_scripts', array($this, 'wccao_enqueue_scripts'), 20);
+		add_action('admin_menu', array($this, 'wccao_add_admin_page'));
+		add_action('add_meta_boxes', array($this, 'wccao_meta_box'));
 		add_action('wp_ajax_wccao_send_email_test', array($this, 'wccao_send_email_test'));
 		add_action('wp_ajax_wccao_manually_generate_coupons', array($this, 'wccao_manually_generate_coupons'));
 		add_action('delete_post', array($this, 'wccao_delete_coupon_and_update_users'));
-		add_action('admin_body_class', array( $this, 'wccao_admin_body_class' ) );
-		add_action('current_screen', array( $this, 'wccao_current_screen' ) );
-		add_action('manage_shop_coupon_posts_custom_column', array( $this, 'wccao_custom_coupon_column_content'), 10, 2);
+		add_action('admin_body_class', array($this, 'wccao_admin_body_class'));
+		add_action('current_screen', array($this, 'wccao_current_screen'));
+		add_action('manage_shop_coupon_posts_custom_column', array($this, 'wccao_custom_coupon_column_content'), 10, 2);
 		add_action('woocommerce_init', array($this, 'wccao_register_custom_column_hooks'));
-		
+
 		// Filter
-		add_filter('plugin_action_links_' . WCCAO_PLUGIN_BASENAME, array( __CLASS__, 'wccao_plugin_action_links' ) );
-		add_filter('manage_edit-shop_coupon_columns', array( $this, 'wccao_custom_coupon_column') );
+		add_filter('plugin_action_links_' . WCCAO_PLUGIN_BASENAME, array(__CLASS__, 'wccao_plugin_action_links'));
+		add_filter('manage_edit-shop_coupon_columns', array($this, 'wccao_custom_coupon_column'));
+
+		// Register plugin activation function
+		register_activation_hook(WCCAO_PLUGIN_FILE, array($this, 'wccao_save_default_values'));
 	}
 
 	/**
@@ -63,18 +69,19 @@ class WCCAO_Admin {
 	 *
 	 * @since 1.0.0
 	 */
-	public function wccao_enqueue_scripts( $hook ) {
+	public function wccao_enqueue_scripts($hook)
+	{
 		$current_screen = get_current_screen();
 
-		if ( strpos( $current_screen->id, WCCAO_Admin::WCCAO_ADMIN_SLUG ) !== false ) {
-			wp_enqueue_style( 'admin-coupons-after-order-for-woocommerce', plugins_url( 'assets/css/woocommerce-coupons-after-order-admin.css', WCCAO_Coupons_After_Order_WooCommerce()->file ), array( 'woocommerce_admin_styles', 'jquery-ui-style' ), WCCAO_Coupons_After_Order_WooCommerce()->version );
-			wp_enqueue_script( 'admin-coupons-after-order-for-woocommerce', plugins_url( 'assets/js/woocommerce-coupons-after-order-admin.js', WCCAO_Coupons_After_Order_WooCommerce()->file ), array( 'jquery', 'wp-i18n' ), WCCAO_Coupons_After_Order_WooCommerce()->version, true );
-		
+		if (strpos($current_screen->id, WCCAO_Admin::WCCAO_ADMIN_SLUG) !== false) {
+			wp_enqueue_style('admin-coupons-after-order-for-woocommerce', plugins_url('assets/css/woocommerce-coupons-after-order-admin.css', WCCAO_Coupons_After_Order_WooCommerce()->file), array('woocommerce_admin_styles', 'jquery-ui-style'), WCCAO_Coupons_After_Order_WooCommerce()->version);
+			wp_enqueue_script('admin-coupons-after-order-for-woocommerce', plugins_url('assets/js/woocommerce-coupons-after-order-admin.js', WCCAO_Coupons_After_Order_WooCommerce()->file), array('jquery', 'wp-i18n'), WCCAO_Coupons_After_Order_WooCommerce()->version, true);
+
 			// Pass translation strings to JavaScript
 			$translation_strings = array(
 				'errorMessageDatePosterior' => esc_html__('The start date of validity cannot be later than the expiry date of the coupon.', 'coupons-after-order'),
 				/* translators: %s: price decimal separator */
-				'customErrorMessage' => sprintf(esc_html__( 'Please enter a numeric value and the defined decimal separator (%s), without thousands separators or currency symbols', 'coupons-after-order' ), wc_get_price_decimal_separator() ),
+				'customErrorMessage' => sprintf(esc_html__('Please enter a numeric value and the defined decimal separator (%s), without thousands separators or currency symbols', 'coupons-after-order'), wc_get_price_decimal_separator()),
 				'textDisplayedToggle' => esc_html__('Show email template', 'coupons-after-order'),
 				'textHiddenToggle' => esc_html__('Hide email template', 'coupons-after-order'),
 				'errorMessageText' => esc_html__('Error sending test email. Please try again.', 'coupons-after-order'),
@@ -86,8 +93,8 @@ class WCCAO_Admin {
 				'successEmailsCouponsGenerated' => esc_html__('Successful processing for all email-value pairs.', 'coupons-after-order'),
 				'errorInvalidFormat' => esc_html__('The entry format is invalid. Please use the email;amount format.', 'coupons-after-order'),
 			);
-			wp_localize_script( 'admin-coupons-after-order-for-woocommerce', 'couponsAfterOrderTranslations', $translation_strings );
-			
+			wp_localize_script('admin-coupons-after-order-for-woocommerce', 'couponsAfterOrderTranslations', $translation_strings);
+
 			// Nonce
 			$wccao_manually_generate_coupons_nonce = wp_create_nonce('wccao_manually_generate_coupons_nonce');
 			wp_add_inline_script('admin-coupons-after-order-for-woocommerce', 'var wccao_manually_generate_coupons_nonce = "' . $wccao_manually_generate_coupons_nonce . '";', 'before');
@@ -102,20 +109,21 @@ class WCCAO_Admin {
 	 *
 	 * @since 1.0.0
 	 */
-	public function wccao_add_admin_page() {
+	public function wccao_add_admin_page()
+	{
 		global $admin_page_hooks;
-		$parent_menu = ( isset( $admin_page_hooks['woocommerce-marketing'] ) ) ? 'woocommerce-marketing' : 'woocommerce';
+		$parent_menu = (isset($admin_page_hooks['woocommerce-marketing'])) ? 'woocommerce-marketing' : 'woocommerce';
 		add_submenu_page(
-            $parent_menu,
+			$parent_menu,
 			WCCAO_Admin::WCCAO_PLUGIN_NAME,
 			WCCAO_Admin::WCCAO_PLUGIN_NAME,
-            'manage_options',
+			'manage_options',
 			WCCAO_Admin::WCCAO_ADMIN_SLUG,
-            array( $this, 'wccao_admin_page' )
-        );
+			array($this, 'wccao_admin_page')
+		);
 	}
 
- 
+
 	/**
 	 * Coupons after order admin page.
 	 *
@@ -124,7 +132,8 @@ class WCCAO_Admin {
 	 *
 	 * @since 1.0.0
 	 */
-	public function wccao_admin_page($tabs) {
+	public function wccao_admin_page($tabs)
+	{
 		// Get the settings for the plugin
 		$settings = get_option('woocommerce_coupons_after_order_settings');
 
@@ -132,14 +141,14 @@ class WCCAO_Admin {
 		$settings = apply_filters_ref_array('woocommerce_coupons_after_order_settings', array(&$settings));
 
 		// Output the settings
-        ?>
-        <div class="wrap">
-            <h2><?php 
-			/* translators: %s: plugin name */
-			printf( esc_html__('%s Settings', 'coupons-after-order'), esc_html(WCCAO_Admin::WCCAO_PLUGIN_NAME) ); 
-			?>
+	?>
+		<div class="wrap">
+			<h2><?php
+				/* translators: %s: plugin name */
+				printf(esc_html__('%s Settings', 'coupons-after-order'), esc_html(WCCAO_Admin::WCCAO_PLUGIN_NAME));
+				?>
 			</h2>
-		
+
 			<?php
 			$tabs = array(
 				'settings' => __('Settings', 'coupons-after-order'),
@@ -153,65 +162,65 @@ class WCCAO_Admin {
 
 			<nav class="wccao-nav-bar nav-tab-wrapper">
 				<?php foreach ($tabs as $tab_key => $tab_label) : ?>
-					<a href="<?php echo esc_url(admin_url( 'admin.php?page=' . WCCAO_Admin::WCCAO_ADMIN_SLUG ) . '&tab=' . esc_attr( $tab_key )); ?>" class="wccao-nav-tab nav-tab <?php echo ($current_tab === $tab_key) ? 'nav-tab-active' : ''; ?>">
+					<a href="<?php echo esc_url(admin_url('admin.php?page=' . WCCAO_Admin::WCCAO_ADMIN_SLUG) . '&tab=' . esc_attr($tab_key)); ?>" class="wccao-nav-tab nav-tab <?php echo ($current_tab === $tab_key) ? 'nav-tab-active' : ''; ?>">
 						<?php echo esc_html($tab_label); ?>
 					</a>
 				<?php endforeach; ?>
-				</nav>
-    
-            <?php settings_errors(); ?>
-    
-            <form method="post" action="options.php">
-			<?php
-			// Display sections and fields for WooCommerce settings
-			switch ($current_tab) {
-				case 'settings':
-					settings_fields('coupons-after-order-tab-settings-settings');
-					do_settings_sections('coupons-after-order-tab-settings-settings');
-					break;
+			</nav>
 
-				case 'email':
-					settings_fields('coupons-after-order-tab-settings-email');
-					do_settings_sections('coupons-after-order-tab-settings-email'); ?>				
-					<?php $template_file = plugin_dir_path(dirname(__DIR__)) . 'templates/html-email-template-preview-admin.php';
-					if (file_exists($template_file)) {
-						include $template_file;
-					}
-					break;
+			<?php settings_errors(); ?>
 
-				case 'misc':
-					settings_fields('coupons-after-order-tab-settings-misc');
-					do_settings_sections('coupons-after-order-tab-settings-misc');
-					break;
+			<form method="post" action="options.php">
+				<?php
+				// Display sections and fields for WooCommerce settings
+				switch ($current_tab) {
+					case 'settings':
+						settings_fields('coupons-after-order-tab-settings-settings');
+						do_settings_sections('coupons-after-order-tab-settings-settings');
+						break;
 
-				case 'version':
-					settings_fields('coupons-after-order-tab-settings-version');
-					do_settings_sections('coupons-after-order-tab-settings-version');
-					break;
+					case 'email':
+						settings_fields('coupons-after-order-tab-settings-email');
+						do_settings_sections('coupons-after-order-tab-settings-email'); ?>
+						<?php $template_file = plugin_dir_path(dirname(__DIR__)) . 'templates/html-email-template-preview-admin.php';
+						if (file_exists($template_file)) {
+							include $template_file;
+						}
+						break;
 
-				default:
-					break;
-			}
+					case 'misc':
+						settings_fields('coupons-after-order-tab-settings-misc');
+						do_settings_sections('coupons-after-order-tab-settings-misc');
+						break;
 
-            if (!isset($_GET['tab']) || $_GET['tab'] !== 'version') {
-				submit_button();
-			}
-        	?>
-            </form>
-        </div>
-        <?php
-    }
+					case 'version':
+						settings_fields('coupons-after-order-tab-settings-version');
+						do_settings_sections('coupons-after-order-tab-settings-version');
+						break;
 
+					default:
+						break;
+				}
+
+				if (!isset($_GET['tab']) || $_GET['tab'] !== 'version') {
+					submit_button();
+				}
+				?>
+			</form>
+		</div>
+	<?php
+	}
 
 	/**
 	 * Add custom meta box to single order page.
 	 *
 	 * @return void
 	 */
-	public function wccao_meta_box() {
+	public function wccao_meta_box()
+	{
 		$screen = wc_get_container()->get(CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled()
-            ? wc_get_page_screen_id('shop-order')
-            : 'shop_order';
+			? wc_get_page_screen_id('shop-order')
+			: 'shop_order';
 
 		add_meta_box(
 			'custom-order-meta-box',
@@ -228,16 +237,17 @@ class WCCAO_Admin {
 	 *
 	 * @param WP_Post|object $post WP_Post object or any other object with similar properties.
 	 */
-	public function wccao_meta_box_callback($post) {
+	public function wccao_meta_box_callback($post)
+	{
 		// Get the order object
-		$order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;
-	
+		$order = ($post instanceof WP_Post) ? wc_get_order($post->ID) : $post;
+
 		// Get the saved value
 		$coupons_generated = sanitize_text_field($order->get_meta('_coupons_generated', true));
 
 		// Determine whether to display "Yes" or "No" based on the value
 		$display_value = ($coupons_generated === 'yes') ? 'Yes' : 'No';
-	
+
 		// Output the input field
 		echo '<p><label for="coupons-after-order-meta-box">' . esc_html__('Coupons generated:', 'coupons-after-order') . '</label> ';
 		echo '<input type="text" id="coupons-after-order-meta-box" name="coupons_generated" value="' . esc_attr($display_value) . '" disabled /></p>';
@@ -272,7 +282,8 @@ class WCCAO_Admin {
 	 *
 	 * @return array                       Updated columns array with the new column added.
 	 */
-	protected function wccao_add_custom_column_after_key($columns, $key_to_insert_after, $new_key, $new_label) {
+	protected function wccao_add_custom_column_after_key($columns, $key_to_insert_after, $new_key, $new_label)
+	{
 		$reordered_columns = array();
 
 		foreach ($columns as $key => $column) {
@@ -284,7 +295,7 @@ class WCCAO_Admin {
 			}
 		}
 
-    	return $reordered_columns;
+		return $reordered_columns;
 	}
 
 	/**
@@ -294,7 +305,8 @@ class WCCAO_Admin {
 	 *
 	 * @return array          Updated columns array with the new column added.
 	 */
-	public function wccao_custom_shop_order_column($columns) {
+	public function wccao_custom_shop_order_column($columns)
+	{
 		return $this->wccao_add_custom_column_after_key($columns, 'order_status', 'coupons_generated', __('Coupons Generated', 'coupons-after-order'));
 	}
 
@@ -305,7 +317,8 @@ class WCCAO_Admin {
 	 *
 	 * @return array          Updated columns array with the new column added.
 	 */
-	public function wccao_custom_coupon_column($columns) {
+	public function wccao_custom_coupon_column($columns)
+	{
 		return $this->wccao_add_custom_column_after_key($columns, 'usage', 'start_date_coupon', __('Start date', 'coupons-after-order'));
 	}
 
@@ -370,7 +383,7 @@ class WCCAO_Admin {
 
 		// Generate coupons based on the total amount of the order
 		$order_total = $order->get_total();
-		$couponDetails = wccao_generate_coupon_details($order_total); 
+		$couponDetails = wccao_generate_coupon_details($order_total);
 
 		// Generate the list of coupons
 		$coupon_list = wccao_generate_coupons_list($couponDetails, $order->get_id(), $save, $manual_generation, $customer_email);
@@ -439,7 +452,7 @@ class WCCAO_Admin {
 			wp_send_json_error($dataError);
 			return;
 		}
-		
+
 		// Process the array
 		foreach ($dataArray as $item) {
 			// Data
@@ -448,7 +461,7 @@ class WCCAO_Admin {
 
 			self::wccao_send_email($custome_email, $amount_order, true, true, $custome_email);
 		}
-		
+
 		// Send a reply
 		$dataSuccessAll = array(
 			'success' => true,
@@ -519,13 +532,14 @@ class WCCAO_Admin {
 	 * @param   string $classes CSS classe.
 	 * @return  string
 	 */
-	public function wccao_admin_body_class( $classes ) {
+	public function wccao_admin_body_class($classes)
+	{
 		$classes = ' wccao-admin';
 
 		// Return classes.
 		return $classes;
 	}
-	
+
 	/**
 	 * Adds custom functionality to "Coupons after order for WooCommerce" admin pages.
 	 *
@@ -534,24 +548,26 @@ class WCCAO_Admin {
 	 * @param   void
 	 * @return  void
 	 */
-	public function wccao_current_screen( $screen ) {
+	public function wccao_current_screen($screen)
+	{
 		// Determine if the current page being viewed is "ACF" related.
-		if ( strpos( $screen->id, WCCAO_Admin::WCCAO_ADMIN_SLUG ) !== false ) {
-			add_filter( 'admin_footer_text', array( $this, 'wccao_admin_footer_text' ) );
-			add_filter( 'update_footer', array( $this, 'wccao_update_footer' ) );
+		if (strpos($screen->id, WCCAO_Admin::WCCAO_ADMIN_SLUG) !== false) {
+			add_filter('admin_footer_text', array($this, 'wccao_admin_footer_text'));
+			add_filter('update_footer', array($this, 'wccao_update_footer'));
 		}
 	}
-	
+
 	/**
 	 * Customizes the admin footer text with a credit link to Webpixelia.
 	 *
 	 * @param string $credit The current admin footer text.
 	 * @return string The modified admin footer text with Webpixelia credit.
 	 */
-	public function wccao_admin_footer_text( $credit ) {
+	public function wccao_admin_footer_text($credit)
+	{
 		$url = 'https://webpixelia.com/';
 		$credit = '<span id="webpixelia-credit">' . sprintf('<span>%s</span> <a href="%s" target="_blank">Webpixelia</a>', esc_html(__('Coupons after order for WooCommerce is powered by', 'coupons-after-order')), esc_url($url)) . '</span>';
-	
+
 		return $credit;
 	}
 
@@ -561,7 +577,8 @@ class WCCAO_Admin {
 	 * @param string $html The current update footer HTML.
 	 * @return string The modified update footer HTML with the plugin version.
 	 */
-	public function wccao_update_footer( $html ) {
+	public function wccao_update_footer($html)
+	{
 		$version = WCCAO_Coupons_After_Order_WooCommerce()->version;
 		$html = '<span>Version ' . $version . '</span>';
 
@@ -575,11 +592,51 @@ class WCCAO_Admin {
 	 *
 	 * @return array
 	 */
-	public static function wccao_plugin_action_links( $links ) {
+	public static function wccao_plugin_action_links($links)
+	{
 		$action_links = array(
-			'settings' => '<a href="' . admin_url( 'admin.php?page=' . WCCAO_Admin::WCCAO_ADMIN_SLUG ) . '" aria-label="' . esc_attr__( 'View Coupons after order for WooCommerce settings', 'coupons-after-order' ) . '">' . esc_html__( 'Settings', 'coupons-after-order' ) . '</a>',
+			'settings' => '<a href="' . admin_url('admin.php?page=' . WCCAO_Admin::WCCAO_ADMIN_SLUG) . '" aria-label="' . esc_attr__('View Coupons after order for WooCommerce settings', 'coupons-after-order') . '">' . esc_html__('Settings', 'coupons-after-order') . '</a>',
 		);
 
-		return array_merge( $action_links, $links );
+		return array_merge($action_links, $links);
 	}
+
+	/**
+	 * Method to save default values in the database when the plugin is activated.
+	 */
+	public function wccao_save_default_values()
+	{
+		// Créer les options dans la base de données lors de l'activation du plugin
+		add_option('wccao_coupons_after_order_email_subject', /* translators: %s: shop name */ sprintf(__('Your promo codes to enjoy the refund offer at %s', 'coupons-after-order'), get_bloginfo('name')));
+		add_option('wccao_coupons_after_order_email_header', __('Thank you for your order', 'coupons-after-order'));
+		add_option('wccao_coupons_after_order_email_content', '
+            <p>' . /* translators: %s: buyer name */ sprintf(esc_html__('Hello %s,', 'coupons-after-order'), esc_html('{billing_first_name}')) . '</p>
+            <p>' . /* translators: %1$s: order amount */
+			/* translators: %2$s: number of coupons generated */
+			/* translators: %3$s: amount of each coupon */ sprintf(esc_html__('To thank you, we are sending you your promo codes corresponding to our full refund offer. You spent %1$s on your last purchase, entitling you to %2$s promo codes, each worth %3$s.', 'coupons-after-order'), '{order_total}', '{nb_coupons}', '{coupon_amount}') . '</p>
+            <p>' . /* translators: %s: minimum cart amount for coupon use */ sprintf(esc_html__('Each promo code is valid for a minimum cart value of %s.', 'coupons-after-order'), '{min_amount_order}') . '</p>
+            <p>' . /* translators: %s: list of coupons generated */ sprintf(esc_html__('Here are your promo codes: %s', 'coupons-after-order'), '{coupons}') . '</p>
+            <p>' . esc_html__('To use these promo codes on your next purchase, simply follow these steps:', 'coupons-after-order') . '</p>
+            <ul style="list-style-type: disc; margin-left: 20px;">
+                <li>' . esc_html__('Add the items of your choice to your cart.',
+				'coupons-after-order'
+			) . '</li>
+                <li>' . esc_html__('During the payment process, enter one of these promo codes in the corresponding "Promo Code" box.', 'coupons-after-order') . '</li>
+                <li>' . /* translators: %s: coupon amount */ sprintf(esc_html__('The discount of %s will be automatically applied to your order.', 'coupons-after-order'), '{coupon_amount}') . '</li>
+                <li>' . /* translators: %1$s: start date of validity of generated coupons */
+			/* translators: %2$s: end date of validity of generated coupons */ sprintf(esc_html__('Please note that these promo codes are valid from %1$s until %2$s and cannot be combined in a single order.', 'coupons-after-order'), '{start_date}', '{end_date}') . '</li>
+            </ul>
+            <p>' . esc_html__('If you have any questions or need assistance, our customer service team is here to help.', 'coupons-after-order') . '</p>
+            <p>' . esc_html__('Thank you for your loyalty. We hope you enjoy this special.', 'coupons-after-order') . '</p>
+            <p>' . esc_html__('Best regards', 'coupons-after-order') . ',<br/>' . get_bloginfo('name') . '.</p>
+        ');
+		add_option('wccao_coupons_after_order_email_bt_title', __('I\'m enjoying it now', 'coupons-after-order'));
+		add_option('wccao_coupons_after_order_email_bt_url', get_home_url());
+		add_option('wccao_coupons_after_order_email_bt_color', '#ffffff');
+		add_option('wccao_coupons_after_order_email_bt_bg_color', get_option('woocommerce_email_base_color'));
+		add_option('wccao_coupons_after_order_coupon_font_color', '#ffffff');
+		add_option('wccao_coupons_after_order_coupon_bg_color', get_option('woocommerce_email_base_color'));
+		add_option('wccao_coupons_after_order_email_bt_font_size', 16);
+	}
+	
 }

@@ -4,13 +4,13 @@
 * Plugin URI: https://github.com/Webpixelia
 * Description: Generate coupons after order completion. The sum of the coupons will be equal to the amount of the order.
 * Author: Webpixelia
-* Version: 1.3.7
+* Version: 1.3.8
 * Author URI: https://webpixelia.com/
-* Requires PHP: 7.1
+* Requires PHP: 7.4
 * Requires at least: 5.0
-* Tested up to: 6.4
+* Tested up to: 6.5
 * WC requires at least: 5.0
-* WC tested up to: 8.4
+* WC tested up to: 8.6
 * License: GPLv2 or later
 * License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * Text Domain: coupons-after-order
@@ -41,7 +41,7 @@ class WCCAO_Coupons_After_Order_WooCommerce {
 	 * @since 1.0.0
 	 * @var string $version Plugin version number.
 	 */
-	public $version = '1.3.7';
+	public $version = '1.3.8';
 
 
 	/**
@@ -116,15 +116,11 @@ class WCCAO_Coupons_After_Order_WooCommerce {
 			require_once WCCAO_ABSPATH . 'includes/admin/class-wccao-admin.php';
 			$this->admin = new WCCAO_Admin();
 		}
+		require_once WCCAO_ABSPATH . 'includes/admin/class-wccao-fields-register.php';
+		new WCCAO_Fields_Register();
 
 		require_once WCCAO_ABSPATH . 'includes/admin/class-wccao-link-coupons-email.php';
 		require_once WCCAO_ABSPATH . 'includes/admin/class-wccao-account.php';
-
-		// Include PRO.
-		wccao_include( 'pro/wccao-pro.php' );
-		if ( is_admin() && function_exists( 'wccao_is_pro' ) && ! wccao_is_pro() ) {
-			wccao_include( 'pro/admin/admin-settings-pages.php' );
-		}
 	}
 
 	/**
